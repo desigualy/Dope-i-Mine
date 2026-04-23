@@ -1,0 +1,18 @@
+enum AnalyticsEvent {
+  appOpened,
+  onboardingCompleted,
+  taskCreated,
+  taskBreakdownViewed,
+  stepCompleted,
+  stepBrokenDownFurther,
+  overwhelmRescueOpened,
+  overwhelmRescueUsed,
+  sideQuestAccepted,
+  sideQuestCompleted,
+  routineCreated,
+  routineStarted,
+  reminderCreated,
+  reminderTriggered,
+  voiceEnabled,
+  voiceSpokeStep,
+}

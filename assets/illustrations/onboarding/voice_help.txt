@@ -1,0 +1,8 @@
+
+Onboarding illustration brief: voice help
+
+Scene:
+User speaking a task aloud while Dope-i listens.
+
+Purpose:
+Communicate voice-first support.

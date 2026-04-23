@@ -1,0 +1,8 @@
+
+Empty-state brief: no tasks
+
+Message:
+Nothing active yet. Start with one manageable task.
+
+Illustration tone:
+clean, spacious, non-judgmental

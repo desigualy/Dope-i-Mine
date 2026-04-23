@@ -1,0 +1,10 @@
+
+App icon brief
+
+Use:
+Primary mobile icon for Android and iOS.
+
+Requirements:
+- readable at small sizes
+- no fine detail dependence
+- should still feel like Dope-i-Mine, not generic productivity sludge

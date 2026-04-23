@@ -1,0 +1,11 @@
+
+Dope-i logo lockup brief
+
+Purpose:
+Primary companion-first logo lockup for onboarding, splash, and promotional surfaces.
+
+Design notes:
+- foreground the assistant name "Dope-i"
+- supporting brand "Dope-i-Mine" may sit below or beside depending layout
+- should feel warm, clever, and calm
+- avoid hard-edged corporate styling

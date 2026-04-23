@@ -1,0 +1,13 @@
+
+Mascot brand sheet brief
+
+Purpose:
+Single-sheet reference for Dope-i personality, proportions, expression states, and approved color treatment.
+
+Must include:
+- idle
+- speaking
+- thinking
+- proud
+- gentle concern
+- celebration

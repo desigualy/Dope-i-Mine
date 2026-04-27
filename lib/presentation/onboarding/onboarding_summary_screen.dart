@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/errors/user_facing_error_mapper.dart';
 import '../../core/widgets/error_banner.dart';
+import '../../domain/branding/pronunciation_option.dart';
 import '../../providers.dart';
 import 'onboarding_controller.dart';
 import 'widgets/onboarding_step_scaffold.dart';

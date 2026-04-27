@@ -16,9 +16,12 @@ import '../presentation/caregiver/link_caregiver_screen.dart';
 import '../presentation/home/home_screen.dart';
 import '../presentation/onboarding/age_band_screen.dart';
 import '../presentation/onboarding/assistant_name_screen.dart';
+import '../presentation/onboarding/accessibility_screen.dart';
 import '../presentation/onboarding/mode_selection_screen.dart';
 import '../presentation/onboarding/onboarding_summary_screen.dart';
+import '../presentation/onboarding/permissions_screen.dart';
 import '../presentation/onboarding/sensory_preferences_screen.dart';
+import '../presentation/onboarding/voice_setup_screen.dart';
 import '../presentation/onboarding/voice_preferences_screen.dart';
 import '../presentation/onboarding/welcome_screen.dart';
 import '../presentation/progress/progress_screen.dart';
@@ -50,16 +53,72 @@ final GoRouter appRouter = GoRouter(
     GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
     GoRoute(path: '/signup', builder: (_, __) => const SignupScreen()),
     GoRoute(path: '/home', builder: (_, __) => const HomeScreen()),
-    GoRoute(path: '/branding/intro', builder: (_, __) => const DopeIIntroScreen()),
-    GoRoute(path: '/branding/pronunciation', builder: (_, __) => const PronunciationSetupScreen()),
+    GoRoute(
+      path: '/branding/intro',
+      builder: (_, state) => DopeIIntroScreen(
+        returnToSummary: state.uri.queryParameters['return'] == 'summary',
+      ),
+    ),
+    GoRoute(
+      path: '/branding/pronunciation',
+      builder: (_, state) => PronunciationSetupScreen(
+        returnToSummary: state.uri.queryParameters['return'] == 'summary',
+      ),
+    ),
     GoRoute(path: '/branding/voice-preview', builder: (_, __) => const VoiceNamePreviewScreen()),
     GoRoute(path: '/branding/skins', builder: (_, __) => const SkinPackShopScreen()),
-    GoRoute(path: '/onboarding/age-band', builder: (_, __) => const AgeBandScreen()),
-    GoRoute(path: '/onboarding/assistant-name', builder: (_, __) => const AssistantNameScreen()),
-    GoRoute(path: '/onboarding/mode', builder: (_, __) => const ModeSelectionScreen()),
-    GoRoute(path: '/onboarding/sensory', builder: (_, __) => const SensoryPreferencesScreen()),
-    GoRoute(path: '/onboarding/voice', builder: (_, __) => const VoicePreferencesScreen()),
-    GoRoute(path: '/onboarding/summary', builder: (_, __) => const OnboardingSummaryScreen()),
+    GoRoute(
+      path: '/onboarding/age-band',
+      builder: (_, state) => AgeBandScreen(
+        returnToSummary: state.uri.queryParameters['return'] == 'summary',
+      ),
+    ),
+    GoRoute(
+      path: '/onboarding/assistant-name',
+      builder: (_, state) => AssistantNameScreen(
+        returnToSummary: state.uri.queryParameters['return'] == 'summary',
+      ),
+    ),
+    GoRoute(
+      path: '/onboarding/mode',
+      builder: (_, state) => ModeSelectionScreen(
+        returnToSummary: state.uri.queryParameters['return'] == 'summary',
+      ),
+    ),
+    GoRoute(
+      path: '/onboarding/accessibility',
+      builder: (_, state) => AccessibilityScreen(
+        returnToSummary: state.uri.queryParameters['return'] == 'summary',
+      ),
+    ),
+    GoRoute(
+      path: '/onboarding/sensory',
+      builder: (_, state) => SensoryPreferencesScreen(
+        returnToSummary: state.uri.queryParameters['return'] == 'summary',
+      ),
+    ),
+    GoRoute(
+      path: '/onboarding/permissions',
+      builder: (_, state) => PermissionsScreen(
+        returnToSummary: state.uri.queryParameters['return'] == 'summary',
+      ),
+    ),
+    GoRoute(
+      path: '/onboarding/voice',
+      builder: (_, state) => VoicePreferencesScreen(
+        returnToSummary: state.uri.queryParameters['return'] == 'summary',
+      ),
+    ),
+    GoRoute(
+      path: '/onboarding/voice-setup',
+      builder: (_, state) => VoiceSetupScreen(
+        returnToSummary: state.uri.queryParameters['return'] == 'summary',
+      ),
+    ),
+    GoRoute(
+      path: '/onboarding/summary',
+      builder: (_, __) => const OnboardingSummaryScreen(),
+    ),
     GoRoute(path: '/tasks/new', builder: (_, __) => const TaskInputScreen()),
     GoRoute(path: '/tasks/breakdown', builder: (_, __) => const TaskBreakdownScreen()),
     GoRoute(path: '/tasks/summary', builder: (_, __) => const TaskSummaryScreen()),

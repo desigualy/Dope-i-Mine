@@ -1,16 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/widgets/primary_scaffold.dart';
 import '../../core/widgets/section_header.dart';
+import '../onboarding/widgets/onboarding_step_scaffold.dart';
 
 class DopeIIntroScreen extends StatelessWidget {
-  const DopeIIntroScreen({super.key});
+  const DopeIIntroScreen({super.key, this.returnToSummary = false});
+
+  final bool returnToSummary;
 
   @override
   Widget build(BuildContext context) {
-    return PrimaryScaffold(
+    // This screen is always part of onboarding. The legacy PrimaryScaffold
+    // import remains for any future non-onboarding entry points.
+    final backTarget = returnToSummary ? '/onboarding/summary' : '/login';
+    final nextTarget = returnToSummary
+        ? '/onboarding/summary'
+        : '/branding/pronunciation';
+
+    return OnboardingStepScaffold(
       title: 'Meet Dope-i',
+      stepNumber: 1,
+      totalSteps: 9,
+      onBack: () => context.go(backTarget),
+      onNext: () => context.go(nextTarget),
+      nextLabel: returnToSummary ? 'Done' : 'Continue',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -20,14 +34,6 @@ class DopeIIntroScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           const Text('I break big tasks into wins you can feel immediately.'),
-          const Spacer(),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () => context.go('/branding/pronunciation'),
-              child: const Text('Set up assistant voice'),
-            ),
-          ),
         ],
       ),
     );

@@ -21,9 +21,14 @@ class ProfileRepositoryImpl {
     required bool reducedAnimation,
     required bool largeText,
     required bool soundEnabled,
+    bool softColors = true,
+    String praiseLevel = 'medium',
+    bool iconMode = false,
+    bool reduceSurprises = true,
   }) async {
     await _client.from('users_profile').upsert(<String, dynamic>{
       'id': userId,
+      'email': _client.auth.currentUser?.email,
       'age_band': ageBand.name,
       'default_mode': _modeToDb(mode),
       'voice_enabled': voiceEnabled,
@@ -42,10 +47,10 @@ class ProfileRepositoryImpl {
       'reduced_animation': reducedAnimation,
       'large_text': largeText,
       'sound_enabled': soundEnabled,
-      'soft_colors': true,
-      'praise_level': 'medium',
-      'icon_mode': false,
-      'reduce_surprises': true,
+      'soft_colors': softColors,
+      'praise_level': praiseLevel,
+      'icon_mode': iconMode,
+      'reduce_surprises': reduceSurprises,
       'updated_at': DateTime.now().toIso8601String(),
     });
   }

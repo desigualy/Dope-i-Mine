@@ -1,21 +1,10 @@
 enum PronunciationOption {
-  dopeEe,
-  dopy,
-  dopeEye,
-  custom,
-}
+  dopeEe('Dope-ee'),
+  dopy('Dopy'),
+  dopeEye('Dope-eye'),
+  custom('Custom');
 
-extension PronunciationOptionLabel on PronunciationOption {
-  String get label {
-    switch (this) {
-      case PronunciationOption.dopeEe:
-        return 'Dope-ee';
-      case PronunciationOption.dopy:
-        return 'Dopy';
-      case PronunciationOption.dopeEye:
-        return 'Dope-eye';
-      case PronunciationOption.custom:
-        return 'Custom';
-    }
-  }
+  final String label;
+
+  const PronunciationOption(this.label);
 }

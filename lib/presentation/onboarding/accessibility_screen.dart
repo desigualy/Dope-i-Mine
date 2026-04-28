@@ -20,7 +20,7 @@ class AccessibilityScreen extends ConsumerWidget {
     return OnboardingStepScaffold(
       title: 'Accessibility & comfort',
       stepNumber: 6,
-      totalSteps: 9,
+      totalSteps: 12,
       onBack: () => context.go(
         returnToSummary ? '/onboarding/summary' : '/onboarding/mode',
       ),

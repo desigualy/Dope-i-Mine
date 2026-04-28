@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -13,6 +12,9 @@ import 'task_controller.dart';
 import 'task_session_controller.dart';
 import 'widgets/minimum_version_toggle.dart';
 import 'widgets/step_card.dart';
+import '../sidequests/side_quest_panel.dart';
+import '../rewards/reward_controller.dart';
+import '../rewards/widgets/xp_bar.dart';
 
 class TaskBreakdownScreen extends ConsumerWidget {
   const TaskBreakdownScreen({super.key});
@@ -21,6 +23,15 @@ class TaskBreakdownScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(taskControllerProvider);
     final session = ref.watch(taskSessionControllerProvider);
+    final rewardState = ref.watch(rewardControllerProvider);
+
+    // Load stats once if needed
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authUser = ref.read(authRepositoryProvider).getCurrentUser();
+      if (authUser != null && rewardState is AsyncLoading) {
+        ref.read(rewardControllerProvider.notifier).loadStats(authUser.id);
+      }
+    });
 
     List<TaskStepModel> visibleSteps =
         state.showMinimumVersion ? state.minimumVersion : state.steps;
@@ -36,6 +47,8 @@ class TaskBreakdownScreen extends ConsumerWidget {
         allStepsCompletedSteps.every((step) => step.status == StepStatus.completed);
     
     debugPrint('>>> TaskBreakdownScreen: allStepsCompleted=$allStepsCompleted, totalSteps=${allStepsCompletedSteps.length}, completed=${allStepsCompletedSteps.where((s) => s.status == StepStatus.completed).length}');
+    debugPrint('>>> TaskBreakdownScreen: steps=${state.steps.map((s) => s.text).toList()}');
+    debugPrint('>>> TaskBreakdownScreen: minimumVersion=${state.minimumVersion.map((s) => s.text).toList()}');
 
     return Scaffold(
       appBar: AppBar(
@@ -57,6 +70,15 @@ class TaskBreakdownScreen extends ConsumerWidget {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: <Widget>[
+              rewardState.when(
+                data: (stats) => XPBar(
+                  level: stats.level,
+                  progress: stats.progressToNextLevel,
+                ),
+                loading: () => const LinearProgressIndicator(),
+                error: (_, __) => const SizedBox.shrink(),
+              ),
+              const SizedBox(height: 16),
               MinimumVersionToggle(
                 value: state.showMinimumVersion,
                 onChanged: (value) {
@@ -87,12 +109,13 @@ class TaskBreakdownScreen extends ConsumerWidget {
                     return StepCard(
                       step: step,
                       onBreakDownMore: () async {
-                        final snapshot = TaskStateSnapshot(
-                          mode: SupportMode.audhd,
-                          energyLevel: EnergyLevel.medium,
-                          stressLevel: StressLevel.friction,
-                          timeAvailable: TimeAvailable.fifteenMinutes,
-                        );
+                        final snapshot = state.task?.stateSnapshot ??
+                            TaskStateSnapshot(
+                              mode: SupportMode.audhd,
+                              energyLevel: EnergyLevel.medium,
+                              stressLevel: StressLevel.friction,
+                              timeAvailable: TimeAvailable.fifteenMinutes,
+                            );
 
                         final substeps =
                             await ref.read(taskRepositoryProvider).breakDownStep(
@@ -101,14 +124,11 @@ class TaskBreakdownScreen extends ConsumerWidget {
                                   stepText: step.text,
                                 );
 
-                        final current = List<TaskStepModel>.from(
-                          ref.read(taskControllerProvider).steps,
-                        );
-                        final insertIndex =
-                            current.indexWhere((s) => s.id == step.id);
-                        ref
-                            .read(taskControllerProvider.notifier)
-                            .replaceSteps(insertedAfter(current, insertIndex, substeps));
+                        ref.read(taskControllerProvider.notifier).replaceStepWithSubsteps(
+                              stepId: step.id,
+                              substeps: substeps,
+                              isMinimumVersion: state.showMinimumVersion,
+                            );
                       },
                       onComplete: () async {
                         debugPrint('>>> Completing step: ${step.id}, current status: ${step.status}');
@@ -124,6 +144,10 @@ class TaskBreakdownScreen extends ConsumerWidget {
                               step.id,
                               'completed',
                             );
+                        
+                        // Refresh rewards
+                        ref.read(rewardControllerProvider.notifier).refreshStats(authUser.id);
+
                         final updatedState = ref.read(taskControllerProvider);
                         debugPrint('>>> After completion, step status: ${updatedState.steps.firstWhere((s) => s.id == step.id, orElse: () => step).status}');
                         debugPrint('>>> Total steps: ${updatedState.steps.length}, Completed: ${updatedState.steps.where((s) => s.status == StepStatus.completed).length}');
@@ -143,6 +167,26 @@ class TaskBreakdownScreen extends ConsumerWidget {
                     child: const Text('View Summary & Continue'),
                   ),
                 ),
+              const SizedBox(height: 24),
+              if (state.task?.id != null) ...<Widget>[
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    children: <Widget>[
+                      Icon(Icons.auto_awesome, size: 18, color: Colors.amber),
+                      SizedBox(width: 8),
+                      Text(
+                        'Side Quests',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SideQuestPanel(taskId: state.task!.id),
+              ],
             ],
           ),
         ),

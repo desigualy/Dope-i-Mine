@@ -6,6 +6,7 @@ serve(async (req) => {
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
   }
 
   if (req.method === 'OPTIONS') {
@@ -17,6 +18,7 @@ serve(async (req) => {
 
     // Simple task breakdown logic
     const normalizedTitle = sourceText.trim().split(/[.!?]/)[0].trim() || 'New task'
+    const category = categorizeTask(sourceText)
 
     // Generate primary steps based on task complexity
     const primarySteps = generatePrimarySteps(sourceText, mode, energyLevel, stressLevel, timeAvailable)
@@ -24,13 +26,17 @@ serve(async (req) => {
     // Generate minimum version (simplified steps)
     const minimumVersionSteps = generateMinimumSteps(sourceText, mode)
 
+    // Generate side quests
+    const sideQuests = generateSideQuests(sourceText, category)
+
     const response = {
       normalizedTitle,
-      category: categorizeTask(sourceText),
+      category,
       effortBand: estimateEffort(primarySteps.length, timeAvailable),
       estimatedMinutes: estimateTime(primarySteps.length, timeAvailable),
       primarySteps,
       minimumVersionSteps,
+      sideQuests,
     }
 
     return new Response(
@@ -55,14 +61,23 @@ serve(async (req) => {
 function generatePrimarySteps(sourceText: string, mode: string, energyLevel: string, stressLevel: string, timeAvailable: string): any[] {
   const text = sourceText.toLowerCase().trim()
 
-  // Simple keyword-based breakdown
-  if (text.includes('laundry')) {
+  if ((text.includes('washing') || text.includes('laundry') || text.includes('clothes')) &&
+      (text.includes('put away') || text.includes('fold') || text.includes('hang'))) {
     return [
-      { text: 'Sort laundry by color and fabric type', isOptional: false },
-      { text: 'Load washing machine with appropriate detergent', isOptional: false },
-      { text: 'Start the wash cycle', isOptional: false },
-      { text: 'Transfer to dryer or hang to dry', isOptional: false },
-      { text: 'Fold and put away clean laundry', isOptional: false },
+      { text: 'Bring the clean washing to one place', isOptional: false },
+      { text: 'Sort the clothes into small piles', isOptional: false },
+      { text: 'Fold or hang one pile at a time', isOptional: false },
+      { text: 'Put each pile into the right drawer or wardrobe', isOptional: false },
+    ]
+  }
+
+  // Simple keyword-based breakdown
+  if (text.includes('laundry') || text.includes('washing') || text.includes('clothes')) {
+    return [
+      { text: 'Collect the laundry into one place', isOptional: false },
+      { text: 'Sort items by type or where they belong', isOptional: false },
+      { text: 'Handle one small group at a time', isOptional: false },
+      { text: 'Put the finished clothes away', isOptional: false },
     ]
   }
 
@@ -97,8 +112,9 @@ function generatePrimarySteps(sourceText: string, mode: string, energyLevel: str
 
   // Very basic fallback
   return [
-    { text: sourceText.trim(), isOptional: false },
-    { text: 'Mark task as complete when finished', isOptional: false },
+    { text: `Get ready to start: ${sourceText.trim()}`, isOptional: false },
+    { text: `Do one small part of: ${sourceText.trim()}`, isOptional: false },
+    { text: `Finish and check off: ${sourceText.trim()}`, isOptional: false },
   ]
 }
 
@@ -106,8 +122,13 @@ function generateMinimumSteps(sourceText: string, mode: string): any[] {
   const text = sourceText.toLowerCase().trim()
 
   // Minimum version is always just the core action
-  if (text.includes('laundry')) {
-    return [{ text: 'Wash and dry laundry', isOptional: false }]
+  if ((text.includes('washing') || text.includes('laundry') || text.includes('clothes')) &&
+      (text.includes('put away') || text.includes('fold') || text.includes('hang'))) {
+    return [{ text: 'Put away just one small pile of washing', isOptional: false }]
+  }
+
+  if (text.includes('laundry') || text.includes('washing') || text.includes('clothes')) {
+    return [{ text: 'Put away one or two items of clothing', isOptional: false }]
   }
 
   if (text.includes('clean') || text.includes('tidy')) {
@@ -119,7 +140,7 @@ function generateMinimumSteps(sourceText: string, mode: string): any[] {
   }
 
   // Default minimum version
-  return [{ text: sourceText.trim(), isOptional: false }]
+  return [{ text: `Do the easiest first part of: ${sourceText.trim()}`, isOptional: false }]
 }
 
 function categorizeTask(sourceText: string): string {
@@ -157,3 +178,39 @@ function estimateTime(stepCount: number, timeAvailable: string): number {
 
   return Math.max(5, Math.min(60, Math.round(baseTime * multiplier)))
 }
+
+function generateSideQuests(sourceText: string, category: string): any[] {
+  const quests = []
+  
+  if (category === 'household') {
+    quests.push({
+      title: 'Put on a high-energy playlist',
+      quest_type: 'motivation',
+      reward_xp: 50
+    })
+    quests.push({
+      title: 'Set a 15-minute timer for a speed run',
+      quest_type: 'challenge',
+      reward_xp: 100
+    })
+  } else if (category === 'work') {
+    quests.push({
+      title: 'Take a 2-minute stretch break',
+      quest_type: 'health',
+      reward_xp: 30
+    })
+    quests.push({
+      title: 'Drink a glass of water before starting',
+      quest_type: 'health',
+      reward_xp: 20
+    })
+  } else {
+    quests.push({
+      title: 'Do one small extra thing to help future you',
+      quest_type: 'bonus',
+      reward_xp: 40
+    })
+  }
+
+  return quests
+}

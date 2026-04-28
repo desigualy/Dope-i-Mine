@@ -52,7 +52,7 @@ class _PronunciationSetupScreenState extends ConsumerState<PronunciationSetupScr
     return OnboardingStepScaffold(
       title: 'How should Dope-i sound?',
       stepNumber: 2,
-      totalSteps: 9,
+      totalSteps: 12,
       onBack: () => context.go(
         widget.returnToSummary ? '/onboarding/summary' : '/branding/intro',
       ),

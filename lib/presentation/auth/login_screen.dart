@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -25,6 +23,33 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _loading = false;
   String? _errorText;
+  bool _redirectChecked = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_redirectChecked) return;
+    _redirectChecked = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _redirectIfAlreadyAuthenticated();
+    });
+  }
+
+  Future<void> _redirectIfAlreadyAuthenticated() async {
+    final authUser = ref.read(authRepositoryProvider).getCurrentUser();
+    if (authUser == null || !mounted) return;
+
+    final profileRepository = ref.read(profileRepositoryProvider);
+    await profileRepository.ensureProfileExists(
+      userId: authUser.id,
+      email: authUser.email,
+    );
+    final onboardingComplete =
+        await profileRepository.isOnboardingComplete(authUser.id);
+
+    if (!mounted) return;
+    context.go(onboardingComplete ? '/home' : '/branding/intro');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,26 +77,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               try {
                 validateEmail(_emailController.text);
                 validatePassword(_passwordController.text);
-                await ref.read(authControllerProvider).signIn(
-                      _emailController.text.trim(),
-                      _passwordController.text,
-                    );
-                // Check if user has completed onboarding
-                final authUser = ref.read(authRepositoryProvider).getCurrentUser();
-                if (authUser != null) {
-                  try {
-                    final profile = await ref.read(profileRepositoryProvider).getProfile(authUser.id);
-                    if (profile != null) {
-                      // User has completed onboarding, go to home
-                      if (mounted) context.go('/home');
-                      return;
-                    }
-                  } catch (e) {
-                    debugPrint('Error checking profile: $e');
-                    // If error checking profile, continue with onboarding
-                  }
+                final signedInUser =
+                    await ref.read(authControllerProvider).signIn(
+                          _emailController.text.trim(),
+                          _passwordController.text,
+                        );
+
+                final authUser = signedInUser ??
+                    ref.read(authRepositoryProvider).getCurrentUser();
+                if (authUser == null) {
+                  throw StateError(
+                      'Signed in successfully, but no authenticated user is available.');
                 }
-                if (mounted) context.go('/branding/intro');
+
+                final profileRepository = ref.read(profileRepositoryProvider);
+                await profileRepository.ensureProfileExists(
+                  userId: authUser.id,
+                  email: authUser.email,
+                );
+                final onboardingComplete =
+                    await profileRepository.isOnboardingComplete(authUser.id);
+
+                if (mounted) {
+                  context.go(onboardingComplete ? '/home' : '/branding/intro');
+                }
               } catch (error) {
                 setState(() => _errorText = mapToUserFacingError(error));
               } finally {

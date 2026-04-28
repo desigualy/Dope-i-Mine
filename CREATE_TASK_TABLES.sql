@@ -18,6 +18,8 @@ create table users_profile (
   age_band text default 'teen',
   default_mode text not null default 'audhd',
   voice_enabled boolean not null default true,
+  onboarding_completed boolean not null default false,
+  onboarding_completed_at timestamptz,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );

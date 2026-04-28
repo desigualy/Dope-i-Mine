@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -21,6 +19,7 @@ import '../presentation/onboarding/mode_selection_screen.dart';
 import '../presentation/onboarding/onboarding_summary_screen.dart';
 import '../presentation/onboarding/permissions_screen.dart';
 import '../presentation/onboarding/sensory_preferences_screen.dart';
+import '../presentation/onboarding/avatar_setup_screen.dart';
 import '../presentation/onboarding/voice_setup_screen.dart';
 import '../presentation/onboarding/voice_preferences_screen.dart';
 import '../presentation/onboarding/welcome_screen.dart';
@@ -35,6 +34,7 @@ import '../presentation/settings/voice_profile_screen.dart';
 import '../presentation/tasks/task_breakdown_screen.dart';
 import '../presentation/tasks/task_input_screen.dart';
 import '../presentation/tasks/task_summary_screen.dart';
+import 'onboarding_gate_screen.dart';
 import 'route_guard.dart';
 import 'session_redirect.dart';
 
@@ -42,17 +42,28 @@ final GoRouter appRouter = GoRouter(
   redirect: (BuildContext context, GoRouterState state) {
     final authenticated = isAuthenticated();
     final location = state.matchedLocation;
-    debugPrint('Router redirect: authenticated=$authenticated, location=$location');
+    debugPrint(
+        'Router redirect: authenticated=$authenticated, location=$location');
     return sessionRedirect(
       authenticated: authenticated,
       location: location,
     );
   },
   routes: <RouteBase>[
-    GoRoute(path: '/', builder: (_, __) => const WelcomeScreen()),
+    GoRoute(
+      path: '/',
+      builder: (_, __) => const OnboardingGateScreen(
+        unauthenticatedChild: WelcomeScreen(),
+        completedTarget: '/home',
+        child: SizedBox.shrink(),
+      ),
+    ),
     GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
     GoRoute(path: '/signup', builder: (_, __) => const SignupScreen()),
-    GoRoute(path: '/home', builder: (_, __) => const HomeScreen()),
+    GoRoute(
+      path: '/home',
+      builder: (_, __) => const OnboardingGateScreen(child: HomeScreen()),
+    ),
     GoRoute(
       path: '/branding/intro',
       builder: (_, state) => DopeIIntroScreen(
@@ -65,8 +76,12 @@ final GoRouter appRouter = GoRouter(
         returnToSummary: state.uri.queryParameters['return'] == 'summary',
       ),
     ),
-    GoRoute(path: '/branding/voice-preview', builder: (_, __) => const VoiceNamePreviewScreen()),
-    GoRoute(path: '/branding/skins', builder: (_, __) => const SkinPackShopScreen()),
+    GoRoute(
+        path: '/branding/voice-preview',
+        builder: (_, __) => const VoiceNamePreviewScreen()),
+    GoRoute(
+        path: '/branding/skins',
+        builder: (_, __) => const SkinPackShopScreen()),
     GoRoute(
       path: '/onboarding/age-band',
       builder: (_, state) => AgeBandScreen(
@@ -116,23 +131,51 @@ final GoRouter appRouter = GoRouter(
       ),
     ),
     GoRoute(
+      path: '/onboarding/avatar',
+      builder: (_, state) => AvatarSetupScreen(
+        returnToSummary: state.uri.queryParameters['return'] == 'summary',
+      ),
+    ),
+    GoRoute(
       path: '/onboarding/summary',
       builder: (_, __) => const OnboardingSummaryScreen(),
     ),
     GoRoute(path: '/tasks/new', builder: (_, __) => const TaskInputScreen()),
-    GoRoute(path: '/tasks/breakdown', builder: (_, __) => const TaskBreakdownScreen()),
-    GoRoute(path: '/tasks/summary', builder: (_, __) => const TaskSummaryScreen()),
+    GoRoute(
+        path: '/tasks/breakdown',
+        builder: (_, __) => const TaskBreakdownScreen()),
+    GoRoute(
+        path: '/tasks/summary', builder: (_, __) => const TaskSummaryScreen()),
     GoRoute(path: '/progress', builder: (_, __) => const ProgressScreen()),
     GoRoute(path: '/routines', builder: (_, __) => const RoutineListScreen()),
-    GoRoute(path: '/routines/new', builder: (_, __) => const RoutineBuilderScreen()),
-    GoRoute(path: '/routines/run', builder: (_, __) => const RoutineRunScreen()),
-    GoRoute(path: '/caregiver', builder: (_, __) => const CaregiverDashboardScreen()),
-    GoRoute(path: '/caregiver/link', builder: (_, __) => const LinkCaregiverScreen()),
-    GoRoute(path: '/caregiver/assign-routine', builder: (_, __) => const CaregiverAssignRoutineScreen()),
-    GoRoute(path: '/caregiver/assigned-routines', builder: (_, __) => const CaregiverAssignedRoutinesScreen()),
-    GoRoute(path: '/settings/voice', builder: (_, __) => const VoiceProfileScreen()),
-    GoRoute(path: '/settings/companion', builder: (_, __) => const CompanionScreen()),
-    GoRoute(path: '/settings/pronunciation', builder: (_, __) => const PronunciationSettingsScreen()),
-    GoRoute(path: '/settings/reminders', builder: (_, __) => const ReminderSettingsScreen()),
+    GoRoute(
+        path: '/routines/new',
+        builder: (_, __) => const RoutineBuilderScreen()),
+    GoRoute(
+        path: '/routines/run', builder: (_, __) => const RoutineRunScreen()),
+    GoRoute(
+        path: '/caregiver',
+        builder: (_, __) => const CaregiverDashboardScreen()),
+    GoRoute(
+        path: '/caregiver/link',
+        builder: (_, __) => const LinkCaregiverScreen()),
+    GoRoute(
+        path: '/caregiver/assign-routine',
+        builder: (_, __) => const CaregiverAssignRoutineScreen()),
+    GoRoute(
+        path: '/caregiver/assigned-routines',
+        builder: (_, __) => const CaregiverAssignedRoutinesScreen()),
+    GoRoute(
+        path: '/settings/voice',
+        builder: (_, __) => const VoiceProfileScreen()),
+    GoRoute(
+        path: '/settings/companion',
+        builder: (_, __) => const CompanionScreen()),
+    GoRoute(
+        path: '/settings/pronunciation',
+        builder: (_, __) => const PronunciationSettingsScreen()),
+    GoRoute(
+        path: '/settings/reminders',
+        builder: (_, __) => const ReminderSettingsScreen()),
   ],
 );

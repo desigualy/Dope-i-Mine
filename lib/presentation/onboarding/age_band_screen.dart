@@ -19,7 +19,7 @@ class AgeBandScreen extends ConsumerWidget {
     return OnboardingStepScaffold(
       title: 'Choose age band',
       stepNumber: 3,
-      totalSteps: 9,
+      totalSteps: 12,
       onBack: () => context.go(
         returnToSummary ? '/onboarding/summary' : '/branding/pronunciation',
       ),

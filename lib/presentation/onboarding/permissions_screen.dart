@@ -67,8 +67,8 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen> {
   Widget build(BuildContext context) {
     return OnboardingStepScaffold(
       title: 'Permissions & device checks',
-      stepNumber: 7,
-      totalSteps: 9,
+      stepNumber: 8,
+      totalSteps: 12,
       onBack: () => context.go(
         widget.returnToSummary ? '/onboarding/summary' : '/onboarding/accessibility',
       ),

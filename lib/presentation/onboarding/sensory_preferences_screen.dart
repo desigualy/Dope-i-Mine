@@ -17,13 +17,13 @@ class SensoryPreferencesScreen extends ConsumerWidget {
 
     return OnboardingStepScaffold(
       title: 'Sensory preferences',
-      stepNumber: 6,
-      totalSteps: 9,
+      stepNumber: 7,
+      totalSteps: 12,
       onBack: () => context.go(
         returnToSummary ? '/onboarding/summary' : '/onboarding/mode',
       ),
       onNext: () => context.go(
-        returnToSummary ? '/onboarding/summary' : '/onboarding/accessibility',
+        returnToSummary ? '/onboarding/summary' : '/onboarding/permissions',
       ),
       child: SingleChildScrollView(
         child: Column(

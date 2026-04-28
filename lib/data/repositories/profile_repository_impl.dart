@@ -11,6 +11,32 @@ class ProfileRepositoryImpl {
 
   final SupabaseClient _client;
 
+  Future<void> ensureProfileExists({
+    required String userId,
+    String? email,
+  }) async {
+    await _client.from('users_profile').upsert(<String, dynamic>{
+      'id': userId,
+      if (email != null) 'email': email,
+    });
+  }
+
+  Future<void> setOnboardingCompleted({
+    required String userId,
+    String? email,
+    required bool completed,
+  }) async {
+    await ensureProfileExists(userId: userId, email: email);
+    await _client.from('users_profile').upsert(<String, dynamic>{
+      'id': userId,
+      if (email != null) 'email': email,
+      'onboarding_completed': completed,
+      'onboarding_completed_at':
+          completed ? DateTime.now().toIso8601String() : null,
+      'updated_at': DateTime.now().toIso8601String(),
+    });
+  }
+
   Future<void> saveOnboardingProfile({
     required String userId,
     required AgeBand ageBand,
@@ -26,14 +52,10 @@ class ProfileRepositoryImpl {
     bool iconMode = false,
     bool reduceSurprises = true,
   }) async {
-    await _client.from('users_profile').upsert(<String, dynamic>{
-      'id': userId,
-      'email': _client.auth.currentUser?.email,
-      'age_band': ageBand.name,
-      'default_mode': _modeToDb(mode),
-      'voice_enabled': voiceEnabled,
-      'updated_at': DateTime.now().toIso8601String(),
-    });
+    await ensureProfileExists(
+      userId: userId,
+      email: _client.auth.currentUser?.email,
+    );
 
     await _client.from('assistant_identity_settings').upsert(<String, dynamic>{
       'user_id': userId,
@@ -53,6 +75,17 @@ class ProfileRepositoryImpl {
       'reduce_surprises': reduceSurprises,
       'updated_at': DateTime.now().toIso8601String(),
     });
+
+    await _client.from('users_profile').upsert(<String, dynamic>{
+      'id': userId,
+      'email': _client.auth.currentUser?.email,
+      'age_band': ageBand.name,
+      'default_mode': _modeToDb(mode),
+      'voice_enabled': voiceEnabled,
+      'onboarding_completed': true,
+      'onboarding_completed_at': DateTime.now().toIso8601String(),
+      'updated_at': DateTime.now().toIso8601String(),
+    });
   }
 
   String _pronunciationKey(PronunciationOption option) {
@@ -65,13 +98,31 @@ class ProfileRepositoryImpl {
   }
 
   Future<UserProfileModel?> getProfile(String userId) async {
-    final row = await _client.from('users_profile').select().eq('id', userId).maybeSingle();
+    final row = await _client
+        .from('users_profile')
+        .select()
+        .eq('id', userId)
+        .maybeSingle();
     if (row == null) return null;
     return ProfileMapper.fromProfileRow(row);
   }
 
+  Future<bool> isOnboardingComplete(String userId) async {
+    final profileRow = await _client
+        .from('users_profile')
+        .select()
+        .eq('id', userId)
+        .maybeSingle();
+    if (profileRow == null) return false;
+    return profileRow['onboarding_completed'] == true;
+  }
+
   Future<SensorySettingsModel?> getSensorySettings(String userId) async {
-    final row = await _client.from('sensory_settings').select().eq('user_id', userId).maybeSingle();
+    final row = await _client
+        .from('sensory_settings')
+        .select()
+        .eq('user_id', userId)
+        .maybeSingle();
     if (row == null) return null;
     return ProfileMapper.fromSensoryRow(row);
   }

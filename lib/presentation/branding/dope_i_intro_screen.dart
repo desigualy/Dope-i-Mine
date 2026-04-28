@@ -13,27 +13,26 @@ class DopeIIntroScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // This screen is always part of onboarding. The legacy PrimaryScaffold
     // import remains for any future non-onboarding entry points.
-    final backTarget = returnToSummary ? '/onboarding/summary' : '/login';
-    final nextTarget = returnToSummary
-        ? '/onboarding/summary'
-        : '/branding/pronunciation';
+    final backTarget = returnToSummary ? '/onboarding/summary' : '/';
+    final nextTarget =
+        returnToSummary ? '/onboarding/summary' : '/branding/pronunciation';
 
     return OnboardingStepScaffold(
       title: 'Meet Dope-i',
       stepNumber: 1,
-      totalSteps: 9,
+      totalSteps: 12,
       onBack: () => context.go(backTarget),
       onNext: () => context.go(nextTarget),
       nextLabel: returnToSummary ? 'Done' : 'Continue',
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const SectionHeader(
+          SectionHeader(
             title: 'Dope-i (Dopy), your Dope-i-Mine assistant',
             subtitle: 'Rewarding the chase of progress, one task at a time.',
           ),
-          const SizedBox(height: 16),
-          const Text('I break big tasks into wins you can feel immediately.'),
+          SizedBox(height: 16),
+          Text('I break big tasks into wins you can feel immediately.'),
         ],
       ),
     );

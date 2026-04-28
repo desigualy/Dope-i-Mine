@@ -7,18 +7,36 @@ class AuthRepositoryImpl {
 
   final SupabaseClient _client;
 
-  Future<void> signUp({
+  Future<AuthUser?> signUp({
     required String email,
     required String password,
   }) async {
-    await _client.auth.signUp(email: email, password: password);
+    final response =
+        await _client.auth.signUp(email: email, password: password);
+    final user = response.user;
+    if (user == null || user.email == null) {
+      return null;
+    }
+    return AuthUser(
+      id: user.id,
+      email: user.email!,
+    );
   }
 
-  Future<void> signIn({
+  Future<AuthUser?> signIn({
     required String email,
     required String password,
   }) async {
-    await _client.auth.signInWithPassword(email: email, password: password);
+    final response =
+        await _client.auth.signInWithPassword(email: email, password: password);
+    final user = response.user;
+    if (user == null || user.email == null) {
+      return null;
+    }
+    return AuthUser(
+      id: user.id,
+      email: user.email!,
+    );
   }
 
   Future<void> signOut() async {

@@ -55,6 +55,7 @@ class SideQuestRepositoryImpl {
       'user_id': userId,
       'reward_type': 'xp',
       'reward_key': 'side_quest_complete',
+      'amount': row['reward_xp'],
       'source_type': 'side_quest',
       'source_id': sideQuestId,
     });

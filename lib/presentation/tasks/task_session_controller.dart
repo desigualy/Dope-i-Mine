@@ -32,6 +32,8 @@ final taskSessionControllerProvider =
 class TaskSessionController extends StateNotifier<TaskSessionState> {
   TaskSessionController() : super(const TaskSessionState());
 
+  void reset() => state = const TaskSessionState();
+
   void pause() => state = state.copyWith(paused: true);
 
   void resume() => state = state.copyWith(paused: false);

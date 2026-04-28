@@ -19,7 +19,7 @@ class ModeSelectionScreen extends ConsumerWidget {
     return OnboardingStepScaffold(
       title: 'Choose support mode',
       stepNumber: 5,
-      totalSteps: 9,
+      totalSteps: 12,
       onBack: () => context.go(
         returnToSummary ? '/onboarding/summary' : '/onboarding/assistant-name',
       ),

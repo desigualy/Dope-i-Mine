@@ -10,6 +10,8 @@ create table if not exists users_profile (
   age_band text default 'teen',
   default_mode text not null default 'audhd',
   voice_enabled boolean not null default true,
+  onboarding_completed boolean not null default false,
+  onboarding_completed_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -26,10 +28,11 @@ create or replace function public.handle_new_user()
 returns trigger as $$
 begin
   insert into public.users_profile (id, email, display_name)
-  values (new.id, new.email, new.raw_user_meta_data->>'display_name');
+  values (new.id, new.email, new.raw_user_meta_data->>'display_name')
+  on conflict (id) do nothing;
   return new;
 end;
-$$ language plpgsql security definer;
+$$ language plpgsql security definer set search_path = public;
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users

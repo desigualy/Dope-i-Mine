@@ -55,6 +55,10 @@ final sideQuestRepositoryProvider = Provider<SideQuestRepositoryImpl>((ref) {
   return _requireClientRepo(ref.watch(supabaseProvider), SideQuestRepositoryImpl.new);
 });
 
+final rewardRepositoryProvider = Provider<RewardRepositoryImpl>((ref) {
+  return _requireClientRepo(ref.watch(supabaseProvider), RewardRepositoryImpl.new);
+});
+
 final progressRepositoryProvider = Provider<ProgressRepositoryImpl>((ref) {
   return _requireClientRepo(ref.watch(supabaseProvider), ProgressRepositoryImpl.new);
 });

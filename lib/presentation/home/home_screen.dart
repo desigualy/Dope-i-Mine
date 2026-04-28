@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/widgets/primary_scaffold.dart';
+import '../../providers.dart';
 import '../auth/auth_controller.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -25,6 +26,27 @@ class HomeScreen extends ConsumerWidget {
             child: ElevatedButton(
               onPressed: () => context.go('/tasks/new'),
               child: const Text('Create task'),
+            ),
+          ),
+          const SizedBox(height: 8),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton(
+              onPressed: () async {
+                final authUser =
+                    ref.read(authRepositoryProvider).getCurrentUser();
+                if (authUser != null) {
+                  await ref
+                      .read(profileRepositoryProvider)
+                      .setOnboardingCompleted(
+                        userId: authUser.id,
+                        email: authUser.email,
+                        completed: false,
+                      );
+                }
+                if (context.mounted) context.go('/branding/intro');
+              },
+              child: const Text('Restart onboarding'),
             ),
           ),
           const SizedBox(height: 8),

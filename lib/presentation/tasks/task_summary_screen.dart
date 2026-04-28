@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -65,7 +64,10 @@ class TaskSummaryScreen extends ConsumerWidget {
                           children: <Widget>[
                             Text(
                               '$completedSteps',
-                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall
+                                  ?.copyWith(
                                     color: Colors.green,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -81,7 +83,10 @@ class TaskSummaryScreen extends ConsumerWidget {
                           children: <Widget>[
                             Text(
                               '$totalSteps',
-                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall
+                                  ?.copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),
                             ),
@@ -103,9 +108,10 @@ class TaskSummaryScreen extends ConsumerWidget {
                 child: ElevatedButton(
                   onPressed: () {
                     try {
-                      debugPrint('>>> Summary: Navigating to /home');
+                      debugPrint('>>> Summary: Navigating to home');
                       debugPrint('>>> Summary: Current task = ${state.task}');
-                      debugPrint('>>> Summary: Steps count = ${state.steps.length}');
+                      debugPrint(
+                          '>>> Summary: Steps count = ${state.steps.length}');
                       context.go('/home');
                     } catch (e, st) {
                       debugPrint('ERROR: Summary navigation failed: $e');

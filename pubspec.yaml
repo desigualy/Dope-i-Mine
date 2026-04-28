@@ -20,6 +20,7 @@ dependencies:
   shared_preferences: ^2.2.3
   flutter_local_notifications: ^17.2.1
   intl: ^0.20.2
+  confetti: ^0.7.0
 
 dev_dependencies:
   flutter_test:
@@ -55,3 +56,4 @@ flutter:
     - assets/user_avatar/accessories/
     - assets/user_avatar/base/
     - assets/user_avatar/palettes/
+    - assets/avatar/dopei/

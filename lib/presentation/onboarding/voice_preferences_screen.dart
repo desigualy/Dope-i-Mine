@@ -17,8 +17,8 @@ class VoicePreferencesScreen extends ConsumerWidget {
 
     return OnboardingStepScaffold(
       title: 'Voice preferences',
-      stepNumber: 7,
-      totalSteps: 9,
+      stepNumber: 9,
+      totalSteps: 12,
       onBack: () => context.go(
         returnToSummary ? '/onboarding/summary' : '/onboarding/permissions',
       ),

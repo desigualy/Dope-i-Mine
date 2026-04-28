@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/errors/user_facing_error_mapper.dart';
 import '../../core/widgets/error_banner.dart';
-import '../../domain/branding/pronunciation_option.dart';
+import '../../domain/companion/avatar_config_model.dart';
 import '../../providers.dart';
 import 'onboarding_controller.dart';
 import 'widgets/onboarding_step_scaffold.dart';
@@ -21,8 +21,9 @@ class _OnboardingSummaryScreenState
     extends ConsumerState<OnboardingSummaryScreen> {
   bool _loading = false;
   String? _errorText;
+  late final Future<AvatarConfigModel?> _avatarConfigFuture;
 
-  static const int _totalSteps = 9;
+  static const int _totalSteps = 12;
 
   Widget _summaryRow({
     required String label,
@@ -38,7 +39,8 @@ class _OnboardingSummaryScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
+                Text(label,
+                    style: const TextStyle(fontWeight: FontWeight.w600)),
                 const SizedBox(height: 2),
                 Text(value),
               ],
@@ -51,13 +53,22 @@ class _OnboardingSummaryScreenState
   }
 
   @override
+  void initState() {
+    super.initState();
+    final authUser = ref.read(authRepositoryProvider).getCurrentUser();
+    _avatarConfigFuture = authUser == null
+        ? Future.value(null)
+        : ref.read(companionRepositoryProvider).getAvatarConfig(authUser.id);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final state = ref.watch(onboardingControllerProvider);
     return OnboardingStepScaffold(
       title: 'Summary',
-      stepNumber: 9,
+      stepNumber: 12,
       totalSteps: _totalSteps,
-      onBack: () => context.go('/onboarding/voice'),
+      onBack: () => context.go('/onboarding/avatar'),
       bottom: SizedBox(
         width: double.infinity,
         child: FilledButton(
@@ -127,7 +138,8 @@ class _OnboardingSummaryScreenState
             _summaryRow(
               label: 'Pronunciation',
               value: state.pronunciation.label,
-              onEdit: () => context.go('/branding/pronunciation?return=summary'),
+              onEdit: () =>
+                  context.go('/branding/pronunciation?return=summary'),
             ),
             _summaryRow(
               label: 'Age band',
@@ -137,7 +149,24 @@ class _OnboardingSummaryScreenState
             _summaryRow(
               label: 'Assistant name',
               value: state.assistantDisplayName,
-              onEdit: () => context.go('/onboarding/assistant-name?return=summary'),
+              onEdit: () =>
+                  context.go('/onboarding/assistant-name?return=summary'),
+            ),
+            FutureBuilder<AvatarConfigModel?>(
+              future: _avatarConfigFuture,
+              builder: (context, snapshot) {
+                final avatarValue = snapshot.connectionState ==
+                        ConnectionState.waiting
+                    ? 'Loading…'
+                    : snapshot.data != null
+                        ? '${snapshot.data!.avatarStyle}, ${snapshot.data!.avatarPalette}'
+                        : 'Not configured';
+                return _summaryRow(
+                  label: 'Avatar',
+                  value: avatarValue,
+                  onEdit: () => context.go('/onboarding/avatar?return=summary'),
+                );
+              },
             ),
             _summaryRow(
               label: 'Mode',
@@ -153,13 +182,15 @@ class _OnboardingSummaryScreenState
               label: 'Accessibility & comfort',
               value:
                   'Reduced animation: ${state.reducedAnimation} · Large text: ${state.largeText} · Soft colors: ${state.softColors} · Icon mode: ${state.iconMode} · Reduce surprises: ${state.reduceSurprises} · Praise: ${state.praiseLevel}',
-              onEdit: () => context.go('/onboarding/accessibility?return=summary'),
+              onEdit: () =>
+                  context.go('/onboarding/accessibility?return=summary'),
             ),
             _summaryRow(
               label: 'Permissions',
               value:
                   'Notifications: ${state.notificationsEnabled} · Microphone: ${state.microphoneEnabled}',
-              onEdit: () => context.go('/onboarding/permissions?return=summary'),
+              onEdit: () =>
+                  context.go('/onboarding/permissions?return=summary'),
             ),
             _summaryRow(
               label: 'Voice support',
@@ -170,7 +201,8 @@ class _OnboardingSummaryScreenState
               label: 'Voice setup',
               value:
                   'Rate: ${state.speechRate.toStringAsFixed(2)} · Auto-read steps: ${state.autoReadSteps} · Auto-read side quests: ${state.autoReadSidequests} · Voice profile: ${state.activeVoiceProfileId ?? 'Default'}',
-              onEdit: () => context.go('/onboarding/voice-setup?return=summary'),
+              onEdit: () =>
+                  context.go('/onboarding/voice-setup?return=summary'),
             ),
           ],
         ),

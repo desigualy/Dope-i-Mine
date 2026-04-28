@@ -1,6 +1,3 @@
-import 'dart:developer';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -14,6 +11,7 @@ import '../../core/widgets/state_chip_selector.dart';
 import '../../domain/tasks/task_state_snapshot.dart';
 import '../../providers.dart';
 import 'task_controller.dart';
+import 'task_session_controller.dart';
 
 class TaskInputScreen extends ConsumerStatefulWidget {
   const TaskInputScreen({super.key});
@@ -89,13 +87,21 @@ class _TaskInputScreenState extends ConsumerState<TaskInputScreen> {
                       setState(() => _errorText = null);
                       try {
                         validateTaskText(_taskController.text);
+                        ref
+                            .read(taskSessionControllerProvider.notifier)
+                            .reset();
+                        ref
+                            .read(taskControllerProvider.notifier)
+                            .toggleMinimumVersion(false);
                         final authUser =
                             ref.read(authRepositoryProvider).getCurrentUser();
                         debugPrint('Current user: $authUser');
                         if (authUser == null) {
                           throw Exception('Not authenticated');
                         }
-                        await ref.read(taskControllerProvider.notifier).createTask(
+                        await ref
+                            .read(taskControllerProvider.notifier)
+                            .createTask(
                               userId: authUser.id,
                               sourceText: _taskController.text.trim(),
                               snapshot: TaskStateSnapshot(

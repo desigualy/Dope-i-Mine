@@ -24,13 +24,13 @@ class _VoiceSetupScreenState extends ConsumerState<VoiceSetupScreen> {
 
     return OnboardingStepScaffold(
       title: 'Voice setup',
-      stepNumber: 8,
-      totalSteps: 9,
+      stepNumber: 10,
+      totalSteps: 12,
       onBack: () => context.go(
-        widget.returnToSummary ? '/onboarding/summary' : '/onboarding/permissions',
+        widget.returnToSummary ? '/onboarding/summary' : '/onboarding/voice',
       ),
       onNext: () => context.go(
-        widget.returnToSummary ? '/onboarding/summary' : '/onboarding/summary',
+        widget.returnToSummary ? '/onboarding/summary' : '/onboarding/avatar',
       ),
       nextLabel: widget.returnToSummary ? 'Done' : 'Next',
       child: SingleChildScrollView(

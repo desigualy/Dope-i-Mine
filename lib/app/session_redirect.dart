@@ -14,15 +14,5 @@ String? sessionRedirect({
     return '/login';
   }
 
-  // If authenticated and trying to access login/signup, redirect to home
-  // But allow welcome page (/) for testing the full flow
-  if (authenticated && location == '/login') {
-    return '/home';
-  }
-
-  if (authenticated && location == '/signup') {
-    return '/home';
-  }
-
   return null;
 }

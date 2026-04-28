@@ -31,7 +31,7 @@ class _AssistantNameScreenState extends ConsumerState<AssistantNameScreen> {
     return OnboardingStepScaffold(
       title: 'Name your assistant',
       stepNumber: 4,
-      totalSteps: 9,
+      totalSteps: 12,
       onBack: () => context.go(
         widget.returnToSummary
             ? '/onboarding/summary'

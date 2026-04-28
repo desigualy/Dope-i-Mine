@@ -4,6 +4,7 @@ import '../../data/repositories/task_repository_impl.dart';
 import '../../domain/tasks/task_model.dart';
 import '../../domain/tasks/task_state_snapshot.dart';
 import '../../domain/tasks/task_step_model.dart';
+import '../../domain/sidequests/side_quest_model.dart';
 import '../../providers.dart';
 
 class TaskViewState {
@@ -12,6 +13,7 @@ class TaskViewState {
     this.task,
     this.steps = const <TaskStepModel>[],
     this.minimumVersion = const <TaskStepModel>[],
+    this.sideQuests = const <SideQuestModel>[],
     this.showMinimumVersion = false,
   });
 
@@ -19,6 +21,7 @@ class TaskViewState {
   final TaskModel? task;
   final List<TaskStepModel> steps;
   final List<TaskStepModel> minimumVersion;
+  final List<SideQuestModel> sideQuests;
   final bool showMinimumVersion;
 
   TaskViewState copyWith({
@@ -26,6 +29,7 @@ class TaskViewState {
     TaskModel? task,
     List<TaskStepModel>? steps,
     List<TaskStepModel>? minimumVersion,
+    List<SideQuestModel>? sideQuests,
     bool? showMinimumVersion,
   }) {
     return TaskViewState(
@@ -33,6 +37,7 @@ class TaskViewState {
       task: task ?? this.task,
       steps: steps ?? this.steps,
       minimumVersion: minimumVersion ?? this.minimumVersion,
+      sideQuests: sideQuests ?? this.sideQuests,
       showMinimumVersion: showMinimumVersion ?? this.showMinimumVersion,
     );
   }
@@ -53,7 +58,7 @@ class TaskController extends StateNotifier<TaskViewState> {
     required String sourceText,
     required TaskStateSnapshot snapshot,
   }) async {
-    state = state.copyWith(loading: true);
+    state = const TaskViewState(loading: true);
     try {
       final result = await _repository.createTask(
         userId: userId,
@@ -65,6 +70,8 @@ class TaskController extends StateNotifier<TaskViewState> {
         task: result.task,
         steps: result.steps,
         minimumVersion: result.minimumVersion,
+        sideQuests: result.sideQuests,
+        showMinimumVersion: false,
       );
     } catch (_) {
       state = state.copyWith(loading: false);
@@ -78,6 +85,32 @@ class TaskController extends StateNotifier<TaskViewState> {
 
   void replaceSteps(List<TaskStepModel> steps) {
     state = state.copyWith(steps: steps);
+  }
+
+  void replaceStepWithSubsteps({
+    required String stepId,
+    required List<TaskStepModel> substeps,
+    required bool isMinimumVersion,
+  }) {
+    if (isMinimumVersion) {
+      final current = state.minimumVersion;
+      final index = current.indexWhere((s) => s.id == stepId);
+      if (index != -1) {
+        final updated = List<TaskStepModel>.from(current);
+        updated.removeAt(index);
+        updated.insertAll(index, substeps);
+        state = state.copyWith(minimumVersion: updated);
+      }
+    } else {
+      final current = state.steps;
+      final index = current.indexWhere((s) => s.id == stepId);
+      if (index != -1) {
+        final updated = List<TaskStepModel>.from(current);
+        updated.removeAt(index);
+        updated.insertAll(index, substeps);
+        state = state.copyWith(steps: updated);
+      }
+    }
   }
 
   void updateStepCompletion(String stepId, String status) {

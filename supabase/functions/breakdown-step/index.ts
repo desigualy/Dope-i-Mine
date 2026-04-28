@@ -6,6 +6,7 @@ serve(async (req) => {
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
   }
 
   if (req.method === 'OPTIONS') {
@@ -44,6 +45,16 @@ serve(async (req) => {
 function generateSubsteps(stepText: string, mode: string, energyLevel: string, stressLevel: string): any[] {
   const text = stepText.toLowerCase().trim()
 
+  if ((text.includes('washing') || text.includes('laundry') || text.includes('clothes')) &&
+      (text.includes('put away') || text.includes('fold') || text.includes('hang'))) {
+    return [
+      { text: 'Pick up one item' },
+      { text: 'Fold it or hang it up' },
+      { text: 'Put it in the right place' },
+      { text: 'Repeat with the next item' },
+    ]
+  }
+
   // Handle specific common patterns
   if (text.includes('sort laundry')) {
     return [
@@ -77,19 +88,41 @@ function generateSubsteps(stepText: string, mode: string, energyLevel: string, s
     ]
   }
 
+  if (text.includes('tidy') || text.includes('clean room')) {
+    return [
+      { text: 'Pick up items from the floor' },
+      { text: 'Put things back in their designated spots' },
+      { text: 'Wipe down any dusty surfaces' },
+    ]
+  }
+
+  if (text.includes('cook') || text.includes('prepare meal')) {
+    return [
+      { text: 'Gather all ingredients and tools' },
+      { text: 'Prepare the ingredients (chop, wash, etc.)' },
+      { text: 'Follow the cooking steps' },
+      { text: 'Serve and tidy the kitchen' },
+    ]
+  }
+
   // Generic breakdown based on action verbs
-  const actionVerbs = ['clean', 'wash', 'fold', 'sort', 'organize', 'check', 'review', 'prepare', 'gather', 'collect']
-  const words = text.split(' ')
+  const actionVerbs = ['clean', 'wash', 'fold', 'sort', 'organize', 'check', 'review', 'prepare', 'gather', 'collect', 'tidy', 'vacuum', 'hoover']
+  const words = text.split(/\s+/)
   const actions = words.filter(word => actionVerbs.some(verb => word.includes(verb)))
 
-  if (actions.length > 1) {
-    return actions.map(action => ({
-      text: `${action.charAt(0).toUpperCase() + action.slice(1)} ${words.filter(w => !actions.includes(w)).join(' ')}`.trim()
-    }))
+  if (actions.length > 0) {
+    // If we have a verb, try to create a 3-step breakdown
+    const verb = actions[0]
+    const object = words.filter(w => !actionVerbs.includes(w)).join(' ')
+    return [
+      { text: `Get ready to ${verb} ${object}`.trim() },
+      { text: `Start ${verb}ing ${object}`.trim() },
+      { text: `Finish and check ${verb} ${object}`.trim() },
+    ]
   }
 
   // Split long sentences into smaller parts
-  if (text.length > 50) {
+  if (text.length > 40) {
     const midPoint = Math.floor(text.length / 2)
     const splitPoint = text.indexOf(' ', midPoint)
     if (splitPoint > 0) {
@@ -104,13 +137,20 @@ function generateSubsteps(stepText: string, mode: string, energyLevel: string, s
   const parts = text.split(/\s+(and|or|then|after|before|while)\s+/i)
   if (parts.length > 1) {
     const result = []
-    for (let i = 0; i < parts.length; i += 2) {
+    for (let i = 0; i < parts.length; i += 1) {
       const part = parts[i].trim()
-      if (part) result.push({ text: part })
+      const conjunctions = ['and', 'or', 'then', 'after', 'before', 'while']
+      if (part && !conjunctions.includes(part.toLowerCase())) {
+        result.push({ text: part })
+      }
     }
     if (result.length > 1) return result
   }
 
-  // Ultimate fallback: just return the original step
-  return [{ text: stepText.trim() }]
+  // Ultimate fallback: just return the original step broken into tiny pieces
+  return [
+    { text: 'Prepare for the task' },
+    { text: `Take one small step: ${text}` },
+    { text: 'Complete and review' },
+  ]
 }

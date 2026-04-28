@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -10,6 +8,7 @@ import '../../core/widgets/app_text_field.dart';
 import '../../core/widgets/async_action_button.dart';
 import '../../core/widgets/error_banner.dart';
 import '../../core/widgets/primary_scaffold.dart';
+import '../../providers.dart';
 import 'auth_controller.dart';
 
 class SignupScreen extends ConsumerStatefulWidget {
@@ -24,6 +23,33 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   final _passwordController = TextEditingController();
   bool _loading = false;
   String? _errorText;
+  bool _redirectChecked = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_redirectChecked) return;
+    _redirectChecked = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _redirectIfAlreadyAuthenticated();
+    });
+  }
+
+  Future<void> _redirectIfAlreadyAuthenticated() async {
+    final authUser = ref.read(authRepositoryProvider).getCurrentUser();
+    if (authUser == null || !mounted) return;
+
+    final profileRepository = ref.read(profileRepositoryProvider);
+    await profileRepository.ensureProfileExists(
+      userId: authUser.id,
+      email: authUser.email,
+    );
+    final onboardingComplete =
+        await profileRepository.isOnboardingComplete(authUser.id);
+
+    if (!mounted) return;
+    context.go(onboardingComplete ? '/home' : '/branding/intro');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,11 +77,22 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               try {
                 validateEmail(_emailController.text);
                 validatePassword(_passwordController.text);
-                await ref.read(authControllerProvider).signUp(
-                      _emailController.text.trim(),
-                      _passwordController.text,
-                    );
-                if (mounted) context.go('/branding/intro');
+                final signedUpUser =
+                    await ref.read(authControllerProvider).signUp(
+                          _emailController.text.trim(),
+                          _passwordController.text,
+                        );
+                final authUser = signedUpUser ??
+                    ref.read(authRepositoryProvider).getCurrentUser();
+                if (authUser != null) {
+                  await ref.read(profileRepositoryProvider).ensureProfileExists(
+                        userId: authUser.id,
+                        email: authUser.email,
+                      );
+                }
+                if (mounted) {
+                  context.go(authUser == null ? '/login' : '/branding/intro');
+                }
               } catch (error) {
                 setState(() => _errorText = mapToUserFacingError(error));
               } finally {

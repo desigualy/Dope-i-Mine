@@ -129,7 +129,7 @@ create policy "Users can update their own task steps" on task_steps for update u
 create table if not exists progress_logs (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references users_profile(id) on delete cascade,
-  task_id uuid not null references tasks(id) on delete cascade,
+  task_id uuid references tasks(id) on delete cascade,
   step_id uuid references task_steps(id) on delete cascade,
   event_type text not null,
   metadata jsonb not null default '{}',
@@ -191,3 +191,67 @@ create table if not exists user_skin_unlocks (
   unlocked_at timestamptz not null default now(),
   unique(user_id, skin_pack_id)
 );
+
+-- 12. Side Quests
+create table if not exists side_quests (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references users_profile(id) on delete cascade,
+  task_id uuid references tasks(id) on delete cascade,
+  routine_id uuid,
+  title text not null,
+  quest_type text not null,
+  reward_xp integer not null default 50,
+  status text not null default 'available' check (status in ('available', 'accepted', 'completed', 'dismissed')),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+alter table side_quests enable row level security;
+create policy "Users can view their own side quests" on side_quests for select using (auth.uid() = user_id);
+create policy "Users can insert their own side quests" on side_quests for insert with check (auth.uid() = user_id);
+create policy "Users can update their own side quests" on side_quests for update using (auth.uid() = user_id);
+
+-- 13. Rewards
+create table if not exists rewards (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references users_profile(id) on delete cascade,
+  reward_type text not null,
+  reward_key text not null,
+  amount integer not null default 0,
+  source_type text,
+  source_id uuid,
+  created_at timestamptz not null default now()
+);
+alter table rewards enable row level security;
+create policy "Users can view their own rewards" on rewards for select using (auth.uid() = user_id);
+create policy "Users can insert their own rewards" on rewards for insert with check (auth.uid() = user_id);
+
+-- 14. Routines
+create table if not exists routines (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references users_profile(id) on delete cascade,
+  title text not null,
+  age_band text not null,
+  is_template boolean not null default false,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+alter table routines enable row level security;
+create policy "Users can view their own routines" on routines for select using (auth.uid() = user_id);
+create policy "Users can insert their own routines" on routines for insert with check (auth.uid() = user_id);
+create policy "Users can update their own routines" on routines for update using (auth.uid() = user_id);
+
+create table if not exists routine_steps (
+  id uuid primary key default gen_random_uuid(),
+  routine_id uuid not null references routines(id) on delete cascade,
+  parent_step_id uuid references routine_steps(id) on delete cascade,
+  depth_level integer not null default 0,
+  sequence_no integer not null,
+  step_text text not null,
+  is_optional boolean not null default false,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+alter table routine_steps enable row level security;
+create policy "Users can view their own routine steps" on routine_steps for select using (exists (select 1 from routines where routines.id = routine_steps.routine_id and routines.user_id = auth.uid()));
+create policy "Users can insert their own routine steps" on routine_steps for insert with check (exists (select 1 from routines where routines.id = routine_steps.routine_id and routines.user_id = auth.uid()));
+create policy "Users can update their own routine steps" on routine_steps for update using (exists (select 1 from routines where routines.id = routine_steps.routine_id and routines.user_id = auth.uid()));

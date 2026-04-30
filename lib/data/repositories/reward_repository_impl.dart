@@ -12,7 +12,7 @@ class RewardRepositoryImpl {
         .select('amount')
         .eq('user_id', userId)
         .eq('reward_type', 'xp');
-    
+
     final totalXp = (response as List<dynamic>)
         .fold<int>(0, (sum, row) => sum + (row['amount'] as int? ?? 0));
 
@@ -22,7 +22,7 @@ class RewardRepositoryImpl {
     final progress = xpInCurrentLevel / 1000;
 
     // TODO: Implement streak logic based on progress_logs
-    final currentStreak = 0;
+    const currentStreak = 0;
 
     return UserStats(
       totalXp: totalXp,

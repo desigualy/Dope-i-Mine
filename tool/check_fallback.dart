@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print, invalid_use_of_visible_for_testing_member
+
 import 'package:dope_i_mine/data/repositories/task_repository_impl.dart';
 import 'package:dope_i_mine/domain/tasks/task_state_snapshot.dart';
 
@@ -10,7 +12,7 @@ void main() {
     'buy groceries',
   ];
 
-  final snapshot = TaskStateSnapshot(
+  const snapshot = TaskStateSnapshot(
     mode: SupportMode.audhd,
     energyLevel: EnergyLevel.medium,
     stressLevel: StressLevel.friction,

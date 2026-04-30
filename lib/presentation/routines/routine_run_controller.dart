@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/routines/routine_step_model.dart';
+import '../../providers.dart';
 
 class RoutineRunState {
   const RoutineRunState({
@@ -32,11 +33,13 @@ class RoutineRunState {
 
 final routineRunControllerProvider =
     StateNotifierProvider<RoutineRunController, RoutineRunState>((ref) {
-  return RoutineRunController();
+  return RoutineRunController(ref);
 });
 
 class RoutineRunController extends StateNotifier<RoutineRunState> {
-  RoutineRunController() : super(const RoutineRunState());
+  RoutineRunController([this._ref]) : super(const RoutineRunState());
+
+  final Ref? _ref;
 
   void start(List<RoutineStepModel> steps) {
     state = state.copyWith(
@@ -46,9 +49,22 @@ class RoutineRunController extends StateNotifier<RoutineRunState> {
     );
   }
 
-  void completeCurrent() {
+  Future<void> completeCurrent() async {
     if (state.steps.isEmpty) return;
     final currentStep = state.steps[state.currentIndex];
+
+    final ref = _ref;
+    if (ref != null) {
+      final authUser = ref.read(authRepositoryProvider).getCurrentUser();
+      if (authUser != null) {
+        await ref.read(routineRepositoryProvider).completeStep(
+              userId: authUser.id,
+              routineId: currentStep.routineId,
+              stepId: currentStep.id,
+            );
+      }
+    }
+
     final updatedCompleted = <String>{
       ...state.completedStepIds,
       currentStep.id,

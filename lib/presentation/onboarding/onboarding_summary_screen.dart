@@ -155,12 +155,12 @@ class _OnboardingSummaryScreenState
             FutureBuilder<AvatarConfigModel?>(
               future: _avatarConfigFuture,
               builder: (context, snapshot) {
-                final avatarValue = snapshot.connectionState ==
-                        ConnectionState.waiting
-                    ? 'Loading…'
-                    : snapshot.data != null
-                        ? '${snapshot.data!.avatarStyle}, ${snapshot.data!.avatarPalette}'
-                        : 'Not configured';
+                final avatarValue =
+                    snapshot.connectionState == ConnectionState.waiting
+                        ? 'Loading…'
+                        : snapshot.data != null
+                            ? snapshot.data!.displayLabel
+                            : 'Not configured';
                 return _summaryRow(
                   label: 'Avatar',
                   value: avatarValue,

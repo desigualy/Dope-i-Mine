@@ -8,6 +8,8 @@ import 'package:dope_i_mine/data/repositories/companion_repository_impl.dart';
 import 'package:dope_i_mine/data/repositories/profile_repository_impl.dart';
 import 'package:dope_i_mine/data/repositories/voice_settings_repository_impl.dart';
 import 'package:dope_i_mine/app/onboarding_gate_screen.dart';
+import 'package:dope_i_mine/domain/avatar/avatar_enums.dart' as user_avatar;
+import 'package:dope_i_mine/domain/avatar/user_avatar_profile.dart';
 import 'package:dope_i_mine/domain/auth/auth_user.dart';
 import 'package:dope_i_mine/domain/branding/pronunciation_option.dart';
 import 'package:dope_i_mine/domain/companion/avatar_config_model.dart';
@@ -31,6 +33,8 @@ import 'package:dope_i_mine/presentation/onboarding/voice_preferences_screen.dar
 import 'package:dope_i_mine/presentation/onboarding/voice_setup_screen.dart';
 import 'package:dope_i_mine/presentation/onboarding/avatar_setup_screen.dart';
 import 'package:dope_i_mine/presentation/home/home_screen.dart';
+import 'package:dope_i_mine/presentation/settings/companion_screen.dart';
+import 'package:dope_i_mine/presentation/settings/settings_screen.dart';
 import 'package:dope_i_mine/providers.dart';
 
 class _FakeAuthRepository implements AuthRepositoryImpl {
@@ -65,10 +69,16 @@ class _FakeAuthRepository implements AuthRepositoryImpl {
 }
 
 class _FakeCompanionRepository implements CompanionRepositoryImpl {
+  AvatarConfigModel? savedAvatarConfig;
+
   @override
   Future<List<CompanionModel>> getCompanions() async {
     return const <CompanionModel>[
-      CompanionModel(id: 'companion1', name: 'Buddy', style: 'Calm orb'),
+      CompanionModel(
+        id: 'companion1',
+        name: 'Dope-i',
+        style: 'Neon hoodie robot mascot',
+      ),
     ];
   }
 
@@ -76,15 +86,18 @@ class _FakeCompanionRepository implements CompanionRepositoryImpl {
   Future<void> saveAvatarConfig({
     required String userId,
     required AvatarConfigModel config,
-  }) async {}
+  }) async {
+    savedAvatarConfig = config;
+  }
 
   @override
   Future<AvatarConfigModel?> getAvatarConfig(String userId) async {
-    return const AvatarConfigModel(
-      avatarStyle: 'fox',
-      avatarPalette: 'bright',
-      accessoryConfig: <String, dynamic>{},
-    );
+    return savedAvatarConfig ??
+        const AvatarConfigModel(
+          avatarStyle: AvatarConfigModel.modeInspiredByMe,
+          avatarPalette: AvatarConfigModel.paletteSoftIllustrated,
+          accessoryConfig: <String, dynamic>{},
+        );
   }
 
   @override
@@ -148,6 +161,21 @@ class _FakeProfileRepository implements ProfileRepositoryImpl {
 
   @override
   Future<SensorySettingsModel?> getSensorySettings(String userId) async => null;
+
+  @override
+  Future<void> updateAssistantName(String userId, String name) async {}
+
+  @override
+  Future<void> updateSensorySettings(
+    String userId, {
+    bool? reducedAnimation,
+    bool? largeText,
+    bool? soundEnabled,
+    bool? softColors,
+    String? praiseLevel,
+    bool? iconMode,
+    bool? reduceSurprises,
+  }) async {}
 }
 
 GoRouter _buildHomeGateRouter() {
@@ -162,8 +190,40 @@ GoRouter _buildHomeGateRouter() {
         path: '/branding/intro',
         builder: (_, __) => const DopeIIntroScreen(returnToSummary: false),
       ),
+      GoRoute(
+        path: '/settings',
+        builder: (_, __) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/settings/companion',
+        builder: (_, __) => const CompanionScreen(),
+      ),
     ],
   );
+}
+
+Future<void> _pumpUntilVisible(
+  WidgetTester tester,
+  Finder finder, {
+  Duration step = const Duration(milliseconds: 100),
+  int maxPumps = 20,
+}) async {
+  for (var pumpCount = 0; pumpCount < maxPumps; pumpCount += 1) {
+    await tester.pump(step);
+    if (finder.evaluate().isNotEmpty) return;
+  }
+}
+
+Future<void> _pumpUntilAbsent(
+  WidgetTester tester,
+  Finder finder, {
+  Duration step = const Duration(milliseconds: 100),
+  int maxPumps = 20,
+}) async {
+  for (var pumpCount = 0; pumpCount < maxPumps; pumpCount += 1) {
+    await tester.pump(step);
+    if (finder.evaluate().isEmpty) return;
+  }
 }
 
 class _FakeVoiceSettingsRepository implements VoiceSettingsRepositoryImpl {
@@ -392,13 +452,133 @@ void main() {
 
     expect(find.text('Companion & avatar'), findsOneWidget);
     expect(find.text('Step 11 of 12'), findsOneWidget);
+    expect(find.text('Your personal avatar'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey<String>('onboarding-avatar-preview')),
+      findsOneWidget,
+    );
+    await tester.tap(find.widgetWithText(FilledButton, 'Customize portrait'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Create your avatar'), findsOneWidget);
+    await tester.ensureVisible(find.text('Private Abstract'));
+    await tester.tap(find.text('Private Abstract'));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.widgetWithText(ElevatedButton, 'Save avatar'),
+      500,
+    );
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Save avatar'));
+    await tester.pumpAndSettle();
+
     await tester.tap(find.widgetWithText(FilledButton, 'Save and continue'));
     await tester.pumpAndSettle();
 
     expect(find.text('Summary'), findsOneWidget);
     expect(find.text('Step 12 of 12'), findsOneWidget);
     expect(find.text('Avatar'), findsOneWidget);
-    expect(find.text('fox, bright'), findsOneWidget);
+    expect(find.text('Private / abstract, soft illustrated portrait'),
+        findsOneWidget);
+    final savedProfile =
+        fakeCompanionRepository.savedAvatarConfig?.toUserAvatarProfile();
+    expect(savedProfile?.mode, user_avatar.AvatarMode.privateAbstract);
+    expect(savedProfile?.renderMode, user_avatar.AvatarRenderMode.abstract);
+  });
+
+  testWidgets('home reflects the saved unified avatar profile',
+      (WidgetTester tester) async {
+    final fakeAuthRepository = _FakeAuthRepository()
+      ..user = const AuthUser(id: 'tester', email: 'tester@example.com');
+    final fakeProfileRepository =
+        _FakeProfileRepository(onboardingComplete: true);
+    final fakeCompanionRepository = _FakeCompanionRepository()
+      ..savedAvatarConfig = AvatarConfigModel.fromUserAvatarProfile(
+        UserAvatarProfile.defaultAdult.copyWith(
+          mode: user_avatar.AvatarMode.privateAbstract,
+          renderMode: user_avatar.AvatarRenderMode.abstract,
+          accentColor: const Color(0xFFEC4899),
+        ),
+      );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: <Override>[
+          authRepositoryProvider.overrideWithValue(fakeAuthRepository),
+          profileRepositoryProvider.overrideWithValue(fakeProfileRepository),
+          companionRepositoryProvider
+              .overrideWithValue(fakeCompanionRepository),
+        ],
+        child: MaterialApp.router(routerConfig: _buildHomeGateRouter()),
+      ),
+    );
+
+    await _pumpUntilVisible(
+      tester,
+      find.byKey(const ValueKey<String>('home-unified-user-avatar')),
+    );
+
+    expect(find.text('Hi there!'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey<String>('home-unified-user-avatar')),
+      findsOneWidget,
+    );
+    expect(find.text('Private / abstract, soft illustrated portrait'),
+        findsOneWidget);
+  });
+
+  testWidgets('settings avatar editor saves profile changes back to home',
+      (WidgetTester tester) async {
+    final fakeAuthRepository = _FakeAuthRepository()
+      ..user = const AuthUser(id: 'tester', email: 'tester@example.com');
+    final fakeProfileRepository =
+        _FakeProfileRepository(onboardingComplete: true);
+    final fakeCompanionRepository = _FakeCompanionRepository();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: <Override>[
+          authRepositoryProvider.overrideWithValue(fakeAuthRepository),
+          profileRepositoryProvider.overrideWithValue(fakeProfileRepository),
+          companionRepositoryProvider
+              .overrideWithValue(fakeCompanionRepository),
+        ],
+        child: MaterialApp.router(routerConfig: _buildHomeGateRouter()),
+      ),
+    );
+
+    await _pumpUntilVisible(tester, find.text('Hi there!'));
+    await tester.tap(find.text('My avatar'));
+    await _pumpUntilVisible(tester, find.text('Companion and avatar'));
+
+    expect(find.text('Your personal avatar'), findsOneWidget);
+    await tester.tap(find.widgetWithText(FilledButton, 'Customize portrait'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Create your avatar'), findsOneWidget);
+    await tester.ensureVisible(find.text('Private Abstract'));
+    await tester.tap(find.text('Private Abstract'));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.widgetWithText(ElevatedButton, 'Save avatar'),
+      500,
+    );
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Save avatar'));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+        find.widgetWithText(ElevatedButton, 'Save'), 500);
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Save'));
+    await _pumpUntilVisible(tester, find.text('Hi there!'));
+    await _pumpUntilVisible(
+      tester,
+      find.text('Private / abstract, soft illustrated portrait'),
+    );
+
+    final savedProfile =
+        fakeCompanionRepository.savedAvatarConfig?.toUserAvatarProfile();
+    expect(savedProfile?.mode, user_avatar.AvatarMode.privateAbstract);
+    expect(savedProfile?.renderMode, user_avatar.AvatarRenderMode.abstract);
+    expect(find.text('Private / abstract, soft illustrated portrait'),
+        findsOneWidget);
   });
 
   testWidgets('login to onboarding summary full setup',
@@ -580,9 +760,10 @@ void main() {
       ),
     );
 
-    await tester.pumpAndSettle();
+    await _pumpUntilVisible(tester, find.text('Hi there!'));
+    await _pumpUntilAbsent(tester, find.text('Log in'));
 
-    expect(find.text('What do you need to do?'), findsOneWidget);
+    expect(find.text('Hi there!'), findsOneWidget);
     expect(find.text('Log in'), findsNothing);
   });
 
@@ -619,7 +800,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Meet Dope-i'), findsOneWidget);
-    expect(find.text('What do you need to do?'), findsNothing);
+    expect(find.text('Hi there!'), findsNothing);
   });
 
   testWidgets('login sends users with completed onboarding to home',
@@ -651,9 +832,9 @@ void main() {
     await tester.enterText(find.byType(TextField).first, 'tester@example.com');
     await tester.enterText(find.byType(TextField).last, 'password123');
     await tester.tap(find.widgetWithText(AsyncActionButton, 'Log in'));
-    await tester.pumpAndSettle();
+    await _pumpUntilVisible(tester, find.text('Hi there!'));
 
-    expect(find.text('What do you need to do?'), findsOneWidget);
+    expect(find.text('Hi there!'), findsOneWidget);
     expect(find.text('Meet Dope-i'), findsNothing);
   });
 
@@ -696,9 +877,9 @@ void main() {
       ),
     );
 
-    await tester.pumpAndSettle();
+    await _pumpUntilVisible(tester, find.text('Hi there!'));
 
-    expect(find.text('What do you need to do?'), findsOneWidget);
+    expect(find.text('Hi there!'), findsOneWidget);
   });
 
   testWidgets(
@@ -712,9 +893,9 @@ void main() {
       ),
     );
 
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 300));
 
-    expect(find.text('What do you need to do?'), findsOneWidget);
+    expect(find.text('Hi there!'), findsOneWidget);
     expect(find.text('Meet Dope-i'), findsNothing);
   });
 
@@ -740,7 +921,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Meet Dope-i'), findsOneWidget);
-    expect(find.text('What do you need to do?'), findsNothing);
+    expect(find.text('Hi there!'), findsNothing);
   });
 
   testWidgets(
@@ -761,11 +942,13 @@ void main() {
       ),
     );
 
-    await tester.pumpAndSettle();
+    await _pumpUntilVisible(tester, find.text('Hi there!'));
 
-    expect(find.text('What do you need to do?'), findsOneWidget);
-    await tester.tap(find.widgetWithText(OutlinedButton, 'Restart onboarding'));
-    await tester.pumpAndSettle();
+    expect(find.text('Hi there!'), findsOneWidget);
+    await tester.tap(find.byIcon(Icons.settings));
+    await _pumpUntilVisible(tester, find.text('Settings'));
+    await tester.tap(find.text('Restart onboarding'));
+    await _pumpUntilVisible(tester, find.text('Meet Dope-i'));
 
     expect(fakeProfileRepository.onboardingComplete, isFalse);
     expect(find.text('Meet Dope-i'), findsOneWidget);

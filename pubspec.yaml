@@ -21,6 +21,7 @@ dependencies:
   flutter_local_notifications: ^17.2.1
   intl: ^0.20.2
   confetti: ^0.7.0
+  timezone: ^0.9.4
 
 dev_dependencies:
   flutter_test:
@@ -55,5 +56,45 @@ flutter:
     - assets/play_store/
     - assets/user_avatar/accessories/
     - assets/user_avatar/base/
+    - assets/user_avatar/base/heads/
+    - assets/user_avatar/base/bodies/
+    - assets/user_avatar/base/skin_tones/
+    - assets/user_avatar/hair/straight/
+    - assets/user_avatar/hair/wavy/
+    - assets/user_avatar/hair/curly/
+    - assets/user_avatar/hair/coily/
+    - assets/user_avatar/hair/afro_textured/
+    - assets/user_avatar/hair/locs/
+    - assets/user_avatar/hair/braids/
+    - assets/user_avatar/hair/twists/
+    - assets/user_avatar/hair/shaved/
+    - assets/user_avatar/hair/bald/
+    - assets/user_avatar/face/eyes/
+    - assets/user_avatar/face/eyebrows/
+    - assets/user_avatar/face/noses/
+    - assets/user_avatar/face/mouths/
+    - assets/user_avatar/face/facial_hair/
+    - assets/user_avatar/face/marks/
+    - assets/user_avatar/clothing/casual/
+    - assets/user_avatar/clothing/school/
+    - assets/user_avatar/clothing/work/
+    - assets/user_avatar/clothing/modest/
+    - assets/user_avatar/clothing/sleepwear/
+    - assets/user_avatar/clothing/sportswear/
+    - assets/user_avatar/accessibility/glasses/
+    - assets/user_avatar/accessibility/hearing_aids/
+    - assets/user_avatar/accessibility/wheelchairs/
+    - assets/user_avatar/accessibility/prosthetics/
+    - assets/user_avatar/accessibility/medical_devices/
+    - assets/user_avatar/accessibility/sensory/
+    - assets/user_avatar/cultural/hijab/
+    - assets/user_avatar/cultural/turban/
+    - assets/user_avatar/cultural/headwrap/
+    - assets/user_avatar/cultural/kippah/
+    - assets/user_avatar/abstract/orbs/
+    - assets/user_avatar/abstract/symbols/
+    - assets/user_avatar/abstract/patterns/
+    - assets/user_avatar/abstract/initials/
+    - assets/user_avatar/backgrounds/
     - assets/user_avatar/palettes/
-    - assets/avatar/dopei/
+    - assets/avatar/dopey/

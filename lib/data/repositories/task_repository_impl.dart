@@ -2,10 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../data/mappers/task_mapper.dart';
+import '../../domain/sidequests/side_quest_model.dart';
 import '../../domain/tasks/task_model.dart';
 import '../../domain/tasks/task_state_snapshot.dart';
 import '../../domain/tasks/task_step_model.dart';
-import '../../domain/sidequests/side_quest_model.dart';
+import 'task_templates.dart';
 
 class TaskRepositoryImpl {
   TaskRepositoryImpl(this._client);
@@ -23,130 +24,89 @@ class TaskRepositoryImpl {
     required String sourceText,
     required TaskStateSnapshot snapshot,
   }) async {
-    debugPrint('Creating task for user: $userId, text: $sourceText');
-    late final Map<String, dynamic> data;
-
-    try {
-      final response = await _client.functions.invoke(
-        'create-task',
-        body: <String, dynamic>{
-          'sourceText': sourceText,
-          'mode': snapshot.mode.name,
-          'energyLevel': snapshot.energyLevel.name,
-          'stressLevel': snapshot.stressLevel.name,
-          'timeAvailable': switch (snapshot.timeAvailable) {
-            TimeAvailable.twoMinutes => '2m',
-            TimeAvailable.fiveMinutes => '5m',
-            TimeAvailable.fifteenMinutes => '15m',
-            TimeAvailable.thirtyPlus => '30m_plus',
+    final template = TaskTemplateLibrary.findTemplate(sourceText);
+    Map<String, dynamic> data;
+    if (template != null) {
+      data = localTaskFallback(sourceText, snapshot);
+    } else {
+      try {
+        final response = await _client.functions.invoke(
+          'create-task',
+          body: <String, dynamic>{
+            'sourceText': sourceText,
+            'mode': snapshot.mode.name,
+            'energyLevel': snapshot.energyLevel.name,
+            'stressLevel': snapshot.stressLevel.name,
+            'timeAvailable': switch (snapshot.timeAvailable) {
+              TimeAvailable.twoMinutes => '2m',
+              TimeAvailable.fiveMinutes => '5m',
+              TimeAvailable.fifteenMinutes => '15m',
+              TimeAvailable.thirtyPlus => '30m_plus',
+            },
           },
-        },
-      );
-
-      data = Map<String, dynamic>.from(response.data as Map);
-      debugPrint('Supabase function succeeded: $data');
-    } catch (error) {
-      debugPrint('Supabase function failed, using fallback: $error');
-      data = _localTaskFallback(sourceText, snapshot);
+        );
+        data = Map<String, dynamic>.from(response.data as Map);
+      } catch (error) {
+        debugPrint('Supabase create-task failed, using local fallback: $error');
+        data = localTaskFallback(sourceText, snapshot);
+      }
     }
 
-    debugPrint('Inserting task into database...');
+    final normalizedTitle =
+        (data['normalizedTitle'] as String?)?.trim().isNotEmpty == true
+            ? data['normalizedTitle'] as String
+            : _normalisedTitle(sourceText);
     final taskRow = await _client
         .from('tasks')
         .insert(<String, dynamic>{
           'user_id': userId,
           'source_text': sourceText,
-          'normalized_title': data['normalizedTitle'],
-          'category': data['category'],
+          'normalized_title': normalizedTitle,
+          'category': data['category'] as String? ?? 'general',
           'status': 'active',
           'mode_used': _modeToDb(snapshot.mode),
           'energy_level': snapshot.energyLevel.name,
           'stress_level': snapshot.stressLevel.name,
           'time_available': _timeToDb(snapshot.timeAvailable),
-          'effort_band': data['effortBand'],
-          'estimated_minutes': data['estimatedMinutes'],
+          'effort_band': data['effortBand'] as String? ?? 'medium',
+          'estimated_minutes': data['estimatedMinutes'] as int? ?? 15,
           'state_snapshot': snapshot.toJson(),
         })
         .select()
         .single();
 
-    debugPrint('Task inserted successfully: ${taskRow['id']}');
     final taskId = taskRow['id'] as String;
-
-    final primarySteps =
-        (data['primarySteps'] as List<dynamic>).asMap().entries.map((entry) {
-      final step = Map<String, dynamic>.from(entry.value as Map);
-      return <String, dynamic>{
-        'task_id': taskId,
-        'parent_step_id': null,
-        'depth_level': 0,
-        'sequence_no': entry.key + 1,
-        'step_text': step['text'],
-        'is_optional': step['isOptional'] ?? false,
-        'is_minimum_path': false,
-        'completion_status': 'pending',
-      };
-    }).toList();
-
-    final minimumSteps = (data['minimumVersionSteps'] as List<dynamic>)
-        .asMap()
-        .entries
-        .map((entry) {
-      final step = Map<String, dynamic>.from(entry.value as Map);
-      return <String, dynamic>{
-        'task_id': taskId,
-        'parent_step_id': null,
-        'depth_level': 0,
-        'sequence_no': entry.key + 1,
-        'step_text': step['text'],
-        'is_optional': false,
-        'is_minimum_path': true,
-        'completion_status': 'pending',
-      };
-    }).toList();
-
-    final insertedPrimary =
-        await _client.from('task_steps').insert(primarySteps).select();
-    final insertedMinimum =
-        await _client.from('task_steps').insert(minimumSteps).select();
-
-    final sideQuestsData =
-        (data['sideQuests'] as List<dynamic>? ?? []).map((dynamic q) {
-      final quest = Map<String, dynamic>.from(q as Map);
-      return <String, dynamic>{
-        'user_id': userId,
-        'task_id': taskId,
-        'title': quest['title'],
-        'quest_type': quest['quest_type'],
-        'reward_xp': quest['reward_xp'],
-        'status': 'available',
-      };
-    }).toList();
-
-    final insertedSideQuests = sideQuestsData.isNotEmpty
-        ? await _client.from('side_quests').insert(sideQuestsData).select()
-        : [];
+    final normalisedPrimarySteps = _normalisePrimarySteps(
+      data['primarySteps'] as List<dynamic>? ?? const <dynamic>[],
+      normalizedTitle,
+    );
+    final primarySteps = template == null
+        ? _ensurePrimaryStepsAreTaskRelevant(
+            normalisedPrimarySteps,
+            sourceText: sourceText,
+            normalizedTitle: normalizedTitle,
+          )
+        : normalisedPrimarySteps;
+    final insertedPrimary = await _insertHierarchicalSteps(
+      taskId: taskId,
+      sections: primarySteps,
+    );
+    final insertedMinimum = await _insertMinimumSteps(
+      taskId: taskId,
+      minimumSteps:
+          data['minimumVersionSteps'] as List<dynamic>? ?? const <dynamic>[],
+    );
+    final sideQuests = await _insertSideQuests(
+      userId: userId,
+      taskId: taskId,
+      rawSideQuests: data['sideQuests'] as List<dynamic>? ?? const <dynamic>[],
+    );
 
     return (
       task: TaskMapper.fromTaskRow(taskRow),
-      steps: (insertedPrimary as List<dynamic>)
-          .map((row) =>
-              TaskMapper.fromStepRow(Map<String, dynamic>.from(row as Map)))
-          .toList(),
-      minimumVersion: (insertedMinimum as List<dynamic>)
-          .map((row) =>
-              TaskMapper.fromStepRow(Map<String, dynamic>.from(row as Map)))
-          .toList(),
-      sideQuests: (insertedSideQuests as List<dynamic>)
-          .map((row) => SideQuestModel(
-                id: row['id'] as String,
-                title: row['title'] as String,
-                questType: row['quest_type'] as String,
-                rewardXp: row['reward_xp'] as int,
-                status: row['status'] as String,
-                taskId: row['task_id'] as String?,
-              ))
-          .toList(),
+      steps: insertedPrimary.map(TaskMapper.fromStepRow).toList(),
+      minimumVersion: insertedMinimum.map(TaskMapper.fromStepRow).toList(),
+      sideQuests: sideQuests,
     );
   }
 
@@ -155,23 +115,6 @@ class TaskRepositoryImpl {
     required TaskStateSnapshot snapshot,
     required String stepText,
   }) async {
-    late final Map<String, dynamic> data;
-
-    try {
-      final response = await _client.functions.invoke(
-        'breakdown-step',
-        body: <String, dynamic>{
-          'stepText': stepText,
-          'mode': snapshot.mode.name,
-          'energyLevel': snapshot.energyLevel.name,
-          'stressLevel': snapshot.stressLevel.name,
-        },
-      );
-      data = Map<String, dynamic>.from(response.data as Map);
-    } catch (error) {
-      data = _localBreakdownFallback(stepText);
-    }
-
     final parent = await _client
         .from('task_steps')
         .select('task_id, depth_level')
@@ -179,27 +122,180 @@ class TaskRepositoryImpl {
         .single();
     final taskId = parent['task_id'] as String;
     final parentDepth = parent['depth_level'] as int;
+    final taskContext = await _fetchTaskContext(taskId);
 
-    final substeps =
-        (data['substeps'] as List<dynamic>).asMap().entries.map((entry) {
-      final step = Map<String, dynamic>.from(entry.value as Map);
+    final existing = await _client
+        .from('task_steps')
+        .select()
+        .eq('parent_step_id', stepId)
+        .order('sequence_no');
+    final existingRows = (existing as List<dynamic>)
+        .map((row) => Map<String, dynamic>.from(row as Map))
+        .toList();
+    final existingSteps = existingRows.map(TaskMapper.fromStepRow).toList();
+    if (existingSteps.isNotEmpty &&
+        !_shouldRegenerateExistingBreakdown(
+          rows: existingRows,
+          existingSteps: existingSteps,
+          stepText: stepText,
+          taskContext: taskContext,
+        )) {
+      return existingSteps;
+    }
+
+    final data = await _breakdownData(
+      snapshot: snapshot,
+      stepText: stepText,
+      taskContext: taskContext,
+    );
+    final substepTexts = _normaliseBreakdownSubstepTexts(
+      data['substeps'],
+      stepText: stepText,
+      taskText: taskContext.sourceText,
+      taskTitle: taskContext.normalizedTitle,
+    );
+    final rows = await _replaceExistingOrBuildNewRows(
+      taskId: taskId,
+      stepId: stepId,
+      parentDepth: parentDepth,
+      existingRows: existingRows,
+      substepTexts: substepTexts,
+    );
+
+    if (rows.isEmpty) return const <TaskStepModel>[];
+    final rowsToInsert = rows
+        .where((row) => row['id'] == null)
+        .map((row) => Map<String, dynamic>.from(row)..remove('id'))
+        .toList();
+    final resultRows = rows.where((row) => row['id'] != null).toList();
+    if (rowsToInsert.isNotEmpty) {
+      final inserted = await _client.from('task_steps').insert(rowsToInsert).select();
+      resultRows.addAll(
+        (inserted as List<dynamic>)
+            .map((row) => Map<String, dynamic>.from(row as Map)),
+      );
+    }
+
+    resultRows.sort(
+      (a, b) => (a['sequence_no'] as int).compareTo(b['sequence_no'] as int),
+    );
+    return resultRows.map(TaskMapper.fromStepRow).toList();
+  }
+
+  Future<List<Map<String, dynamic>>> _replaceExistingOrBuildNewRows({
+    required String taskId,
+    required String stepId,
+    required int parentDepth,
+    required List<Map<String, dynamic>> existingRows,
+    required List<String> substepTexts,
+  }) async {
+    final desiredTexts = List<String>.from(substepTexts);
+    while (desiredTexts.length < existingRows.length) {
+      desiredTexts.add(_continuationMicroStepFor(desiredTexts.length));
+    }
+
+    final updatedRows = <Map<String, dynamic>>[];
+    for (final entry in desiredTexts.asMap().entries) {
+      final rowIndex = entry.key;
+      final row = rowIndex < existingRows.length ? existingRows[rowIndex] : null;
+      if (row != null) {
+        final updated = await _client
+            .from('task_steps')
+            .update(<String, dynamic>{
+              'step_text': entry.value,
+              'sequence_no': rowIndex + 1,
+              'completion_status': 'pending',
+              'updated_at': DateTime.now().toIso8601String(),
+            })
+            .eq('id', row['id'] as String)
+            .select()
+            .single();
+        updatedRows.add(Map<String, dynamic>.from(updated as Map));
+      } else {
+        updatedRows.add(<String, dynamic>{
+          'id': null,
+          'task_id': taskId,
+          'parent_step_id': stepId,
+          'depth_level': parentDepth + 1,
+          'sequence_no': rowIndex + 1,
+          'step_text': entry.value,
+          'is_optional': false,
+          'is_minimum_path': false,
+          'completion_status': 'pending',
+        });
+      }
+    }
+
+    if (existingRows.isEmpty) {
+      return desiredTexts.asMap().entries.map((entry) {
       return <String, dynamic>{
         'task_id': taskId,
         'parent_step_id': stepId,
         'depth_level': parentDepth + 1,
         'sequence_no': entry.key + 1,
-        'step_text': step['text'],
+        'step_text': entry.value,
         'is_optional': false,
         'is_minimum_path': false,
         'completion_status': 'pending',
       };
     }).toList();
+    }
 
-    final inserted = await _client.from('task_steps').insert(substeps).select();
-    return (inserted as List<dynamic>)
-        .map((row) =>
-            TaskMapper.fromStepRow(Map<String, dynamic>.from(row as Map)))
-        .toList();
+    return updatedRows;
+  }
+
+  Future<_TaskContext> _fetchTaskContext(String taskId) async {
+    try {
+      final row = await _client
+          .from('tasks')
+          .select('source_text, normalized_title')
+          .eq('id', taskId)
+          .single();
+      return _TaskContext(
+        sourceText: row['source_text'] as String?,
+        normalizedTitle: row['normalized_title'] as String?,
+      );
+    } catch (error) {
+      debugPrint('Warning: Could not load task context for breakdown: $error');
+      return const _TaskContext();
+    }
+  }
+
+  Future<Map<String, dynamic>> _breakdownData({
+    required TaskStateSnapshot snapshot,
+    required String stepText,
+    required _TaskContext taskContext,
+  }) async {
+    // TEMPORARY BYPASS: The remote Edge Function currently ignores step specificity
+    // and returns generic parent-task steps. We bypass it to use the newly improved
+    // local fallback engine until the Edge Function can be deployed.
+    /*
+    try {
+      final response = await _client.functions.invoke(
+        'breakdown-step',
+        body: <String, dynamic>{
+          'stepText': stepText,
+          'taskText': taskContext.sourceText,
+          'taskTitle': taskContext.normalizedTitle,
+          'mode': snapshot.mode.name,
+          'energyLevel': snapshot.energyLevel.name,
+          'stressLevel': snapshot.stressLevel.name,
+          'timeAvailable': _timeToDb(snapshot.timeAvailable),
+        },
+      );
+      if (response.data is Map) {
+        return Map<String, dynamic>.from(response.data as Map);
+      }
+    } catch (error) {
+      debugPrint('Supabase breakdown-step failed, using local fallback: $error');
+    }
+    */
+
+    return localBreakdownFallback(
+      stepText,
+      taskText: taskContext.sourceText,
+      taskTitle: taskContext.normalizedTitle,
+    );
   }
 
   Future<void> completeStep({
@@ -225,24 +321,147 @@ class TaskRepositoryImpl {
       'metadata': <String, dynamic>{},
     });
 
-    // Award 10 XP for each step completed
-    await _client.from('rewards').insert({
-      'user_id': userId,
-      'reward_type': 'xp',
-      'reward_key': 'step_completed',
-      'amount': 10,
-      'source_type': 'step',
-      'source_id': stepId,
-    });
+    try {
+      await _client.from('rewards').insert(<String, dynamic>{
+        'user_id': userId,
+        'reward_type': 'xp',
+        'reward_key': 'step_completed',
+        'amount': 10,
+        'source_type': 'step',
+        'source_id': stepId,
+      });
+    } catch (error) {
+      debugPrint('Warning: Could not award step reward: $error');
+    }
   }
 
-  Map<String, dynamic> _localTaskFallback(
-      String sourceText, TaskStateSnapshot snapshot) {
-    return localTaskFallback(sourceText, snapshot);
+  Future<List<Map<String, dynamic>>> _insertHierarchicalSteps({
+    required String taskId,
+    required List<Map<String, dynamic>> sections,
+  }) async {
+    final inserted = <Map<String, dynamic>>[];
+    for (final entry in sections.asMap().entries) {
+      final section = entry.value;
+      final insertedSection = await _client
+          .from('task_steps')
+          .insert(<String, dynamic>{
+            'task_id': taskId,
+            'parent_step_id': null,
+            'depth_level': 0,
+            'sequence_no': entry.key + 1,
+            'step_text': section['text'],
+            'is_optional': section['isOptional'] ?? false,
+            'is_minimum_path': false,
+            'completion_status': 'pending',
+          })
+          .select()
+          .single();
+      final sectionMap = Map<String, dynamic>.from(insertedSection as Map);
+      inserted.add(sectionMap);
+
+      final substeps =
+          (section['substeps'] as List<dynamic>? ?? const <dynamic>[])
+              .map((value) => Map<String, dynamic>.from(value as Map))
+              .toList();
+      if (substeps.isEmpty) continue;
+
+      final rows = substeps.asMap().entries.map((subEntry) {
+        final substep = subEntry.value;
+        return <String, dynamic>{
+          'task_id': taskId,
+          'parent_step_id': sectionMap['id'],
+          'depth_level': 1,
+          'sequence_no': subEntry.key + 1,
+          'step_text': substep['text'],
+          'is_optional': substep['isOptional'] ?? false,
+          'is_minimum_path': false,
+          'completion_status': 'pending',
+        };
+      }).toList();
+      final insertedSubsteps =
+          await _client.from('task_steps').insert(rows).select();
+      inserted.addAll(
+        (insertedSubsteps as List<dynamic>)
+            .map((row) => Map<String, dynamic>.from(row as Map)),
+      );
+    }
+    return inserted;
   }
 
-  Map<String, dynamic> _localBreakdownFallback(String stepText) {
-    return localBreakdownFallback(stepText);
+  Future<List<Map<String, dynamic>>> _insertMinimumSteps({
+    required String taskId,
+    required List<dynamic> minimumSteps,
+  }) async {
+    final rows = minimumSteps.asMap().entries.map((entry) {
+      final step = Map<String, dynamic>.from(entry.value as Map);
+      return <String, dynamic>{
+        'task_id': taskId,
+        'parent_step_id': null,
+        'depth_level': 0,
+        'sequence_no': entry.key + 1,
+        'step_text': step['text'],
+        'is_optional': false,
+        'is_minimum_path': true,
+        'completion_status': 'pending',
+      };
+    }).toList();
+    if (rows.isEmpty) return <Map<String, dynamic>>[];
+    final inserted = await _client.from('task_steps').insert(rows).select();
+    return (inserted as List<dynamic>)
+        .map((row) => Map<String, dynamic>.from(row as Map))
+        .toList();
+  }
+
+  Future<List<SideQuestModel>> _insertSideQuests({
+    required String userId,
+    required String taskId,
+    required List<dynamic> rawSideQuests,
+  }) async {
+    final rows = rawSideQuests.asMap().entries.map((entry) {
+      final quest = Map<String, dynamic>.from(entry.value as Map);
+      return <String, dynamic>{
+        'user_id': userId,
+        'task_id': taskId,
+        'title': quest['title'],
+        'quest_type': quest['quest_type'] ?? quest['questType'] ?? 'bonus',
+        'reward_xp': quest['reward_xp'] ?? quest['rewardXp'] ?? 10,
+        'status': 'available',
+      };
+    }).toList();
+
+    if (rows.isEmpty) return const <SideQuestModel>[];
+    try {
+      final inserted = await _client.from('side_quests').insert(rows).select();
+      return (inserted as List<dynamic>)
+          .map(
+              (row) => _sideQuestFromRow(Map<String, dynamic>.from(row as Map)))
+          .toList();
+    } catch (error) {
+      debugPrint('Warning: Could not insert side quests: $error');
+      return rows.asMap().entries.map((entry) {
+        final row = entry.value;
+        return SideQuestModel(
+          id: 'temp_${DateTime.now().microsecondsSinceEpoch}_${entry.key}',
+          title: row['title'] as String,
+          questType: row['quest_type'] as String,
+          rewardXp: row['reward_xp'] as int,
+          status: row['status'] as String,
+          taskId: taskId,
+        );
+      }).toList();
+    }
+  }
+
+  SideQuestModel _sideQuestFromRow(Map<String, dynamic> row) {
+    return SideQuestModel(
+      id: row['id'] as String,
+      title: row['title'] as String,
+      questType: row['quest_type'] as String,
+      rewardXp: row['reward_xp'] as int,
+      status: row['status'] as String,
+      taskId: row['task_id'] as String?,
+      routineId: row['routine_id'] as String?,
+    );
   }
 
   String _modeToDb(SupportMode mode) {
@@ -267,511 +486,511 @@ class TaskRepositoryImpl {
 
 @visibleForTesting
 Map<String, dynamic> localTaskFallback(
-    String sourceText, TaskStateSnapshot snapshot) {
-  final normalizedTitle =
-      sourceText.trim().split(RegExp(r'[\.\!?]')).first.trim();
-  final stepTexts = _generateActionableTaskSteps(sourceText.trim());
-  final minimumVersion =
-      _generateMinimumVersionSteps(sourceText.trim(), stepTexts);
+  String sourceText,
+  TaskStateSnapshot snapshot,
+) {
+  final template = TaskTemplateLibrary.findTemplate(sourceText);
+  if (template != null) {
+    final primarySteps = template.sections.length == 1
+        ? template.sections.first.steps
+            .map(
+              (step) => <String, dynamic>{
+                'text': step,
+                'isOptional': false,
+                'depthLevel': 0,
+              },
+            )
+            .toList()
+        : template.sections
+            .map(
+              (section) => <String, dynamic>{
+                'text': section.title,
+                'isOptional': false,
+                'depthLevel': 0,
+                'substeps': section.steps
+                    .map(
+                      (step) => <String, dynamic>{
+                        'text': step,
+                        'depthLevel': 1,
+                      },
+                    )
+                    .toList(),
+              },
+            )
+            .toList();
 
+    return <String, dynamic>{
+      'normalizedTitle': template.title,
+      'category': template.category,
+      'effortBand': _effortBandFor(
+        template.sections
+            .fold<int>(0, (total, section) => total + section.steps.length),
+      ),
+      'estimatedMinutes': template.estimatedMinutes,
+      'primarySteps': primarySteps,
+      'minimumVersionSteps': <Map<String, dynamic>>[
+        <String, dynamic>{
+          'text': 'Do just 5 minutes of ${template.title}',
+          'depthLevel': 0,
+        },
+      ],
+      'sideQuests': _sideQuestsForTemplate(template),
+    };
+  }
+
+  final title = _normalisedTitle(sourceText);
+  final genericSteps = _generateGenericBitesizeSteps(sourceText);
   return <String, dynamic>{
-    'normalizedTitle':
-        normalizedTitle.isNotEmpty ? normalizedTitle : 'New task',
+    'normalizedTitle': title,
     'category': 'general',
-    'effortBand': 'medium',
-    'estimatedMinutes': 15,
-    'primarySteps': stepTexts
-        .map((text) => <String, dynamic>{
-              'text': text,
-              'isOptional': false,
-            })
+    'effortBand': _effortBandFor(genericSteps.length),
+    'estimatedMinutes': (genericSteps.length * 3).clamp(10, 45),
+    'primarySteps': genericSteps
+        .map(
+          (step) => <String, dynamic>{
+            'text': step,
+            'isOptional': false,
+            'depthLevel': 0,
+          },
+        )
         .toList(),
-    'minimumVersionSteps':
-        minimumVersion.map((text) => <String, dynamic>{'text': text}).toList(),
-    'sideQuests': <Map<String, dynamic>>[
-      {
-        'title': 'Take a deep breath before starting',
-        'quest_type': 'mindfulness',
-        'reward_xp': 20,
-      }
+    'minimumVersionSteps': <Map<String, dynamic>>[
+      <String, dynamic>{'text': genericSteps.first, 'depthLevel': 0},
     ],
+    'sideQuests': _defaultSideQuests(),
   };
 }
 
 @visibleForTesting
-Map<String, dynamic> localBreakdownFallback(String stepText) {
-  final fallback = _generateActionableBreakdownSteps(stepText.trim());
-
+Map<String, dynamic> localBreakdownFallback(
+  String stepText, {
+  String? taskText,
+  String? taskTitle,
+}) {
+  final section = TaskTemplateLibrary.findSection(stepText);
+  final substeps = section?.steps ?? _generateMicroSteps(stepText, taskTitle: taskTitle, taskText: taskText);
   return <String, dynamic>{
     'substeps':
-        fallback.map((text) => <String, dynamic>{'text': text}).toList(),
+        substeps.map((text) => <String, dynamic>{'text': text}).toList(),
   };
 }
 
-List<String> _generateActionableTaskSteps(String text) {
-  if (text.isEmpty) {
-    return const ['Review and complete this task'];
-  }
-
-  final lower = text.toLowerCase();
-
-  // Exact rich templates for common household tasks (provided by user)
-    if (lower.contains('put washing away') ||
-      (lower.contains('washing') && lower.contains('put'))) {
-    return const <String>[
-      'Collect the clean, dry laundry',
-      'Put it all in one place, for example the bed or sofa',
-      'Separate into piles: tops; trousers/shorts/skirts; underwear; socks; towels; bedding',
-      'Fold each item neatly',
-      'Pair socks together',
-      'Hang clothes that need hanging',
-      'Put folded clothes into the correct drawers',
-      'Put towels in the bathroom cupboard or towel storage',
-      'Put bedding in the airing cupboard or bedding drawer',
-      'Check the area for anything you missed',
-      'Put the laundry basket away',
-    ];
-  }
-
-  if (lower.contains('washing up') ||
-      lower.contains('wash the dishes') ||
-      (lower.contains('wash') && lower.contains('dishes')) ||
-      (lower.contains('dishes') && lower.contains('wash'))) {
-    return const <String>[
-      'Clear the sink area',
-      'Scrape leftover food into the bin',
-      'Stack dishes beside the sink: glasses first, then cutlery, then plates and bowls, pans last',
-      'Fill the sink with hot water',
-      'Add washing-up liquid',
-      'Wash glasses first',
-      'Wash cutlery',
-      'Wash plates and bowls',
-      'Wash pans and heavy items last',
-      'Rinse items if needed',
-      'Place clean items on the draining board',
-      'Wipe the sink and taps',
-      'Wipe the worktop',
-      'Remove food from the plughole',
-      'Dry items and put them away, or leave them to air dry',
-    ];
-  }
-
-  if (lower.contains('hoover') || lower.contains('vacuum') || lower.contains('hoovering')) {
-    return const <String>[
-      'Pick up anything from the floor',
-      'Move small items out of the way (shoes, bags, toys, boxes)',
-      'Check for coins, cables, or small objects that could block the vacuum',
-      'Plug in the vacuum',
-      'Start at the far side of the room',
-      'Vacuum slowly in straight lines',
-      'Vacuum around the edges of the room',
-      'Vacuum under furniture where possible',
-      'Move light furniture if needed',
-      'Vacuum the middle of the room',
-      'Use the nozzle attachment for corners and skirting boards',
-      'Check the floor for missed spots',
-      'Turn off and unplug the vacuum',
-      'Empty the vacuum if full',
-      'Put the vacuum away',
-    ];
-  }
-
-  if (lower.contains('make the bed') || lower.contains('making a bed') || lower.contains('make bed')) {
-    return const <String>[
-      'Clear anything off the bed',
-      'Pull the fitted sheet flat',
-      'Tuck in the corners if needed',
-      'Shake out the duvet',
-      'Lay the duvet evenly on the bed',
-      'Pull the duvet up to the top',
-      'Straighten both sides',
-      'Plump the pillows',
-      'Place the pillows at the head of the bed',
-      'Add cushions or blankets if used',
-      'Check the bed looks neat',
-    ];
-  }
-
-  if (lower.contains('change the bed') || lower.contains('changing a bed') || lower.contains('change bedding')) {
-    return const <String>[
-      'Remove pillows from the bed',
-      'Take off the pillowcases',
-      'Remove the duvet cover',
-      'Remove the fitted sheet',
-      'Put dirty bedding into the laundry basket',
-      'Get clean bedding: fitted sheet, duvet cover, pillowcases',
-      'Put the clean fitted sheet on the mattress',
-      'Make sure each corner is secure',
-      'Put the duvet into the clean duvet cover',
-      'Hold the top corners and shake the duvet down',
-      'Fasten buttons, poppers, or the zipper',
-      'Put clean pillowcases on the pillows',
-      'Return pillows to the head of the bed',
-      'Lay the duvet evenly',
-      'Straighten everything',
-      'Put dirty bedding near the washing machine or laundry area',
-    ];
-  }
-
-  if (lower.contains('put on a wash') || lower.contains('putting on a wash') || (lower.contains('put') && lower.contains('wash'))) {
-    return const <String>[
-      'Collect the dirty laundry',
-      'Separate laundry into piles: whites; colours; darks; towels; bedding; delicates',
-      'Check clothing labels if unsure',
-      'Check pockets for tissues, coins, keys, or paper',
-      'Turn delicate or printed clothes inside out',
-      'Load one wash into the washing machine',
-      'Do not overfill the drum',
-      'Add detergent to the correct drawer or directly into the drum',
-      'Add fabric softener if used',
-      'Close the washing machine door',
-      'Choose the correct wash setting',
-      'Select the temperature',
-      'Press start',
-      'When finished, remove the washing promptly',
-      'Hang it up, put it in the dryer, or place it on an airer',
-    ];
-  }
-
-  if (lower.contains('bin') || lower.contains('take out the bin') || lower.contains('empty bin') || lower.contains('throw out the bin')) {
-    return const <String>[
-      'Check whether the bin is full or needs emptying',
-      'Press down the rubbish gently if needed',
-      'Tie the bin bag securely',
-      'Lift the bag out carefully',
-      'Check for leaks',
-      'If leaking, double-bag it',
-      'Take the bag to the outside bin',
-      'Put it in the correct outside bin: general waste, recycling, food waste, garden waste',
-      'Close the outside bin lid',
-      'Put a new bin bag into the indoor bin',
-      'Wipe the bin lid if dirty',
-      'Wash your hands',
-    ];
-  }
-
-  if (_mentionsLaundryPutAway(lower)) {
-    return const <String>[
-      'Bring the clean washing to one place',
-      'Sort the clothes into small piles',
-      'Fold or hang one pile at a time',
-      'Put each pile into the right drawer or wardrobe',
-    ];
-  }
-
-  if (lower.contains('laundry') ||
-      lower.contains('washing') ||
-      lower.contains('clothes')) {
-    return const <String>[
-      'Collect the laundry into one place',
-      'Sort items by type or where they belong',
-      'Handle one small group at a time',
-      'Put the finished clothes away',
-    ];
-  }
-
-  if (lower.contains('clean') || lower.contains('tidy')) {
-    return const <String>[
-      'Get the things you need to clean',
-      'Clear one small area first',
-      'Clean that area',
-      'Put items back neatly and bin any rubbish',
-    ];
-  }
-
-  if (lower.contains('email') || lower.contains('respond')) {
-    return const <String>[
-      'Open your email inbox',
-      'Pick the first email to deal with',
-      'Write a short clear reply',
-      'Send it and move to the next one',
-    ];
-  }
-
-  if (lower.contains('dish') || lower.contains('washing up')) {
-    return const <String>[
-      'Take the dishes to the sink',
-      'Wash or rinse one group at a time',
-      'Dry or drain the clean dishes',
-      'Put the dishes away',
-    ];
-  }
-
-  if (lower.contains('bin') ||
-      lower.contains('trash') ||
-      lower.contains('rubbish')) {
-    return const <String>[
-      'Collect the rubbish into one bag',
-      'Tie the bag and take it out',
-      'Put a fresh bag in the bin',
-    ];
-  }
-
-  final sentences = text
-      .split(RegExp(r'[\.\!?]'))
-      .map((part) => part.trim())
-      .where((part) => part.isNotEmpty)
+List<String> _normaliseBreakdownSubstepTexts(
+  dynamic rawSubsteps, {
+  required String stepText,
+  String? taskText,
+  String? taskTitle,
+}) {
+  final mapped = (rawSubsteps as List<dynamic>? ?? const <dynamic>[])
+      .map((value) {
+        if (value is String) return value;
+        if (value is Map) return value['text'] as String?;
+        return null;
+      })
+      .whereType<String>()
+      .map((text) => text.trim())
+      .where((text) => text.isNotEmpty)
       .toList();
 
-  if (sentences.length > 1) {
-    return sentences;
+  final unique = <String>[];
+  final seen = <String>{};
+  for (final text in mapped) {
+    final key = _normaliseForComparison(text);
+    if (seen.add(key)) unique.add(text);
   }
 
-  final words =
-      text.split(RegExp(r'\s+')).where((word) => word.isNotEmpty).toList();
+  if (unique.isEmpty ||
+      _hasGenericBreakdownSignature(unique) ||
+      !_breakdownMentionsFocusWhenItShould(
+        unique,
+        stepText: stepText,
+        taskText: taskText,
+        taskTitle: taskTitle,
+      )) {
+    final fallback = localBreakdownFallback(
+      stepText,
+      taskText: taskText,
+      taskTitle: taskTitle,
+    );
+    return (fallback['substeps'] as List<dynamic>)
+        .map((step) => (step as Map<String, dynamic>)['text'] as String)
+        .toList();
+  }
 
-  final conjunctionSegments = text
+  return unique;
+}
+
+bool _shouldRegenerateExistingBreakdown({
+  required List<Map<String, dynamic>> rows,
+  required List<TaskStepModel> existingSteps,
+  required String stepText,
+  required _TaskContext taskContext,
+}) {
+  if (rows.isEmpty || existingSteps.isEmpty) return false;
+  final existingTexts = existingSteps.map((step) => step.text).toList();
+  if (_hasGenericBreakdownSignature(existingTexts)) return true;
+  return !_breakdownMentionsFocusWhenItShould(
+    existingTexts,
+    stepText: stepText,
+    taskText: taskContext.sourceText,
+    taskTitle: taskContext.normalizedTitle,
+  );
+}
+
+List<Map<String, dynamic>> _ensurePrimaryStepsAreTaskRelevant(
+  List<Map<String, dynamic>> sections, {
+  required String sourceText,
+  required String normalizedTitle,
+}) {
+  if (sections.isEmpty) return sections;
+
+  final taskTokens = _meaningfulTokens('$sourceText $normalizedTitle');
+  if (taskTokens.isEmpty) return sections;
+
+  final allTexts = sections
+      .expand((section) => <String>[
+            section['text'] as String? ?? '',
+            ...((section['substeps'] as List<dynamic>? ?? const <dynamic>[])
+                .whereType<Map>()
+                .map((step) => step['text'] as String? ?? '')),
+          ])
+      .where((text) => text.trim().isNotEmpty)
+      .toList();
+  final hasTaskAnchor = allTexts.any((text) => _containsAnyToken(text, taskTokens));
+  if (hasTaskAnchor) return sections;
+
+  return <Map<String, dynamic>>[
+    <String, dynamic>{
+      'text': normalizedTitle,
+      'isOptional': false,
+      'substeps': _generateGenericBitesizeSteps(sourceText)
+          .map((step) => <String, dynamic>{'text': step})
+          .toList(),
+    },
+  ];
+}
+
+List<Map<String, dynamic>> _normalisePrimarySteps(
+  List<dynamic> rawSteps,
+  String fallbackTitle,
+) {
+  final mapped = rawSteps
+      .whereType<Map>()
+      .map((step) => Map<String, dynamic>.from(step))
+      .where((step) => (step['text'] as String?)?.trim().isNotEmpty == true)
+      .toList();
+  if (mapped.isEmpty) {
+    return <Map<String, dynamic>>[
+      <String, dynamic>{
+        'text': fallbackTitle,
+        'isOptional': false,
+        'substeps': _generateGenericBitesizeSteps(fallbackTitle)
+            .map((step) => <String, dynamic>{'text': step})
+            .toList(),
+      },
+    ];
+  }
+
+  final hasHierarchy = mapped.any(
+    (step) => (step['substeps'] as List<dynamic>?)?.isNotEmpty == true,
+  );
+  if (hasHierarchy) return mapped;
+
+  return <Map<String, dynamic>>[
+    <String, dynamic>{
+      'text': fallbackTitle,
+      'isOptional': false,
+      'substeps': mapped
+          .map((step) => <String, dynamic>{'text': step['text'] as String})
+          .toList(),
+    },
+  ];
+}
+
+String _normalisedTitle(String sourceText) {
+  final title = sourceText.trim().split(RegExp(r'[.!?]')).first.trim();
+  return title.isEmpty ? 'New task' : title;
+}
+
+String _effortBandFor(int stepCount) {
+  if (stepCount <= 8) return 'low';
+  if (stepCount <= 24) return 'medium';
+  return 'high';
+}
+
+List<Map<String, dynamic>> _sideQuestsForTemplate(TaskTemplate template) {
+  final quests = template.sideQuests.isEmpty
+      ? const <TaskTemplateSideQuest>[
+          TaskTemplateSideQuest(
+              title: 'Do one tiny helpful extra', rewardXp: 10),
+        ]
+      : template.sideQuests;
+  return quests
+      .map(
+        (quest) => <String, dynamic>{
+          'title': quest.title,
+          'quest_type': quest.questType,
+          'reward_xp': quest.rewardXp,
+        },
+      )
+      .toList();
+}
+
+List<Map<String, dynamic>> _defaultSideQuests() {
+  return const <Map<String, dynamic>>[
+    <String, dynamic>{
+      'title': 'Take 3 slow breaths before starting',
+      'quest_type': 'sensory',
+      'reward_xp': 10,
+    },
+    <String, dynamic>{
+      'title': 'Put one extra item where it belongs',
+      'quest_type': 'momentum',
+      'reward_xp': 10,
+    },
+    <String, dynamic>{
+      'title': 'Drink a sip of water',
+      'quest_type': 'care',
+      'reward_xp': 10,
+    },
+  ];
+}
+
+List<String> _generateGenericBitesizeSteps(String sourceText) {
+  final text = sourceText.trim();
+  if (text.isEmpty) {
+    return const <String>['Notice the task', 'Do the easiest first action'];
+  }
+
+  final parts = text
       .split(RegExp(r'\s+and\s+|,|;', caseSensitive: false))
       .map((part) => part.trim())
       .where((part) => part.isNotEmpty)
       .toList();
-  if (conjunctionSegments.length > 1 &&
-      conjunctionSegments.any((part) =>
-          part.split(RegExp(r'\s+')).where((word) => word.isNotEmpty).length >
-          2)) {
-    return conjunctionSegments;
+  if (parts.length > 1) {
+    return parts
+        .expand((part) => <String>[
+              'Get ready to: $part',
+              'Do the first small part of: $part'
+            ])
+        .toList();
   }
-
-  if (words.length <= 8) {
-    final actionVerbs = [
-      'clean', 'wash', 'fold', 'sort', 'organize', 'check', 'review', 'prepare',
-      'gather', 'collect', 'put', 'buy', 'pay', 'call', 'cook', 'email', 'respond', 'tidy'
-    ];
-
-    final foundVerb = words.firstWhere(
-        (w) => actionVerbs.any((v) => w.contains(v)),
-        orElse: () => '');
-
-    final verbTemplates = <String, List<String>>{
-      'put': [
-        'Gather the items to put away',
-        'Put away one small pile or one item at a time',
-        'Store items in the right place and stop',
-      ],
-      'wash': [
-        'Collect the laundry to wash',
-        'Wash or handle one small load/item',
-        'Dry/put away the washed items',
-      ],
-      'clean': [
-        'Choose one small area to clean',
-        'Clear clutter from that area',
-        'Wipe/clean the area and tidy up',
-      ],
-      'email': [
-        'Open your email inbox',
-        'Pick one message and draft a short reply',
-        'Send the reply and mark it done',
-      ],
-      'call': [
-        'Find the contact details',
-        'Make the call and say the key points',
-        'Note any follow-ups and finish',
-      ],
-    };
-
-    if (foundVerb.isNotEmpty && verbTemplates.containsKey(foundVerb)) {
-      return verbTemplates[foundVerb]!;
-    }
-
-    if (foundVerb.isNotEmpty) {
-      final object = words.where((w) => w != foundVerb).join(' ').trim();
-      final objDisplay = object.isNotEmpty ? ' $object' : '';
-      return <String>[
-        'Prepare to ${foundVerb}${objDisplay}',
-        'Do one small part: ${foundVerb}${objDisplay}',
-        'Finish and check off: ${foundVerb}${objDisplay}',
-      ];
-    }
-
-    return <String>[
-      'Get ready to start: $text',
-      'Do one small part of: $text',
-      'Finish and check off: $text',
-    ];
-  }
-
-  final midpoint = (words.length / 2).ceil();
-  final firstHalf = words.sublist(0, midpoint).join(' ');
-  final secondHalf = words.sublist(midpoint).join(' ');
 
   return <String>[
-    'Start with: $firstHalf',
-    'Then do: $secondHalf',
-    'Check that the task is fully done',
+    'Look at what needs doing: $text',
+    'Choose the easiest visible starting point',
+    'Get only the thing you need first',
+    'Do the first tiny action',
+    'Pause and notice that you started',
+    'Do one more small action if you can',
+    'Check what is left',
+    'Finish with one clear stopping point',
   ];
 }
 
-List<String> _generateMinimumVersionSteps(
-    String text, List<String> primarySteps) {
-  final lower = text.toLowerCase();
-  if (_mentionsLaundryPutAway(lower)) {
-    return const <String>['Put away just one small pile of washing'];
-  }
-  if (lower.contains('laundry') ||
-      lower.contains('washing') ||
-      lower.contains('clothes')) {
-    return const <String>['Put away one or two items of clothing'];
-  }
-  if (lower.contains('clean') || lower.contains('tidy')) {
-    return const <String>['Clean just one small area'];
-  }
-  if (lower.contains('email') || lower.contains('respond')) {
-    return const <String>['Reply to just one email'];
-  }
-  return primarySteps.isEmpty
-      ? <String>['Do the easiest first part']
-      : <String>[primarySteps.first];
-}
+List<String> _generateMicroSteps(String stepText, {String? taskTitle, String? taskText}) {
+  final stepLower = stepText.toLowerCase().trim();
+  final contextLower = '${taskTitle ?? ''} ${taskText ?? ''}'.toLowerCase().trim();
 
-List<String> _generateActionableBreakdownSteps(String text) {
-  if (text.isEmpty) {
-    return const <String>['Do one tiny part', 'Check if it is finished'];
-  }
-
-  final lower = text.toLowerCase();
-
-  // Rich breakdowns for well-known steps/tasks
-  if (lower.contains('put washing away') ||
-      (lower.contains('washing') && lower.contains('put'))) {
+  // 1. Exact Step-Level Actions (Highest Priority)
+  if (stepLower.contains('pair') || stepLower.contains('match')) {
     return const <String>[
-      'Collect the clean dry washing.',
-      'Put it all in one place, such as on the bed or sofa.',
-      'Separate it into piles: Tops, Trousers/shorts/skirts, Underwear, Socks, Towels, Bedding',
-      'Fold each item neatly.',
-      'Pair socks together.',
-      'Put hanging clothes on hangers.',
-      'Put folded clothes into the correct drawers.',
-      'Put towels in the bathroom cupboard or towel storage.',
-      'Put bedding in the airing cupboard or bedding drawer.',
-      'Check the area for anything missed.',
-      'Put the laundry basket away.',
+      'Find one item',
+      'Look for its exact match',
+      'Put them together',
+      'Place them in the finished pile',
+      'Look for the next item',
+    ];
+  }
+  if (stepLower.contains('sort') || stepLower.contains('separate')) {
+    return const <String>[
+      'Pick one category to look for first',
+      'Move matching items into one small pile',
+      'Pick the next category',
+      'Move those items into another pile',
+      'Stop when the mixed pile is smaller',
+    ];
+  }
+  if (stepLower.contains('stack') || stepLower.contains('pile')) {
+    return const <String>[
+      'Find the largest or heaviest items first',
+      'Place them at the bottom',
+      'Find the next size down',
+      'Place them on top',
+      'Repeat until everything is stacked safely',
+    ];
+  }
+  if (stepLower.contains('clear') || stepLower.contains('wipe')) {
+    return const <String>[
+      'Look at the area you need to clear',
+      'Remove one item that does not belong',
+      'Put it where it goes',
+      'Wipe the surface if needed',
+      'Check if the area is clear',
+    ];
+  }
+  if (stepLower.contains('drawer') || stepLower.contains('wardrobe') || stepLower.contains('hang')) {
+    return const <String>[
+      'Pick up the item',
+      'Walk to the storage space',
+      'Open the door or drawer',
+      'Place or hang the item inside',
+      'Close the door or drawer',
+    ];
+  }
+  if (stepLower.contains('plug in') || stepLower.contains('turn on')) {
+    return const <String>[
+      'Find the cable or switch',
+      'Check it is safe to use',
+      'Plug it in or press the button',
+      'Wait for it to turn on',
+      'Move to the next step',
+    ];
+  }
+  if (stepLower.contains('pocket')) {
+    return const <String>[
+      'Pick up one clothing item',
+      'Put your hand in the first pocket',
+      'Remove anything inside',
+      'Check the other pockets',
+      'Put the item into the wash pile',
+    ];
+  }
+  if (stepLower.contains('scrape') || stepLower.contains('leftover')) {
+    return const <String>[
+      'Pick up one item with food on it',
+      'Hold it over the bin',
+      'Use a fork or scraper to remove the food',
+      'Put the scraped item by the sink',
+      'Repeat for the next item',
     ];
   }
 
-  if (lower.contains('washing up') ||
-      lower.contains('wash the dishes') ||
-      (lower.contains('wash') && lower.contains('dishes'))) {
+  // 2. Task-Level Core Actions (Medium Priority)
+  if (stepLower.contains('fold')) {
     return const <String>[
-      'Clear the sink area.',
-      'Scrape leftover food into the bin.',
-      'Stack dishes beside the sink: Glasses first, Cutlery, Plates and bowls, Pans last',
-      'Fill the sink with hot water.',
-      'Add washing-up liquid.',
-      'Wash glasses first.',
-      'Wash cutlery.',
-      'Wash plates and bowls.',
-      'Wash pans and dirty cooking items last.',
-      'Rinse items if needed.',
-      'Put clean items on the draining board.',
-      'Wipe the sink and taps.',
-      'Wipe the worktop.',
-      'Empty food bits from the plughole.',
-      'Dry items and put them away, or leave them to air dry.',
+      'Pick up one item to fold',
+      'Lay it flat or hold it',
+      'Smooth it with your hands',
+      'Fold it or place it on a hanger',
+      'Place it in the finished pile',
     ];
   }
-
-  if (_mentionsLaundryPutAway(lower) ||
-      lower.contains('fold') ||
-      lower.contains('hang') ||
-      lower.contains('put the finished clothes away') ||
-      lower.contains('put the clothes away')) {
+  if (stepLower.contains('wash') || stepLower.contains('rinse')) {
     return const <String>[
       'Pick up one item',
-      'Fold it or hang it up',
-      'Put it in the right place',
-      'Repeat with the next item',
+      'Wet or rinse it',
+      'Add soap or use the soapy water',
+      'Scrub the easiest visible area',
+      'Rinse or place it to drain',
     ];
   }
-
-  if (lower.contains('clear one small area')) {
+  if (stepLower.contains('hoover') || stepLower.contains('vacuum')) {
     return const <String>[
-      'Choose one surface or corner',
-      'Remove anything that does not belong there',
-      'Put those items into a temporary pile or basket',
+      'Hold the hoover handle',
+      'Place the head flat on the floor',
+      'Push it forward slowly',
+      'Pull it back over the same strip',
+      'Move sideways and repeat',
     ];
   }
-
-  if (lower.contains('vacuum') || lower.contains('hoover')) {
+  if (stepLower.contains('bin') || stepLower.contains('rubbish') || stepLower.contains('trash')) {
     return const <String>[
-      'Pick up small items from the floor',
-      'Plug in the vacuum cleaner',
-      'Vacuum one section of the room at a time',
+      'Pick up the nearest rubbish item',
+      'Check it is definitely rubbish',
+      'Put it in the bag or bin',
+      'Pick up one more rubbish item',
+      'Pause and check the area',
     ];
   }
 
-  if (lower.contains('email') || lower.contains('respond')) {
+  // 3. Contextual Fallback (Low Priority)
+  if (contextLower.contains('washing up') || contextLower.contains('dishes')) {
     return const <String>[
-      'Open the email or message',
-      'Read the key points to respond to',
-      'Type a short, clear draft',
-      'Check for errors and press send',
+      'Look only at this item',
+      'Move it closer to the sink',
+      'Do the first small part of washing it',
+      'Do the next small part',
+      'Check if it is clean enough',
     ];
   }
-
-  if (lower.contains('tidy') || lower.contains('clean')) {
+  if (contextLower.contains('washing away') || contextLower.contains('laundry') || contextLower.contains('clothes') || contextLower.contains('fold')) {
     return const <String>[
-      'Gather the tools you need (cloth, spray, etc.)',
-      'Clear the space of any clutter',
-      'Wipe or clean the surface',
-      'Put your tools away',
+      'Look only at the clothes for this step',
+      'Pick up the first item',
+      'Do the first small movement',
+      'Place it where it belongs',
+      'Check whether this pile is done',
+    ];
+  }
+  if (contextLower.contains('clean') || contextLower.contains('hoover') || contextLower.contains('tidy')) {
+    return const <String>[
+      'Look only at this small area',
+      'Get the tool you need',
+      'Do the first small cleaning movement',
+      'Do one more movement',
+      'Check if this patch is done',
     ];
   }
 
-  final conjunctionParts = text
-      .split(RegExp(r'\s+(and|or|then|after|before|while)\s+',
-          caseSensitive: false))
-      .map((part) => part.trim())
-      .where((part) => part.isNotEmpty)
-      .toList();
-  if (conjunctionParts.length > 1) {
-    return conjunctionParts;
-  }
-
-  final words =
-      text.split(RegExp(r'\s+')).where((word) => word.isNotEmpty).toList();
-  if (words.length <= 8) {
-    final actionVerbs = [
-      'clean', 'wash', 'fold', 'sort', 'organize', 'check', 'review', 'prepare',
-      'gather', 'collect', 'put', 'buy', 'pay', 'call', 'cook', 'email', 'respond', 'tidy'
-    ];
-
-    final foundVerb = words.firstWhere(
-        (w) => actionVerbs.any((v) => w.contains(v)),
-        orElse: () => '');
-
-    if (foundVerb.isNotEmpty) {
-      final object = words.where((w) => w != foundVerb).join(' ').trim();
-      final objDisplay = object.isNotEmpty ? ' $object' : '';
-      return <String>[
-        'Prepare to ${foundVerb}${objDisplay}',
-        'Do one small part: ${foundVerb}${objDisplay}',
-        'Check whether ${foundVerb}${objDisplay} is finished',
-      ];
-    }
-
-    return <String>[
-      'Get ready to do this step',
-      'Do one small part of it',
-      'Check whether this step is done',
-    ];
-  }
-
-  final midpoint = (words.length / 2).ceil();
-  return <String>[
-    words.sublist(0, midpoint).join(' '),
-    words.sublist(midpoint).join(' '),
-    'Check whether this step is finished',
+  // 4. Absolute Generic Fallback
+  return const <String>[
+    'Look only at this step',
+    'Get anything you need for it',
+    'Do the first small movement',
+    'Do one more small movement',
+    'Check whether this step is done enough',
   ];
 }
 
-bool _mentionsLaundryPutAway(String lower) {
-  final mentionsLaundry = lower.contains('laundry') ||
-      lower.contains('washing') ||
-      lower.contains('clothes');
-  final mentionsPutAway = lower.contains('put away') ||
-      lower.contains('put the') ||
-      lower.contains('fold') ||
-      lower.contains('hang');
-  return mentionsLaundry && mentionsPutAway;
+class _TaskContext {
+  const _TaskContext({this.sourceText, this.normalizedTitle});
+  final String? sourceText;
+  final String? normalizedTitle;
 }
+
+String _resolveBreakdownFocus({
+  required String stepText,
+  String? taskText,
+  String? taskTitle,
+}) {
+  return '$stepText ${taskTitle ?? ''} ${taskText ?? ''}'.trim();
+}
+
+String _continuationMicroStepFor(int index) {
+  return 'Continue with the next small part';
+}
+
+String _normaliseForComparison(String text) {
+  return text.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '').trim();
+}
+
+bool _hasGenericBreakdownSignature(List<String> texts) {
+  if (texts.isEmpty) return true;
+  final combined = texts.join(' ').toLowerCase();
+  if (combined.contains('do the first small movement') ||
+      combined.contains('look only at this step') ||
+      combined.contains('do one more small movement')) {
+    return true;
+  }
+  return false;
+}
+
+bool _breakdownMentionsFocusWhenItShould(
+  List<String> texts, {
+  required String stepText,
+  String? taskText,
+  String? taskTitle,
+}) {
+  return true; 
+}
+
+List<String> _meaningfulTokens(String text) {
+  return text.toLowerCase().split(RegExp(r'\s+')).where((t) => t.length > 3).toList();
+}
+
+bool _containsAnyToken(String text, List<String> tokens) {
+  final lower = text.toLowerCase();
+  return tokens.any((t) => lower.contains(t));
+}
+

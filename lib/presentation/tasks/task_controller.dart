@@ -15,6 +15,8 @@ class TaskViewState {
     this.minimumVersion = const <TaskStepModel>[],
     this.sideQuests = const <SideQuestModel>[],
     this.showMinimumVersion = false,
+    this.showSideQuests = true,
+    this.focusedSectionId,
   });
 
   final bool loading;
@@ -23,6 +25,8 @@ class TaskViewState {
   final List<TaskStepModel> minimumVersion;
   final List<SideQuestModel> sideQuests;
   final bool showMinimumVersion;
+  final bool showSideQuests;
+  final String? focusedSectionId;
 
   TaskViewState copyWith({
     bool? loading,
@@ -31,6 +35,9 @@ class TaskViewState {
     List<TaskStepModel>? minimumVersion,
     List<SideQuestModel>? sideQuests,
     bool? showMinimumVersion,
+    bool? showSideQuests,
+    String? focusedSectionId,
+    bool clearFocusedSection = false,
   }) {
     return TaskViewState(
       loading: loading ?? this.loading,
@@ -39,6 +46,10 @@ class TaskViewState {
       minimumVersion: minimumVersion ?? this.minimumVersion,
       sideQuests: sideQuests ?? this.sideQuests,
       showMinimumVersion: showMinimumVersion ?? this.showMinimumVersion,
+      showSideQuests: showSideQuests ?? this.showSideQuests,
+      focusedSectionId: clearFocusedSection
+          ? null
+          : (focusedSectionId ?? this.focusedSectionId),
     );
   }
 }
@@ -83,6 +94,18 @@ class TaskController extends StateNotifier<TaskViewState> {
     state = state.copyWith(showMinimumVersion: value);
   }
 
+  void toggleSideQuests(bool value) {
+    state = state.copyWith(showSideQuests: value);
+  }
+
+  void setFocusedSection(String sectionId) {
+    state = state.copyWith(focusedSectionId: sectionId);
+  }
+
+  void clearFocusedSection() {
+    state = state.copyWith(clearFocusedSection: true);
+  }
+
   void replaceSteps(List<TaskStepModel> steps) {
     state = state.copyWith(steps: steps);
   }
@@ -92,23 +115,25 @@ class TaskController extends StateNotifier<TaskViewState> {
     required List<TaskStepModel> substeps,
     required bool isMinimumVersion,
   }) {
+    if (substeps.isEmpty) return;
+
     if (isMinimumVersion) {
       final current = state.minimumVersion;
-      final index = current.indexWhere((s) => s.id == stepId);
-      if (index != -1) {
-        final updated = List<TaskStepModel>.from(current);
-        updated.removeAt(index);
-        updated.insertAll(index, substeps);
-        state = state.copyWith(minimumVersion: updated);
+      final existingIds = current.map((step) => step.id).toSet();
+      final additions =
+          substeps.where((step) => !existingIds.contains(step.id)).toList();
+      if (additions.isNotEmpty) {
+        state = state.copyWith(
+            minimumVersion: <TaskStepModel>[...current, ...additions]);
       }
     } else {
       final current = state.steps;
-      final index = current.indexWhere((s) => s.id == stepId);
-      if (index != -1) {
-        final updated = List<TaskStepModel>.from(current);
-        updated.removeAt(index);
-        updated.insertAll(index, substeps);
-        state = state.copyWith(steps: updated);
+      final existingIds = current.map((step) => step.id).toSet();
+      final additions =
+          substeps.where((step) => !existingIds.contains(step.id)).toList();
+      if (additions.isNotEmpty) {
+        state =
+            state.copyWith(steps: <TaskStepModel>[...current, ...additions]);
       }
     }
   }
@@ -133,6 +158,17 @@ class TaskController extends StateNotifier<TaskViewState> {
       steps: updatedSteps,
       minimumVersion: updatedMinimumVersion,
     );
+  }
+
+  void updateSideQuestStatus(String sideQuestId, String status) {
+    final updatedSideQuests = state.sideQuests.map((quest) {
+      if (quest.id == sideQuestId) {
+        return quest.copyWith(status: status);
+      }
+      return quest;
+    }).toList();
+
+    state = state.copyWith(sideQuests: updatedSideQuests);
   }
 
   StepStatus _statusFromString(String status) {

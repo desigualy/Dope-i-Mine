@@ -127,6 +127,37 @@ class ProfileRepositoryImpl {
     return ProfileMapper.fromSensoryRow(row);
   }
 
+  Future<void> updateAssistantName(String userId, String name) async {
+    await _client.from('assistant_identity_settings').upsert(<String, dynamic>{
+      'user_id': userId,
+      'assistant_display_name': name,
+      'updated_at': DateTime.now().toIso8601String(),
+    });
+  }
+
+  Future<void> updateSensorySettings(String userId, {
+    bool? reducedAnimation,
+    bool? largeText,
+    bool? soundEnabled,
+    bool? softColors,
+    String? praiseLevel,
+    bool? iconMode,
+    bool? reduceSurprises,
+  }) async {
+    final updates = <String, dynamic>{
+      'updated_at': DateTime.now().toIso8601String(),
+    };
+    if (reducedAnimation != null) updates['reduced_animation'] = reducedAnimation;
+    if (largeText != null) updates['large_text'] = largeText;
+    if (soundEnabled != null) updates['sound_enabled'] = soundEnabled;
+    if (softColors != null) updates['soft_colors'] = softColors;
+    if (praiseLevel != null) updates['praise_level'] = praiseLevel;
+    if (iconMode != null) updates['icon_mode'] = iconMode;
+    if (reduceSurprises != null) updates['reduce_surprises'] = reduceSurprises;
+
+    await _client.from('sensory_settings').update(updates).eq('user_id', userId);
+  }
+
   String _modeToDb(SupportMode mode) {
     return switch (mode) {
       SupportMode.adhd => 'adhd',

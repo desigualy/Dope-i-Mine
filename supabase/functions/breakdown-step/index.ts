@@ -1,156 +1,86 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
-console.log("breakdown-step function started")
-
-serve(async (req) => {
-  const corsHeaders = {
+const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  }
+}
 
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
-  }
+serve(async (req) => {
+    if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
-  try {
-    const { stepText, mode, energyLevel, stressLevel } = await req.json()
-
-    // Generate substeps for further breakdown
-    const substeps = generateSubsteps(stepText, mode, energyLevel, stressLevel)
-
-    const response = {
-      substeps,
+    try {
+        const { stepText, taskText, taskTitle } = await req.json()
+        return new Response(
+            JSON.stringify({
+                substeps: generateMicroSteps(String(stepText ?? ''), String(taskText ?? ''), String(taskTitle ?? '')).map((text) => ({ text })),
+            }),
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 },
+        )
+    } catch (error) {
+        console.error('Error in breakdown-step:', error)
+        return new Response(JSON.stringify({ error: error.message }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 500,
+        })
     }
-
-    return new Response(
-      JSON.stringify(response),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
-      },
-    )
-  } catch (error) {
-    console.error('Error in breakdown-step:', error)
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500,
-      },
-    )
-  }
 })
 
-function generateSubsteps(stepText: string, mode: string, energyLevel: string, stressLevel: string): any[] {
-  const text = stepText.toLowerCase().trim()
+function generateMicroSteps(stepText: string, taskText: string, taskTitle: string): string[] {
+    const stepLower = stepText.toLowerCase().trim()
+    const contextLower = `${taskTitle} ${taskText}`.toLowerCase().trim()
 
-  if ((text.includes('washing') || text.includes('laundry') || text.includes('clothes')) &&
-      (text.includes('put away') || text.includes('fold') || text.includes('hang'))) {
-    return [
-      { text: 'Pick up one item' },
-      { text: 'Fold it or hang it up' },
-      { text: 'Put it in the right place' },
-      { text: 'Repeat with the next item' },
-    ]
-  }
-
-  // Handle specific common patterns
-  if (text.includes('sort laundry')) {
-    return [
-      { text: 'Separate whites from colors' },
-      { text: 'Check care labels for washing instructions' },
-      { text: 'Sort by fabric type (delicates, towels, etc.)' },
-    ]
-  }
-
-  if (text.includes('load washing machine')) {
-    return [
-      { text: 'Add appropriate amount of detergent' },
-      { text: 'Place laundry evenly in machine' },
-      { text: 'Select correct wash cycle and temperature' },
-    ]
-  }
-
-  if (text.includes('clean surfaces')) {
-    return [
-      { text: 'Choose appropriate cleaning product' },
-      { text: 'Spray surface and let sit briefly' },
-      { text: 'Wipe with clean cloth or paper towel' },
-    ]
-  }
-
-  if (text.includes('respond to emails')) {
-    return [
-      { text: 'Read email carefully' },
-      { text: 'Draft clear, concise response' },
-      { text: 'Proofread before sending' },
-    ]
-  }
-
-  if (text.includes('tidy') || text.includes('clean room')) {
-    return [
-      { text: 'Pick up items from the floor' },
-      { text: 'Put things back in their designated spots' },
-      { text: 'Wipe down any dusty surfaces' },
-    ]
-  }
-
-  if (text.includes('cook') || text.includes('prepare meal')) {
-    return [
-      { text: 'Gather all ingredients and tools' },
-      { text: 'Prepare the ingredients (chop, wash, etc.)' },
-      { text: 'Follow the cooking steps' },
-      { text: 'Serve and tidy the kitchen' },
-    ]
-  }
-
-  // Generic breakdown based on action verbs
-  const actionVerbs = ['clean', 'wash', 'fold', 'sort', 'organize', 'check', 'review', 'prepare', 'gather', 'collect', 'tidy', 'vacuum', 'hoover']
-  const words = text.split(/\s+/)
-  const actions = words.filter(word => actionVerbs.some(verb => word.includes(verb)))
-
-  if (actions.length > 0) {
-    // If we have a verb, try to create a 3-step breakdown
-    const verb = actions[0]
-    const object = words.filter(w => !actionVerbs.includes(w)).join(' ')
-    return [
-      { text: `Get ready to ${verb} ${object}`.trim() },
-      { text: `Start ${verb}ing ${object}`.trim() },
-      { text: `Finish and check ${verb} ${object}`.trim() },
-    ]
-  }
-
-  // Split long sentences into smaller parts
-  if (text.length > 40) {
-    const midPoint = Math.floor(text.length / 2)
-    const splitPoint = text.indexOf(' ', midPoint)
-    if (splitPoint > 0) {
-      return [
-        { text: text.substring(0, splitPoint).trim() },
-        { text: text.substring(splitPoint).trim() },
-      ]
+    // 1. Exact Step-Level Actions (Highest Priority)
+    if (stepLower.includes('pair') || stepLower.includes('match')) {
+        return ['Find one item', 'Look for its exact match', 'Put them together', 'Place them in the finished pile', 'Look for the next item']
     }
-  }
-
-  // Default: split by conjunctions
-  const parts = text.split(/\s+(and|or|then|after|before|while)\s+/i)
-  if (parts.length > 1) {
-    const result = []
-    for (let i = 0; i < parts.length; i += 1) {
-      const part = parts[i].trim()
-      const conjunctions = ['and', 'or', 'then', 'after', 'before', 'while']
-      if (part && !conjunctions.includes(part.toLowerCase())) {
-        result.push({ text: part })
-      }
+    if (stepLower.includes('sort') || stepLower.includes('separate')) {
+        return ['Pick one category to look for first', 'Move matching items into one small pile', 'Pick the next category', 'Move those items into another pile', 'Stop when the mixed pile is smaller']
     }
-    if (result.length > 1) return result
-  }
+    if (stepLower.includes('stack') || stepLower.includes('pile')) {
+        return ['Find the largest or heaviest items first', 'Place them at the bottom', 'Find the next size down', 'Place them on top', 'Repeat until everything is stacked safely']
+    }
+    if (stepLower.includes('clear') || stepLower.includes('wipe')) {
+        return ['Look at the area you need to clear', 'Remove one item that does not belong', 'Put it where it goes', 'Wipe the surface if needed', 'Check if the area is clear']
+    }
+    if (stepLower.includes('drawer') || stepLower.includes('wardrobe') || stepLower.includes('hang')) {
+        return ['Pick up the item', 'Walk to the storage space', 'Open the door or drawer', 'Place or hang the item inside', 'Close the door or drawer']
+    }
+    if (stepLower.includes('plug in') || stepLower.includes('turn on')) {
+        return ['Find the cable or switch', 'Check it is safe to use', 'Plug it in or press the button', 'Wait for it to turn on', 'Move to the next step']
+    }
+    if (stepLower.includes('pocket')) {
+        return ['Pick up one clothing item', 'Put your hand in the first pocket', 'Remove anything inside', 'Check the other pockets', 'Put the item into the wash pile']
+    }
+    if (stepLower.includes('scrape') || stepLower.includes('leftover')) {
+        return ['Pick up one item with food on it', 'Hold it over the bin', 'Use a fork or scraper to remove the food', 'Put the scraped item by the sink', 'Repeat for the next item']
+    }
+    
+    // 2. Task-Level Core Actions (Medium Priority)
+    if (stepLower.includes('fold')) {
+        return ['Pick up one item to fold', 'Lay it flat or hold it', 'Smooth it with your hands', 'Fold it or place it on a hanger', 'Place it in the finished pile']
+    }
+    if (stepLower.includes('wash') || stepLower.includes('rinse')) {
+        return ['Pick up one item', 'Wet or rinse it', 'Add soap or use the soapy water', 'Scrub the easiest visible area', 'Rinse or place it to drain']
+    }
+    if (stepLower.includes('hoover') || stepLower.includes('vacuum')) {
+        return ['Hold the hoover handle', 'Place the head flat on the floor', 'Push it forward slowly', 'Pull it back over the same strip', 'Move sideways and repeat']
+    }
+    if (stepLower.includes('bin') || stepLower.includes('rubbish') || stepLower.includes('trash')) {
+        return ['Pick up the nearest rubbish item', 'Check it is definitely rubbish', 'Put it in the bag or bin', 'Pick up one more rubbish item', 'Pause and check the area']
+    }
 
-  // Ultimate fallback: just return the original step broken into tiny pieces
-  return [
-    { text: 'Prepare for the task' },
-    { text: `Take one small step: ${text}` },
-    { text: 'Complete and review' },
-  ]
+    // 3. Contextual Fallback (Low Priority)
+    if (contextLower.includes('washing up') || contextLower.includes('dishes')) {
+        return ['Look only at this item', 'Move it closer to the sink', 'Do the first small part of washing it', 'Do the next small part', 'Check if it is clean enough']
+    }
+    if (contextLower.includes('washing away') || contextLower.includes('laundry') || contextLower.includes('clothes') || contextLower.includes('fold')) {
+        return ['Look only at the clothes for this step', 'Pick up the first item', 'Do the first small movement', 'Place it where it belongs', 'Check whether this pile is done']
+    }
+    if (contextLower.includes('clean') || contextLower.includes('hoover') || contextLower.includes('tidy')) {
+        return ['Look only at this small area', 'Get the tool you need', 'Do the first small cleaning movement', 'Do one more movement', 'Check if this patch is done']
+    }
+
+    // 4. Absolute Generic Fallback
+    return ['Look only at this step', 'Get anything you need for it', 'Do the first small movement', 'Do one more small movement', 'Check whether this step is done enough']
 }

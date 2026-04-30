@@ -69,4 +69,33 @@ class RoutineRepositoryImpl {
             Map<String, dynamic>.from(row as Map)))
         .toList();
   }
+
+  Future<void> completeStep({
+    required String userId,
+    required String routineId,
+    required String stepId,
+  }) async {
+    await _client.from('progress_logs').insert(<String, dynamic>{
+      'user_id': userId,
+      'task_id': null, // Routines use their own context
+      'step_id': stepId,
+      'event_type': 'routine_step_completed',
+      'metadata': <String, dynamic>{
+        'routine_id': routineId,
+      },
+    });
+  }
+
+  Future<List<RoutineModel>> getRoutinesByAgeBand(String ageBand) async {
+    final rows = await _client
+        .from('routines')
+        .select()
+        .eq('age_band', ageBand)
+        .eq('is_template', true);
+    
+    return (rows as List<dynamic>)
+        .map((dynamic row) =>
+            RoutineMapper.fromRoutineRow(Map<String, dynamic>.from(row as Map)))
+        .toList();
+  }
 }

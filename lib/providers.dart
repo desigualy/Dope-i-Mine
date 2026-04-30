@@ -19,6 +19,7 @@ import 'data/repositories/routine_repository_impl.dart';
 import 'data/repositories/side_quest_repository_impl.dart';
 import 'data/repositories/task_repository_impl.dart';
 import 'data/repositories/voice_settings_repository_impl.dart';
+import 'data/repositories/reward_repository_impl.dart';
 
 final supabaseProvider = Provider<SupabaseClient?>((ref) {
   try {

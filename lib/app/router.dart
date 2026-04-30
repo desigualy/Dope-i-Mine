@@ -31,6 +31,7 @@ import '../presentation/routines/routine_run_screen.dart';
 import '../presentation/settings/companion_screen.dart';
 import '../presentation/settings/pronunciation_settings_screen.dart';
 import '../presentation/settings/voice_profile_screen.dart';
+import '../presentation/settings/settings_screen.dart';
 import '../presentation/tasks/task_breakdown_screen.dart';
 import '../presentation/tasks/task_input_screen.dart';
 import '../presentation/tasks/task_summary_screen.dart';
@@ -165,6 +166,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: '/caregiver/assigned-routines',
         builder: (_, __) => const CaregiverAssignedRoutinesScreen()),
+    GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
     GoRoute(
         path: '/settings/voice',
         builder: (_, __) => const VoiceProfileScreen()),

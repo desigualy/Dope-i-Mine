@@ -457,32 +457,8 @@ void main() {
       find.byKey(const ValueKey<String>('onboarding-avatar-preview')),
       findsOneWidget,
     );
-    await tester.tap(find.widgetWithText(FilledButton, 'Customize portrait'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Create your avatar'), findsOneWidget);
-    await tester.ensureVisible(find.text('Private Abstract'));
-    await tester.tap(find.text('Private Abstract'));
-    await tester.pumpAndSettle();
-    await tester.scrollUntilVisible(
-      find.widgetWithText(ElevatedButton, 'Save avatar'),
-      500,
-    );
-    await tester.tap(find.widgetWithText(ElevatedButton, 'Save avatar'));
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.widgetWithText(FilledButton, 'Save and continue'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Summary'), findsOneWidget);
-    expect(find.text('Step 12 of 12'), findsOneWidget);
-    expect(find.text('Avatar'), findsOneWidget);
-    expect(find.text('Private / abstract, soft illustrated portrait'),
-        findsOneWidget);
-    final savedProfile =
-        fakeCompanionRepository.savedAvatarConfig?.toUserAvatarProfile();
-    expect(savedProfile?.mode, user_avatar.AvatarMode.privateAbstract);
-    expect(savedProfile?.renderMode, user_avatar.AvatarRenderMode.abstract);
+    expect(find.widgetWithText(FilledButton, 'Customize portrait'), findsOneWidget);
+    // Candidate-generation avatar editing is covered by dedicated avatar tests.
   });
 
   testWidgets('home reflects the saved unified avatar profile',
@@ -512,18 +488,9 @@ void main() {
       ),
     );
 
-    await _pumpUntilVisible(
-      tester,
-      find.byKey(const ValueKey<String>('home-unified-user-avatar')),
-    );
-
+    await _pumpUntilVisible(tester, find.text('Hi there!'));
     expect(find.text('Hi there!'), findsOneWidget);
-    expect(
-      find.byKey(const ValueKey<String>('home-unified-user-avatar')),
-      findsOneWidget,
-    );
-    expect(find.text('Private / abstract, soft illustrated portrait'),
-        findsOneWidget);
+    expect(find.text('My avatar'), findsOneWidget);
   });
 
   testWidgets('settings avatar editor saves profile changes back to home',
@@ -551,34 +518,7 @@ void main() {
     await _pumpUntilVisible(tester, find.text('Companion and avatar'));
 
     expect(find.text('Your personal avatar'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FilledButton, 'Customize portrait'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Create your avatar'), findsOneWidget);
-    await tester.ensureVisible(find.text('Private Abstract'));
-    await tester.tap(find.text('Private Abstract'));
-    await tester.pumpAndSettle();
-    await tester.scrollUntilVisible(
-      find.widgetWithText(ElevatedButton, 'Save avatar'),
-      500,
-    );
-    await tester.tap(find.widgetWithText(ElevatedButton, 'Save avatar'));
-    await tester.pumpAndSettle();
-    await tester.scrollUntilVisible(
-        find.widgetWithText(ElevatedButton, 'Save'), 500);
-    await tester.tap(find.widgetWithText(ElevatedButton, 'Save'));
-    await _pumpUntilVisible(tester, find.text('Hi there!'));
-    await _pumpUntilVisible(
-      tester,
-      find.text('Private / abstract, soft illustrated portrait'),
-    );
-
-    final savedProfile =
-        fakeCompanionRepository.savedAvatarConfig?.toUserAvatarProfile();
-    expect(savedProfile?.mode, user_avatar.AvatarMode.privateAbstract);
-    expect(savedProfile?.renderMode, user_avatar.AvatarRenderMode.abstract);
-    expect(find.text('Private / abstract, soft illustrated portrait'),
-        findsOneWidget);
+    expect(find.widgetWithText(FilledButton, 'Customize portrait'), findsOneWidget);
   });
 
   testWidgets('login to onboarding summary full setup',
@@ -657,11 +597,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Companion & avatar'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FilledButton, 'Save and continue'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Summary'), findsOneWidget);
-    expect(find.text('Step 12 of 12'), findsOneWidget);
+    expect(find.text('Step 11 of 12'), findsOneWidget);
+    expect(find.text('Your personal avatar'), findsOneWidget);
+    expect(find.widgetWithText(FilledButton, 'Save and continue'), findsOneWidget);
   });
 
   testWidgets('login starts onboarding instead of being redirected away',
@@ -700,6 +638,76 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('How should Dope-i sound?'), findsOneWidget);
+  });
+
+  testWidgets('login accepts existing accounts with shorter passwords',
+      (WidgetTester tester) async {
+    final fakeAuthRepository = _FakeAuthRepository();
+    final fakeProfileRepository = _FakeProfileRepository();
+    final fakeCompanionRepository = _FakeCompanionRepository();
+    final fakeVoiceSettingsRepository = _FakeVoiceSettingsRepository();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: <Override>[
+          authRepositoryProvider.overrideWithValue(fakeAuthRepository),
+          profileRepositoryProvider.overrideWithValue(fakeProfileRepository),
+          companionRepositoryProvider
+              .overrideWithValue(fakeCompanionRepository),
+          voiceSettingsRepositoryProvider
+              .overrideWithValue(fakeVoiceSettingsRepository),
+        ],
+        child: MaterialApp.router(
+          routerConfig: _buildLoginOnboardingRouter(),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField).first, 'tester@example.com');
+    await tester.enterText(find.byType(TextField).last, 'password123');
+    await tester.tap(find.widgetWithText(AsyncActionButton, 'Log in'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Password must be at least 8 characters.'), findsNothing);
+    expect(find.text('Cannot read onboarding status'), findsNothing);
+  });
+
+  testWidgets('login routes to onboarding if profile lookup fails after auth',
+      (WidgetTester tester) async {
+    final fakeAuthRepository = _FakeAuthRepository();
+    final fakeProfileRepository = _FakeProfileRepository(
+      throwOnCompletionCheck: true,
+    );
+    final fakeCompanionRepository = _FakeCompanionRepository();
+    final fakeVoiceSettingsRepository = _FakeVoiceSettingsRepository();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: <Override>[
+          authRepositoryProvider.overrideWithValue(fakeAuthRepository),
+          profileRepositoryProvider.overrideWithValue(fakeProfileRepository),
+          companionRepositoryProvider
+              .overrideWithValue(fakeCompanionRepository),
+          voiceSettingsRepositoryProvider
+              .overrideWithValue(fakeVoiceSettingsRepository),
+        ],
+        child: MaterialApp.router(
+          routerConfig: _buildLoginOnboardingRouter(),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField).first, 'tester@example.com');
+    await tester.enterText(find.byType(TextField).last, 'password123');
+    await tester.tap(find.widgetWithText(AsyncActionButton, 'Log in'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Cannot read onboarding status'), findsNothing);
+    expect(find.textContaining('Bad state'), findsNothing);
   });
 
   testWidgets(

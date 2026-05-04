@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../domain/avatar/avatar_generation_batch_request.dart';
 import '../../domain/avatar/avatar_generation_batch_result.dart';
 import 'avatar_batch_generator.dart';
+import 'local_avatar_batch_generator.dart';
 
 class SupabaseAvatarBatchGenerator implements AvatarBatchGenerator {
   const SupabaseAvatarBatchGenerator(this.client);
@@ -13,29 +14,35 @@ class SupabaseAvatarBatchGenerator implements AvatarBatchGenerator {
   Future<AvatarGenerationBatchResult> generateBatch(
     AvatarGenerationBatchRequest request,
   ) async {
-    final response = await client.functions.invoke(
-      'generate-avatar-candidates',
-      body: request.toJson(),
-    );
-
-    final data = response.data;
-
-    if (data is! Map) {
-      throw const AvatarBatchGenerationException(
-        'Avatar candidate service returned an invalid response.',
+    try {
+      final response = await client.functions.invoke(
+        'generate-avatar-candidates',
+        body: request.toJson(),
       );
-    }
 
-    final result = AvatarGenerationBatchResult.fromJson(
-      data.cast<String, dynamic>(),
-    );
+      final data = response.data;
 
-    if (result.candidates.isEmpty) {
-      throw const AvatarBatchGenerationException(
-        'Avatar candidate service returned no candidates.',
+      if (data is! Map) {
+        throw const AvatarBatchGenerationException(
+          'Avatar candidate service returned an invalid response.',
+        );
+      }
+
+      final result = AvatarGenerationBatchResult.fromJson(
+        data.cast<String, dynamic>(),
       );
-    }
 
-    return result;
+      if (result.candidates.isEmpty) {
+        throw const AvatarBatchGenerationException(
+          'Avatar candidate service returned no candidates.',
+        );
+      }
+
+      return result;
+    } catch (_) {
+      // Paid/remote providers can fail because of quota, billing, secrets,
+      // timeout, or no network. Avatar creation must still work.
+      return const LocalAvatarBatchGenerator().generateBatch(request);
+    }
   }
 }

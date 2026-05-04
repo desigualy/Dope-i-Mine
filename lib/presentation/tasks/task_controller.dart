@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../data/repositories/task_repository_impl.dart';
+import '../../domain/rewards/points_engine.dart';
+import '../../domain/rewards/reward_points.dart';
 import '../../domain/tasks/task_model.dart';
 import '../../domain/tasks/task_state_snapshot.dart';
 import '../../domain/tasks/task_step_model.dart';
@@ -17,6 +18,7 @@ class TaskViewState {
     this.showMinimumVersion = false,
     this.showSideQuests = true,
     this.focusedSectionId,
+    this.missionRewarded = false,
   });
 
   final bool loading;
@@ -27,6 +29,7 @@ class TaskViewState {
   final bool showMinimumVersion;
   final bool showSideQuests;
   final String? focusedSectionId;
+  final bool missionRewarded;
 
   TaskViewState copyWith({
     bool? loading,
@@ -37,6 +40,7 @@ class TaskViewState {
     bool? showMinimumVersion,
     bool? showSideQuests,
     String? focusedSectionId,
+    bool? missionRewarded,
     bool clearFocusedSection = false,
   }) {
     return TaskViewState(
@@ -50,6 +54,7 @@ class TaskViewState {
       focusedSectionId: clearFocusedSection
           ? null
           : (focusedSectionId ?? this.focusedSectionId),
+      missionRewarded: missionRewarded ?? this.missionRewarded,
     );
   }
 }
@@ -62,7 +67,7 @@ final taskControllerProvider =
 class TaskController extends StateNotifier<TaskViewState> {
   TaskController(this._repository) : super(const TaskViewState());
 
-  final TaskRepositoryImpl _repository;
+  final dynamic _repository;
 
   Future<void> createTask({
     required String userId,
@@ -83,6 +88,7 @@ class TaskController extends StateNotifier<TaskViewState> {
         minimumVersion: result.minimumVersion,
         sideQuests: result.sideQuests,
         showMinimumVersion: false,
+        missionRewarded: false,
       );
     } catch (_) {
       state = state.copyWith(loading: false);
@@ -108,6 +114,10 @@ class TaskController extends StateNotifier<TaskViewState> {
 
   void replaceSteps(List<TaskStepModel> steps) {
     state = state.copyWith(steps: steps);
+  }
+
+  void replaceSideQuests(List<SideQuestModel> sideQuests) {
+    state = state.copyWith(sideQuests: sideQuests);
   }
 
   void replaceStepWithSubsteps({
@@ -169,6 +179,44 @@ class TaskController extends StateNotifier<TaskViewState> {
     }).toList();
 
     state = state.copyWith(sideQuests: updatedSideQuests);
+  }
+
+  List<SideQuestModel> unlockEarnedSideQuests(List<TaskStepModel> rewardSteps) {
+    final earnedCount = PointsEngine.earnedSideQuestCount(rewardSteps);
+    if (earnedCount <= 0 || state.sideQuests.isEmpty) {
+      return const <SideQuestModel>[];
+    }
+
+    var unlockedOrFinishedCount = 0;
+    final newlyUnlocked = <SideQuestModel>[];
+    final updatedSideQuests = state.sideQuests.map((quest) {
+      final alreadyEarned = quest.status == 'available' ||
+          quest.status == 'accepted' ||
+          quest.status == 'completed';
+      if (alreadyEarned) {
+        unlockedOrFinishedCount++;
+        return quest;
+      }
+      if (quest.status == 'locked' && unlockedOrFinishedCount < earnedCount) {
+        unlockedOrFinishedCount++;
+        final unlocked = quest.copyWith(
+          status: 'available',
+          rewardXp: RewardPoints.sideQuestCompleted,
+        );
+        newlyUnlocked.add(unlocked);
+        return unlocked;
+      }
+      return quest;
+    }).toList();
+
+    if (newlyUnlocked.isNotEmpty) {
+      state = state.copyWith(sideQuests: updatedSideQuests);
+    }
+    return newlyUnlocked;
+  }
+
+  void markMissionRewarded() {
+    state = state.copyWith(missionRewarded: true);
   }
 
   StepStatus _statusFromString(String status) {

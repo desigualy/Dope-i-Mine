@@ -26,6 +26,7 @@ import '../presentation/onboarding/welcome_screen.dart';
 import '../presentation/progress/progress_screen.dart';
 import '../presentation/reminders/reminder_settings_screen.dart';
 import '../presentation/routines/routine_builder_screen.dart';
+import '../presentation/routines/routine_detail_screen.dart';
 import '../presentation/routines/routine_list_screen.dart';
 import '../presentation/routines/routine_run_screen.dart';
 import '../presentation/settings/companion_screen.dart';
@@ -152,6 +153,12 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: '/routines/new',
         builder: (_, __) => const RoutineBuilderScreen()),
+    GoRoute(
+        path: '/routines/edit',
+        builder: (_, __) => const RoutineBuilderScreen(editing: true)),
+    GoRoute(
+        path: '/routines/detail',
+        builder: (_, __) => const RoutineDetailScreen()),
     GoRoute(
         path: '/routines/run', builder: (_, __) => const RoutineRunScreen()),
     GoRoute(

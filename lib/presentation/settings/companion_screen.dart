@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/widgets/primary_scaffold.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../data/avatar/avatar_batch_generator.dart';
+import '../../data/avatar/local_avatar_batch_generator.dart';
+import '../../data/avatar/supabase_avatar_batch_generator.dart';
+import '../../data/local/local_avatar_store.dart';
 import '../../domain/avatar/user_avatar_profile.dart' as avatar;
 import '../../domain/companion/avatar_config_model.dart';
 import '../../providers.dart';
-import '../avatar/avatar_creator_screen.dart';
+import '../avatar/avatar_candidate_selector_screen.dart';
 import '../avatar/avatar_preview_card.dart';
 import '../avatar/current_user_avatar_provider.dart';
 
@@ -163,11 +169,18 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> {
                         companionId: selectedCompanionId!,
                       );
                     }
-                    await repo.saveAvatarConfig(
-                      userId: authUser.id,
-                      config: AvatarConfigModel.fromUserAvatarProfile(
-                          userAvatarProfile),
+                    final config = AvatarConfigModel.fromUserAvatarProfile(
+                      userAvatarProfile,
                     );
+                    await ref.read(localAvatarStoreProvider).saveAvatarConfig(config);
+                    try {
+                      await repo.saveAvatarConfig(
+                        userId: authUser.id,
+                        config: config,
+                      );
+                    } catch (error) {
+                      debugPrint('Avatar saved locally; cloud sync can retry later: $error');
+                    }
                     ref.invalidate(currentUserAvatarConfigProvider);
                     if (mounted) Navigator.pop(context);
                   },
@@ -191,16 +204,30 @@ class _CompanionScreenState extends ConsumerState<CompanionScreen> {
   Future<void> _openAvatarCreator() async {
     final edited = await Navigator.of(context).push<avatar.UserAvatarProfile>(
       MaterialPageRoute<avatar.UserAvatarProfile>(
-        builder: (_) => AvatarCreatorScreen(initialProfile: userAvatarProfile),
+        builder: (_) => AvatarCandidateSelectorScreen(
+          generator: _avatarGenerator(),
+          initialProfile: userAvatarProfile,
+        ),
       ),
     );
     if (edited == null || !mounted) return;
 
     final config = AvatarConfigModel.fromUserAvatarProfile(edited);
+    await ref.read(localAvatarStoreProvider).saveAvatarConfig(config);
     setState(() {
       userAvatarProfile = edited;
       avatarStyle = config.normalizedAvatarStyle;
       avatarPalette = config.normalizedAvatarPalette;
     });
+    ref.invalidate(currentUserAvatarConfigProvider);
+  }
+
+  AvatarBatchGenerator _avatarGenerator() {
+    try {
+      final client = Supabase.instance.client;
+      return SupabaseAvatarBatchGenerator(client);
+    } catch (_) {
+      return const LocalAvatarBatchGenerator();
+    }
   }
 }

@@ -64,8 +64,8 @@ class AvatarGenerationCandidate {
       variationStrength: _variationFromName(
         json['variationStrength'] as String?,
       ),
-      providerId: json['providerId'] as String? ?? json['provider'] as String?,
-      revisedPrompt: json['revisedPrompt'] as String? ?? json['prompt'] as String?,
+      providerId: json['providerId'] as String?,
+      revisedPrompt: json['revisedPrompt'] as String?,
       warnings: (json['warnings'] as List?)?.cast<String>() ?? <String>[],
       metadata: (json['metadata'] as Map?)?.cast<String, dynamic>() ??
           <String, dynamic>{},

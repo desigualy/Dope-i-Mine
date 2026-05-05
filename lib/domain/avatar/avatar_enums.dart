@@ -73,6 +73,28 @@ enum AvatarHairLength {
   long,
 }
 
+enum AvatarHairStyle {
+  natural,
+  shortCurls,
+  shoulderLengthCurls,
+  fullCurlyAfro,
+  curlyAfroWithSidePart,
+  longRinglets,
+  locs,
+  twists,
+  braids,
+  protectiveStyle,
+}
+
+enum AvatarFacialHair {
+  none,
+  lightStubble,
+  moustache,
+  goatee,
+  shortBeard,
+  fullBeard,
+}
+
 enum AvatarFaceShape {
   oval,
   round,
@@ -191,7 +213,10 @@ class AvatarPalettes {
     Color(0xFF2A1710),
     Color(0xFF5C4033),
     Color(0xFF8B4513),
+    Color(0xFFA04000),
     Color(0xFFB45309),
+    Color(0xFFC2410C),
+    Color(0xFFD97706),
     Color(0xFFEAB308),
     Color(0xFFD1D5DB),
     Color(0xFFF8FAFC),

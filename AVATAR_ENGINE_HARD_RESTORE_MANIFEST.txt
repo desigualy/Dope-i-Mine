@@ -1,0 +1,30 @@
+DOPE-I-MINE AVATAR ENGINE HARD RESTORE PATCH
+
+Source: uploaded reference ZIP: download (1).zip
+
+Purpose:
+Restore the known-good avatar engine from the reference ZIP without touching the offline connectivity layer.
+
+Files restored:
+- lib/data/avatar/*
+- lib/domain/avatar/*
+- lib/domain/user_avatar/*
+- lib/domain/companion/avatar_config_model.dart
+- lib/data/repositories/companion_repository_impl.dart
+- lib/presentation/avatar/*
+- lib/presentation/user_avatar/*
+- lib/presentation/home/home_screen.dart
+- lib/presentation/onboarding/avatar_setup_screen.dart
+- lib/presentation/settings/companion_screen.dart
+
+After extracting over project root, run:
+flutter clean
+flutter pub get
+flutter analyze
+flutter test
+
+Expected UI path:
+Settings -> Assistant and avatar portraits -> Customize portrait -> Create your avatar
+
+Note:
+This patch deliberately does not overwrite lib/providers.dart, settings_screen.dart, or offline connectivity files, so the offline resilience layer remains intact.

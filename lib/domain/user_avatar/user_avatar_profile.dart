@@ -7,6 +7,7 @@ class UserAvatarProfile {
     this.hairType = 'wavy',
     this.hairStyle = 'short',
     this.hairColor = 'brown',
+    this.facialHair = 'none',
     this.bodyShape = 'average',
     this.accessibilityItems = const <String>[],
     this.clothingItems = const <String>['hoodie'],
@@ -33,6 +34,7 @@ class UserAvatarProfile {
         hairType = 'not_applicable',
         hairStyle = 'not_applicable',
         hairColor = 'not_applicable',
+        facialHair = 'none',
         bodyShape = 'not_applicable',
         accessibilityItems = const <String>[],
         clothingItems = const <String>[],
@@ -66,6 +68,7 @@ class UserAvatarProfile {
   final String hairType;
   final String hairStyle;
   final String hairColor;
+  final String facialHair;
   final String bodyShape;
   final List<String> accessibilityItems;
   final List<String> clothingItems;
@@ -93,6 +96,7 @@ class UserAvatarProfile {
     String? hairType,
     String? hairStyle,
     String? hairColor,
+    String? facialHair,
     String? bodyShape,
     List<String>? accessibilityItems,
     List<String>? clothingItems,
@@ -112,6 +116,10 @@ class UserAvatarProfile {
       hairType: hairType ?? this.hairType,
       hairStyle: hairStyle ?? this.hairStyle,
       hairColor: hairColor ?? this.hairColor,
+      facialHair: _facialHairForAge(
+        facialHair ?? this.facialHair,
+        agePresentation ?? this.agePresentation,
+      ),
       bodyShape: bodyShape ?? this.bodyShape,
       accessibilityItems: accessibilityItems ?? this.accessibilityItems,
       clothingItems: clothingItems ?? this.clothingItems,
@@ -134,6 +142,7 @@ class UserAvatarProfile {
       'hairType': hairType,
       'hairStyle': hairStyle,
       'hairColor': hairColor,
+      'facialHair': facialHair,
       'bodyShape': bodyShape,
       'accessibilityItems': accessibilityItems,
       'clothingItems': clothingItems,
@@ -156,6 +165,10 @@ class UserAvatarProfile {
       hairType: json['hairType'] as String? ?? 'wavy',
       hairStyle: json['hairStyle'] as String? ?? 'short',
       hairColor: json['hairColor'] as String? ?? 'brown',
+      facialHair: _facialHairForAge(
+        json['facialHair'] as String? ?? 'none',
+        json['agePresentation'] as String? ?? 'adult',
+      ),
       bodyShape: json['bodyShape'] as String? ?? 'average',
       accessibilityItems: _stringList(json['accessibilityItems']),
       clothingItems: _stringList(json['clothingItems'],
@@ -168,6 +181,13 @@ class UserAvatarProfile {
       avatarName: json['avatarName'] as String?,
       stylePreference: json['stylePreference'] as String? ?? 'soft_illustrated',
     );
+  }
+
+  static String _facialHairForAge(String facialHair, String agePresentation) {
+    if (agePresentation == 'child' || agePresentation == 'pre_teen') {
+      return 'none';
+    }
+    return facialHair;
   }
 
   static List<String> _stringList(

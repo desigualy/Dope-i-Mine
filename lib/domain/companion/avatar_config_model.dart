@@ -16,6 +16,7 @@ class AvatarConfigModel {
 
   static const String paletteSoftIllustrated = 'soft_illustrated';
   static const String paletteNatural = 'natural';
+  static const String paletteAppleMetaRealistic = 'apple_meta_realistic';
   static const String paletteExpressiveNeon = 'expressive_neon';
 
   static const String defaultAvatarMode = modeInspiredByMe;
@@ -45,9 +46,11 @@ class AvatarConfigModel {
     return switch (value) {
       paletteSoftIllustrated => paletteSoftIllustrated,
       paletteNatural => paletteNatural,
+      paletteAppleMetaRealistic => paletteAppleMetaRealistic,
       paletteExpressiveNeon => paletteExpressiveNeon,
       'soft' => paletteSoftIllustrated,
       'neutral' => paletteNatural,
+      'apple_meta' || 'meta' || 'apple' || 'realistic_avatar' => paletteAppleMetaRealistic,
       'bright' => paletteExpressiveNeon,
       _ => defaultAvatarPalette,
     };
@@ -103,6 +106,7 @@ class AvatarConfigModel {
   static String avatarPaletteLabel(String value) {
     return switch (normalizeAvatarPalette(value)) {
       paletteNatural => 'natural portrait',
+      paletteAppleMetaRealistic => 'Apple / Meta realistic avatar',
       paletteExpressiveNeon => 'expressive neon portrait',
       _ => 'soft illustrated portrait',
     };
@@ -138,9 +142,11 @@ class AvatarConfigModel {
     if (profile.lightingStyle == AvatarLightingStyle.neon) {
       return paletteExpressiveNeon;
     }
-    if (profile.realismLevel == AvatarRealismLevel.semiRealistic ||
-        profile.realismLevel == AvatarRealismLevel.ultraRealistic ||
-        profile.renderMode == AvatarRenderMode.ultraRealistic) {
+    if (profile.renderMode == AvatarRenderMode.ultraRealistic ||
+        profile.realismLevel == AvatarRealismLevel.ultraRealistic) {
+      return paletteAppleMetaRealistic;
+    }
+    if (profile.realismLevel == AvatarRealismLevel.semiRealistic) {
       return paletteNatural;
     }
     return paletteSoftIllustrated;
@@ -166,6 +172,14 @@ class AvatarConfigModel {
           lightingStyle: AvatarLightingStyle.studio,
           backgroundColor: const Color(0xFF111827),
           accentColor: const Color(0xFF34D399),
+        ),
+      paletteAppleMetaRealistic => profile.copyWith(
+          renderMode: AvatarRenderMode.premiumPortrait,
+          realismLevel: AvatarRealismLevel.semiRealistic,
+          lightingStyle: AvatarLightingStyle.softNatural,
+          cameraStyle: AvatarCameraStyle.shoulders,
+          backgroundColor: const Color(0xFF0F172A),
+          accentColor: const Color(0xFF38BDF8),
         ),
       paletteExpressiveNeon => profile.copyWith(
           lightingStyle: AvatarLightingStyle.neon,

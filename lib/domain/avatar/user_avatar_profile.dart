@@ -16,7 +16,9 @@ class UserAvatarProfile {
     required this.skinDetail,
     required this.hairType,
     required this.hairLength,
+    required this.hairStyle,
     required this.hairColor,
+    this.facialHair = AvatarFacialHair.none,
     required this.faceShape,
     required this.expression,
     this.accessibilityItems = const <AvatarAccessibilityItem>[],
@@ -38,7 +40,9 @@ class UserAvatarProfile {
   final AvatarSkinDetail skinDetail;
   final AvatarHairType hairType;
   final AvatarHairLength hairLength;
+  final AvatarHairStyle hairStyle;
   final Color hairColor;
+  final AvatarFacialHair facialHair;
   final AvatarFaceShape faceShape;
   final AvatarExpression expression;
   final List<AvatarAccessibilityItem> accessibilityItems;
@@ -61,7 +65,9 @@ class UserAvatarProfile {
       'skinDetail': skinDetail.name,
       'hairType': hairType.name,
       'hairLength': hairLength.name,
+      'hairStyle': hairStyle.name,
       'hairColor': hairColor.value,
+      'facialHair': facialHair.name,
       'faceShape': faceShape.name,
       'expression': expression.name,
       'accessibilityItems':
@@ -153,7 +159,44 @@ class UserAvatarProfile {
         AvatarHairLength.values,
         defaultAdult.hairLength,
       ),
+      hairStyle: _enumByName(
+        json['hairStyle'],
+        AvatarHairStyle.values,
+        defaultAdult.hairStyle,
+        aliases: const <String, AvatarHairStyle>{
+          'short_curls': AvatarHairStyle.shortCurls,
+          'shoulder_length_curls': AvatarHairStyle.shoulderLengthCurls,
+          'full_curly_afro': AvatarHairStyle.fullCurlyAfro,
+          'curly_afro_with_side_part': AvatarHairStyle.curlyAfroWithSidePart,
+          'long_ringlets': AvatarHairStyle.longRinglets,
+          'protective_style': AvatarHairStyle.protectiveStyle,
+          'afro': AvatarHairStyle.fullCurlyAfro,
+          'side_part_afro': AvatarHairStyle.curlyAfroWithSidePart,
+        },
+      ),
       hairColor: _colorFromJson(json['hairColor'], defaultAdult.hairColor),
+      facialHair: _facialHairForAge(
+        _enumByName(
+          json['facialHair'],
+          AvatarFacialHair.values,
+          defaultAdult.facialHair,
+          aliases: const <String, AvatarFacialHair>{
+            'light_stubble': AvatarFacialHair.lightStubble,
+            'short_beard': AvatarFacialHair.shortBeard,
+            'full_beard': AvatarFacialHair.fullBeard,
+          },
+        ),
+        _enumByName(
+          json['agePresentation'],
+          AvatarAgePresentation.values,
+          defaultAdult.agePresentation,
+          aliases: const <String, AvatarAgePresentation>{
+            'pre_teen': AvatarAgePresentation.preTeen,
+            'young_adult': AvatarAgePresentation.youngAdult,
+            'older_adult': AvatarAgePresentation.olderAdult,
+          },
+        ),
+      ),
       faceShape: _enumByName(
         json['faceShape'],
         AvatarFaceShape.values,
@@ -194,7 +237,9 @@ class UserAvatarProfile {
     AvatarSkinDetail? skinDetail,
     AvatarHairType? hairType,
     AvatarHairLength? hairLength,
+    AvatarHairStyle? hairStyle,
     Color? hairColor,
+    AvatarFacialHair? facialHair,
     AvatarFaceShape? faceShape,
     AvatarExpression? expression,
     List<AvatarAccessibilityItem>? accessibilityItems,
@@ -218,7 +263,12 @@ class UserAvatarProfile {
       skinDetail: skinDetail ?? this.skinDetail,
       hairType: hairType ?? this.hairType,
       hairLength: hairLength ?? this.hairLength,
+      hairStyle: hairStyle ?? this.hairStyle,
       hairColor: hairColor ?? this.hairColor,
+      facialHair: _facialHairForAge(
+        facialHair ?? this.facialHair,
+        agePresentation ?? this.agePresentation,
+      ),
       faceShape: faceShape ?? this.faceShape,
       expression: expression ?? this.expression,
       accessibilityItems: accessibilityItems ?? this.accessibilityItems,
@@ -245,10 +295,23 @@ class UserAvatarProfile {
     skinDetail: AvatarSkinDetail.none,
     hairType: AvatarHairType.curly,
     hairLength: AvatarHairLength.medium,
-    hairColor: Color(0xFF2A1710),
+    hairStyle: AvatarHairStyle.curlyAfroWithSidePart,
+    hairColor: Color(0xFFA04000),
+    facialHair: AvatarFacialHair.none,
     faceShape: AvatarFaceShape.oval,
     expression: AvatarExpression.calm,
   );
+
+  static AvatarFacialHair _facialHairForAge(
+    AvatarFacialHair facialHair,
+    AvatarAgePresentation agePresentation,
+  ) {
+    if (agePresentation == AvatarAgePresentation.child ||
+        agePresentation == AvatarAgePresentation.preTeen) {
+      return AvatarFacialHair.none;
+    }
+    return facialHair;
+  }
 
   static T _enumByName<T extends Enum>(
     Object? value,
@@ -312,7 +375,9 @@ class UserAvatarProfile {
             other.skinDetail == skinDetail &&
             other.hairType == hairType &&
             other.hairLength == hairLength &&
+            other.hairStyle == hairStyle &&
             other.hairColor == hairColor &&
+            other.facialHair == facialHair &&
             other.faceShape == faceShape &&
             other.expression == expression &&
             _listEquals(other.accessibilityItems, accessibilityItems) &&
@@ -324,7 +389,7 @@ class UserAvatarProfile {
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll(<Object?>[
         mode,
         renderMode,
         realismLevel,
@@ -336,7 +401,9 @@ class UserAvatarProfile {
         skinDetail,
         hairType,
         hairLength,
+        hairStyle,
         hairColor,
+        facialHair,
         faceShape,
         expression,
         Object.hashAll(accessibilityItems),
@@ -345,7 +412,7 @@ class UserAvatarProfile {
         accentColor,
         generatedImageUrl,
         localImagePath,
-      );
+      ]);
 
   static bool _listEquals<T>(List<T> a, List<T> b) {
     if (a.length != b.length) return false;

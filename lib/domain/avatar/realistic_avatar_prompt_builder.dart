@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import 'avatar_enums.dart';
 import 'user_avatar_profile.dart';
 
@@ -21,6 +23,9 @@ class RealisticAvatarPromptBuilder {
     final skinDetail = _skinDetailPhrase(profile.skinDetail);
     if (skinDetail.isNotEmpty) buffer.write('$skinDetail, ');
 
+    final facialHair = _facialHairPhrase(profile);
+    if (facialHair.isNotEmpty) buffer.write('$facialHair, ');
+
     if (profile.accessibilityItems.isNotEmpty) {
       buffer
         ..write('including ')
@@ -35,16 +40,16 @@ class RealisticAvatarPromptBuilder {
     buffer
       ..write('${profile.lightingStyle.label.toLowerCase()} lighting, ')
       ..write('${profile.cameraStyle.label.toLowerCase()} framing, ')
-      ..write('inclusive modern wellness app avatar style, ')
+      ..write('realistic Apple and Meta inspired avatar style, ')
       ..write('natural proportions, dignified, friendly, ')
-      ..write('detailed but not uncanny, clean soft background, ')
+      ..write('human-like but still an app avatar, detailed but not uncanny, clean soft background, ')
       ..write('high quality app profile avatar, consistent portrait lighting.');
 
     return buffer.toString();
   }
 
-  static String negativePrompt() {
-    return <String>[
+  static String negativePrompt([UserAvatarProfile? profile]) {
+    final items = <String>[
       'Lego style',
       'blocky toy avatar',
       'plastic toy figure',
@@ -64,13 +69,46 @@ class RealisticAvatarPromptBuilder {
       'messy background',
       'text',
       'watermark',
-    ].join(', ');
+    ];
+
+    final cleanShaven = profile == null ||
+        profile.facialHair == AvatarFacialHair.none ||
+        profile.agePresentation == AvatarAgePresentation.child ||
+        profile.agePresentation == AvatarAgePresentation.preTeen;
+
+    if (cleanShaven) {
+      items.addAll(<String>[
+        'beard',
+        'moustache',
+        'mustache',
+        'stubble',
+        'facial hair',
+        'hair on chin',
+        'hair on jaw',
+        'hair across mouth',
+      ]);
+    }
+
+    if (profile != null &&
+        (profile.hairType == AvatarHairType.curly ||
+            profile.hairType == AvatarHairType.coily ||
+            profile.hairType == AvatarHairType.afro)) {
+      items.addAll(<String>[
+        'curls on chin',
+        'curls on jaw',
+        'curls under mouth',
+        'afro beard',
+        'hair mistaken for beard',
+      ]);
+    }
+
+    return items.join(', ');
   }
 
   static Map<String, dynamic> buildPayload(UserAvatarProfile profile) {
     return <String, dynamic>{
       'prompt': build(profile),
-      'negativePrompt': negativePrompt(),
+      'negativePrompt': negativePrompt(profile),
       'size': '1024x1024',
       'style': profile.realismLevel.name,
       'safety': <String, dynamic>{
@@ -90,6 +128,9 @@ class RealisticAvatarPromptBuilder {
         'bodyPresentation': profile.bodyPresentation.name,
         'hairType': profile.hairType.name,
         'hairLength': profile.hairLength.name,
+        'hairStyle': profile.hairStyle.name,
+        'hairColor': profile.hairColor.value,
+        'facialHair': profile.facialHair.name,
         'faceShape': profile.faceShape.name,
         'expression': profile.expression.name,
         'skinDetail': profile.skinDetail.name,
@@ -125,8 +166,84 @@ class RealisticAvatarPromptBuilder {
     if (profile.hairType == AvatarHairType.covered) {
       return 'hair covered respectfully, ';
     }
-    return '${profile.hairLength.label.toLowerCase()} '
-        '${profile.hairType.label.toLowerCase()} hair, ';
+
+    final colorText = _hairColorText(profile.hairColor);
+
+    switch (profile.hairStyle) {
+      case AvatarHairStyle.fullCurlyAfro:
+        return '$colorText full curly afro hair, dense natural curls, rounded crown volume, '
+            'hair only on scalp and around shoulders, clean visible face, ';
+      case AvatarHairStyle.curlyAfroWithSidePart:
+        return '$colorText curly afro with a soft side part, dense natural ringlets, '
+            'rounded crown volume like a modern Apple Meta style avatar, '
+            'hair only on scalp and around shoulders, clean visible face, ';
+      case AvatarHairStyle.shoulderLengthCurls:
+        return '$colorText shoulder-length curly hair with defined ringlets falling at the sides, '
+            'no curls on chin or jaw, ';
+      case AvatarHairStyle.longRinglets:
+        return '$colorText long defined ringlets falling at the sides of the head and shoulders, '
+            'no curls on chin or jaw, ';
+      case AvatarHairStyle.shortCurls:
+        return '$colorText short curly hair with defined curls on the crown, clean visible face, ';
+      case AvatarHairStyle.locs:
+      case AvatarHairStyle.twists:
+      case AvatarHairStyle.braids:
+      case AvatarHairStyle.protectiveStyle:
+      case AvatarHairStyle.natural:
+        break;
+    }
+
+    switch (profile.hairType) {
+      case AvatarHairType.afro:
+        return '$colorText voluminous curly afro hair, dense natural ringlets, '
+            'hair only on scalp and around shoulders, clean visible face, ';
+      case AvatarHairType.coily:
+        return '$colorText coily natural hair with dense defined curls, '
+            'hair only on scalp and around shoulders, clean visible face, ';
+      case AvatarHairType.curly:
+        return '$colorText ${profile.hairLength.label.toLowerCase()} curly hair '
+            'with defined ringlets framing the head, no curls on chin or jaw, ';
+      case AvatarHairType.locs:
+      case AvatarHairType.braids:
+      case AvatarHairType.twists:
+        return '$colorText ${profile.hairLength.label.toLowerCase()} '
+            '${profile.hairType.label.toLowerCase()} hair, ';
+      case AvatarHairType.straight:
+      case AvatarHairType.wavy:
+      case AvatarHairType.shaved:
+        return '$colorText ${profile.hairLength.label.toLowerCase()} '
+            '${profile.hairType.label.toLowerCase()} hair, ';
+      case AvatarHairType.none:
+      case AvatarHairType.covered:
+        return '';
+    }
+  }
+
+  static String _facialHairPhrase(UserAvatarProfile profile) {
+    if (profile.agePresentation == AvatarAgePresentation.child ||
+        profile.agePresentation == AvatarAgePresentation.preTeen ||
+        profile.facialHair == AvatarFacialHair.none) {
+      return 'clean-shaven face, no beard, no moustache, no stubble';
+    }
+
+    return switch (profile.facialHair) {
+      AvatarFacialHair.lightStubble => 'light facial stubble',
+      AvatarFacialHair.moustache => 'a neat moustache',
+      AvatarFacialHair.goatee => 'a neat goatee',
+      AvatarFacialHair.shortBeard => 'a short well-kept beard',
+      AvatarFacialHair.fullBeard => 'a full well-kept beard',
+      AvatarFacialHair.none => '',
+    };
+  }
+
+  static String _hairColorText(Color color) {
+    final value = color.value;
+    if (value == 0xFFA04000 || value == 0xFFB45309) return 'auburn';
+    if (value == 0xFFC2410C || value == 0xFFD97706) return 'copper';
+    if (value == 0xFF8B4513 || value == 0xFF5C4033) return 'brown';
+    if (value == 0xFFEAB308) return 'blonde';
+    if (value == 0xFFD1D5DB || value == 0xFFF8FAFC) return 'light';
+    return 'dark';
   }
 
   static String _skinToneText(UserAvatarProfile profile) {

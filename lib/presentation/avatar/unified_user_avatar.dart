@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../domain/avatar/avatar_enums.dart';
 import '../../domain/avatar/user_avatar_profile.dart';
-import 'avatar_mood_mapper.dart';
-import 'premium_portrait_avatar.dart';
-import 'ultra_realistic_avatar.dart';
+import 'avatar_engine_bridge.dart';
 
 class UnifiedUserAvatar extends StatelessWidget {
   const UnifiedUserAvatar({
@@ -22,33 +20,6 @@ class UnifiedUserAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final glow = AvatarMoodMapper.glowForDopeiMood(mood);
-
-    switch (profile.renderMode) {
-      case AvatarRenderMode.ultraRealistic:
-        return AnimatedUltraRealisticAvatar(
-          localPath: profile.localImagePath,
-          remoteUrl: profile.generatedImageUrl,
-          moodGlow: glow,
-          size: size,
-          reducedMotion: reducedMotion,
-          placeholder: PremiumPortraitAvatar(
-            profile: profile.copyWith(
-              renderMode: AvatarRenderMode.premiumPortrait,
-              expression: AvatarMoodMapper.expressionForDopeiMood(mood),
-            ),
-            size: size,
-          ),
-        );
-      case AvatarRenderMode.abstract:
-      case AvatarRenderMode.illustrated:
-      case AvatarRenderMode.premiumPortrait:
-        return PremiumPortraitAvatar(
-          profile: profile.copyWith(
-            expression: AvatarMoodMapper.expressionForDopeiMood(mood),
-          ),
-          size: size,
-        );
-    }
+    return AvatarEngineBridge(profile: profile, size: size);
   }
 }

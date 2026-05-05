@@ -79,7 +79,12 @@ class _CandidateTile extends StatelessWidget {
               Image.network(
                 candidate.imageUrl,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => _FallbackCandidateArt(candidate: candidate),
+                errorBuilder: (_, __, ___) => const ColoredBox(
+                  color: Color(0xFF111827),
+                  child: Center(
+                    child: Icon(Icons.person, color: Colors.white),
+                  ),
+                ),
               ),
               Positioned(
                 left: 8,
@@ -119,44 +124,6 @@ class _CandidateTile extends StatelessWidget {
                     child: const Icon(Icons.check, color: Colors.white),
                   ),
                 ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _FallbackCandidateArt extends StatelessWidget {
-  const _FallbackCandidateArt({required this.candidate});
-
-  final AvatarGenerationCandidate candidate;
-
-  @override
-  Widget build(BuildContext context) {
-    final label = candidate.metadata['label'] as String? ?? 'Avatar option';
-    return DecoratedBox(
-      decoration: const BoxDecoration(
-        gradient: RadialGradient(
-          colors: <Color>[Color(0xFF22D3EE), Color(0xFF111827)],
-        ),
-      ),
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Icon(Icons.person_rounded, color: Colors.white, size: 44),
-              const SizedBox(height: 8),
-              Text(
-                label,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
             ],
           ),
         ),

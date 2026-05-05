@@ -48,7 +48,7 @@ $basePrompt
 ''';
   }
 
-  static String negativePrompt() {
+  static String negativePrompt([UserAvatarProfile? profile]) {
     return <String>[
       'Lego style',
       'blocky toy avatar',
@@ -75,6 +75,16 @@ $basePrompt
       'text',
       'watermark',
       'logo',
+      if (profile == null || profile.facialHair == AvatarFacialHair.none) ...<String>[
+        'beard',
+        'moustache',
+        'mustache',
+        'facial hair',
+        'hair on chin',
+        'hair on jaw',
+        'curls on chin',
+        'curls on jaw',
+      ],
     ].join(', ');
   }
 
@@ -84,6 +94,8 @@ $basePrompt
       '${profile.bodyPresentation.label} body presentation',
       '${profile.faceShape.label} face shape',
       '${profile.hairLength.label} ${profile.hairType.label} hair',
+      '${profile.hairStyle.label} hair style',
+      '${profile.facialHair.label} facial hair',
       '${profile.expression.label} expression',
       '${profile.skinDetail.label} skin detail',
     ];

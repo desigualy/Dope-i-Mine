@@ -80,6 +80,12 @@ class UserAvatarOptions {
   ];
 
   static const List<UserAvatarOption> hairStyles = <UserAvatarOption>[
+    UserAvatarOption(id: 'short', label: 'Short'),
+    UserAvatarOption(id: 'short_curls', label: 'Short curls'),
+    UserAvatarOption(id: 'shoulder_length_curls', label: 'Shoulder-length curls'),
+    UserAvatarOption(id: 'full_curly_afro', label: 'Full curly afro'),
+    UserAvatarOption(id: 'curly_afro_side_part', label: 'Curly afro with side part'),
+    UserAvatarOption(id: 'long_ringlets', label: 'Long ringlets'),
     UserAvatarOption(id: 'buzz_cut', label: 'Buzz cut'),
     UserAvatarOption(id: 'fade', label: 'Fade'),
     UserAvatarOption(id: 'undercut', label: 'Undercut'),
@@ -89,6 +95,7 @@ class UserAvatarOptions {
     UserAvatarOption(id: 'afro', label: 'Afro'),
     UserAvatarOption(id: 'cornrows', label: 'Cornrows'),
     UserAvatarOption(id: 'box_braids', label: 'Box braids'),
+    UserAvatarOption(id: 'protective_style', label: 'Protective style'),
     UserAvatarOption(id: 'hidden_hair', label: 'Hidden hair / head covering'),
     UserAvatarOption(id: 'headwrap', label: 'Headwrap'),
   ];
@@ -98,10 +105,21 @@ class UserAvatarOptions {
     UserAvatarOption(id: 'brown', label: 'Brown'),
     UserAvatarOption(id: 'blonde', label: 'Blonde'),
     UserAvatarOption(id: 'ginger', label: 'Ginger'),
+    UserAvatarOption(id: 'auburn', label: 'Auburn'),
+    UserAvatarOption(id: 'copper', label: 'Copper'),
     UserAvatarOption(id: 'grey', label: 'Grey'),
     UserAvatarOption(id: 'white', label: 'White'),
     UserAvatarOption(id: 'dyed', label: 'Dyed colour'),
     UserAvatarOption(id: 'custom', label: 'Custom colour'),
+  ];
+
+  static const List<UserAvatarOption> facialHairOptions = <UserAvatarOption>[
+    UserAvatarOption(id: 'none', label: 'None'),
+    UserAvatarOption(id: 'light_stubble', label: 'Light stubble'),
+    UserAvatarOption(id: 'moustache', label: 'Moustache'),
+    UserAvatarOption(id: 'goatee', label: 'Goatee'),
+    UserAvatarOption(id: 'short_beard', label: 'Short beard'),
+    UserAvatarOption(id: 'full_beard', label: 'Full beard'),
   ];
 
   static const List<UserAvatarOption> faceOptions = <UserAvatarOption>[
@@ -172,6 +190,7 @@ class UserAvatarOptions {
 
   static const List<UserAvatarOption> stylePreferences = <UserAvatarOption>[
     UserAvatarOption(id: 'soft_illustrated', label: 'Soft illustrated'),
+    UserAvatarOption(id: 'apple_meta_realistic', label: 'Apple / Meta realistic'),
     UserAvatarOption(id: 'masculine', label: 'Masculine'),
     UserAvatarOption(id: 'feminine', label: 'Feminine'),
     UserAvatarOption(id: 'androgynous', label: 'Androgynous'),

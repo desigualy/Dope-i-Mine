@@ -77,8 +77,14 @@ class _AvatarCreatorScreenState extends State<AvatarCreatorScreen> {
           _enumChips<AvatarAgePresentation>(
             values: AvatarAgePresentation.values,
             selected: _profile.agePresentation,
-            onSelected: (value) =>
-                _set(_profile.copyWith(agePresentation: value)),
+            onSelected: (value) => _set(
+              _profile.copyWith(
+                agePresentation: value,
+                facialHair: _allowsFacialHair(value)
+                    ? _profile.facialHair
+                    : AvatarFacialHair.none,
+              ),
+            ),
           ),
           _section('Skin tone'),
           _colourRow(
@@ -109,7 +115,18 @@ class _AvatarCreatorScreenState extends State<AvatarCreatorScreen> {
           _enumChips<AvatarHairType>(
             values: AvatarHairType.values,
             selected: _profile.hairType,
-            onSelected: (value) => _set(_profile.copyWith(hairType: value)),
+            onSelected: (value) => _set(_profile.copyWith(
+              hairType: value,
+              hairStyle: _defaultStyleForHairType(value),
+            )),
+          ),
+          _section('Hair style'),
+          _enumChips<AvatarHairStyle>(
+            values: _hairStylesFor(_profile.hairType),
+            selected: _hairStylesFor(_profile.hairType).contains(_profile.hairStyle)
+                ? _profile.hairStyle
+                : _defaultStyleForHairType(_profile.hairType),
+            onSelected: (value) => _set(_profile.copyWith(hairStyle: value)),
           ),
           _section('Hair length'),
           _enumChips<AvatarHairLength>(
@@ -123,6 +140,18 @@ class _AvatarCreatorScreenState extends State<AvatarCreatorScreen> {
             selected: _profile.hairColor,
             onSelected: (value) => _set(_profile.copyWith(hairColor: value)),
           ),
+          _section('Facial hair'),
+          if (_allowsFacialHair(_profile.agePresentation))
+            _enumChips<AvatarFacialHair>(
+              values: AvatarFacialHair.values,
+              selected: _profile.facialHair,
+              onSelected: (value) =>
+                  _set(_profile.copyWith(facialHair: value)),
+            )
+          else
+            const Text(
+              'Facial hair is disabled for child and pre-teen avatar modes.',
+            ),
           _section('Expression'),
           _enumChips<AvatarExpression>(
             values: AvatarExpression.values,
@@ -162,6 +191,62 @@ class _AvatarCreatorScreenState extends State<AvatarCreatorScreen> {
         ],
       ),
     );
+  }
+
+  List<AvatarHairStyle> _hairStylesFor(AvatarHairType type) {
+    return switch (type) {
+      AvatarHairType.curly ||
+      AvatarHairType.coily ||
+      AvatarHairType.afro =>
+        const <AvatarHairStyle>[
+          AvatarHairStyle.shortCurls,
+          AvatarHairStyle.shoulderLengthCurls,
+          AvatarHairStyle.fullCurlyAfro,
+          AvatarHairStyle.curlyAfroWithSidePart,
+          AvatarHairStyle.longRinglets,
+        ],
+      AvatarHairType.locs => const <AvatarHairStyle>[
+          AvatarHairStyle.locs,
+          AvatarHairStyle.protectiveStyle,
+        ],
+      AvatarHairType.braids => const <AvatarHairStyle>[
+          AvatarHairStyle.braids,
+          AvatarHairStyle.protectiveStyle,
+        ],
+      AvatarHairType.twists => const <AvatarHairStyle>[
+          AvatarHairStyle.twists,
+          AvatarHairStyle.protectiveStyle,
+        ],
+      AvatarHairType.none ||
+      AvatarHairType.shaved ||
+      AvatarHairType.covered ||
+      AvatarHairType.straight ||
+      AvatarHairType.wavy =>
+        const <AvatarHairStyle>[AvatarHairStyle.natural],
+    };
+  }
+
+  AvatarHairStyle _defaultStyleForHairType(AvatarHairType type) {
+    return switch (type) {
+      AvatarHairType.curly ||
+      AvatarHairType.coily ||
+      AvatarHairType.afro =>
+        AvatarHairStyle.curlyAfroWithSidePart,
+      AvatarHairType.locs => AvatarHairStyle.locs,
+      AvatarHairType.braids => AvatarHairStyle.braids,
+      AvatarHairType.twists => AvatarHairStyle.twists,
+      AvatarHairType.none ||
+      AvatarHairType.shaved ||
+      AvatarHairType.covered ||
+      AvatarHairType.straight ||
+      AvatarHairType.wavy =>
+        AvatarHairStyle.natural,
+    };
+  }
+
+  bool _allowsFacialHair(AvatarAgePresentation age) {
+    return age != AvatarAgePresentation.child &&
+        age != AvatarAgePresentation.preTeen;
   }
 
   void _set(UserAvatarProfile profile) => setState(() => _profile = profile);

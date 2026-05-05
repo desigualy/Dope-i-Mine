@@ -64,7 +64,12 @@ class UserAvatarProfileController extends StateNotifier<UserAvatarProfile> {
   }
 
   void setAgePresentation(String value) {
-    state = state.copyWith(agePresentation: value);
+    state = state.copyWith(
+      agePresentation: value,
+      facialHair: (value == 'child' || value == 'pre_teen')
+          ? 'none'
+          : state.facialHair,
+    );
   }
 
   void setSkinTone(String value) {
@@ -76,7 +81,10 @@ class UserAvatarProfileController extends StateNotifier<UserAvatarProfile> {
   }
 
   void setHairType(String value) {
-    state = state.copyWith(hairType: value);
+    state = state.copyWith(
+      hairType: value,
+      hairStyle: _defaultHairStyleFor(value),
+    );
   }
 
   void setHairStyle(String value) {
@@ -85,6 +93,10 @@ class UserAvatarProfileController extends StateNotifier<UserAvatarProfile> {
 
   void setHairColor(String value) {
     state = state.copyWith(hairColor: value);
+  }
+
+  void setFacialHair(String value) {
+    state = state.copyWith(facialHair: value);
   }
 
   void setMoodStyle(String value) {
@@ -116,6 +128,19 @@ class UserAvatarProfileController extends StateNotifier<UserAvatarProfile> {
     state = state.copyWith(
       culturalItems: _toggled(state.culturalItems, value),
     );
+  }
+
+  String _defaultHairStyleFor(String hairType) {
+    return switch (hairType) {
+      'curly' => 'curly_afro_side_part',
+      'coily' => 'curly_afro_side_part',
+      'afro_textured' => 'curly_afro_side_part',
+      'locs' => 'locs',
+      'braids' => 'box_braids',
+      'twists' => 'protective_style',
+      'bald' || 'shaved' || 'not_applicable' => 'short',
+      _ => 'short',
+    };
   }
 
   List<String> _toggled(List<String> values, String value) {
@@ -349,6 +374,18 @@ class _UserAvatarStudioCardState extends ConsumerState<UserAvatarStudioCard> {
                       onSelected: controller.setHairColor,
                     ),
                     const SizedBox(height: 10),
+                    _SubLabel('Facial hair'),
+                    _SingleSelectChips(
+                      options: (profile.agePresentation == 'child' ||
+                              profile.agePresentation == 'pre_teen')
+                          ? const <UserAvatarOption>[
+                              UserAvatarOption(id: 'none', label: 'None'),
+                            ]
+                          : UserAvatarOptions.facialHairOptions,
+                      selectedId: profile.facialHair,
+                      onSelected: controller.setFacialHair,
+                    ),
+                    const SizedBox(height: 10),
                     _SubLabel('Style expression'),
                     _SingleSelectChips(
                       options: UserAvatarOptions.stylePreferences,
@@ -576,7 +613,4 @@ const List<UserAvatarOption> _backgroundOptions = <UserAvatarOption>[
   UserAvatarOption(id: 'minimal', label: 'Minimal'),
 ];
 
-const List<UserAvatarOption> _hairStyleOptions = <UserAvatarOption>[
-  UserAvatarOption(id: 'short', label: 'Short'),
-  ...UserAvatarOptions.hairStyles,
-];
+const List<UserAvatarOption> _hairStyleOptions = UserAvatarOptions.hairStyles;

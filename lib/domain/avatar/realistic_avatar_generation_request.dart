@@ -20,7 +20,7 @@ class RealisticAvatarGenerationRequest {
     return RealisticAvatarGenerationRequest(
       profile: profile,
       prompt: RealisticAvatarPromptBuilder.build(profile),
-      negativePrompt: RealisticAvatarPromptBuilder.negativePrompt(),
+      negativePrompt: RealisticAvatarPromptBuilder.negativePrompt(profile),
     );
   }
 

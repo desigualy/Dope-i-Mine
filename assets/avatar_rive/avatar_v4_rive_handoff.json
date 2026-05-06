@@ -1,0 +1,42 @@
+{
+  "engine": "Avatar Engine V4",
+  "file": "assets/avatar_rive/base_avatar.riv",
+  "artboard": "Avatar",
+  "stateMachine": "AvatarState",
+  "requiredNumberInputs": [
+    "skinTone",
+    "faceShape",
+    "hairPack",
+    "hairStyle",
+    "hairColor",
+    "bodyPreset"
+  ],
+  "requiredBooleanInputs": [
+    "freckles",
+    "vitiligo",
+    "hasFacialHair",
+    "hasGlasses"
+  ],
+  "topLevelGroups": [
+    "base",
+    "skin",
+    "hair_back",
+    "neck",
+    "body",
+    "head",
+    "ears",
+    "face",
+    "hair_front",
+    "facial_hair",
+    "clothing",
+    "accessories",
+    "lighting",
+    "diagnostics"
+  ],
+  "retiredPublicFallbacks": [
+    "Avatar V2 CustomPainter",
+    "Avatar V3 SVG/blob/layer renderer",
+    "UnifiedUserAvatar",
+    "FloatingDopeiAvatar"
+  ]
+}

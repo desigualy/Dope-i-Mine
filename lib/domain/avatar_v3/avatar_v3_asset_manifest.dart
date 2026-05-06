@@ -64,17 +64,17 @@ class AvatarV3AssetManifest {
         zIndex: 530,
       ),
       AvatarV3Layer(
-        id: 'hair.ringlet_afro.front.long_copper',
-        slot: AvatarV3LayerSlot.frontHair,
-        assetPath: 'assets/avatar_v3/hair/ringlet_afro/front/long_copper.svg',
-        zIndex: 720,
-      ),
-      AvatarV3Layer(
         id: 'facial_hair.none',
         slot: AvatarV3LayerSlot.facialHair,
         assetPath: 'assets/avatar_v3/facial_hair/none.svg',
         zIndex: 700,
         opacity: 0,
+      ),
+      AvatarV3Layer(
+        id: 'hair.ringlet_afro.front.long_copper',
+        slot: AvatarV3LayerSlot.frontHair,
+        assetPath: 'assets/avatar_v3/hair/ringlet_afro/front/long_copper.svg',
+        zIndex: 720,
       ),
       AvatarV3Layer(
         id: 'accessories.glasses.round_clear',
@@ -119,9 +119,7 @@ class AvatarV3LayerResolver {
     add('body.meta.average.black_top');
     add('body.neck.medium.tan');
 
-    if (normalized.hair.type == AvatarV3HairType.ringletAfro ||
-        normalized.hair.style == AvatarV3HairStyle.longRingletAfro ||
-        normalized.hair.style == AvatarV3HairStyle.sidePartAfro) {
+    if (_shouldRenderStarterHair(normalized)) {
       add('hair.ringlet_afro.back.long_copper');
     }
 
@@ -137,9 +135,7 @@ class AvatarV3LayerResolver {
       add('facial_hair.none');
     }
 
-    if (normalized.hair.type == AvatarV3HairType.ringletAfro ||
-        normalized.hair.style == AvatarV3HairStyle.longRingletAfro ||
-        normalized.hair.style == AvatarV3HairStyle.sidePartAfro) {
+    if (_shouldRenderStarterHair(normalized)) {
       add('hair.ringlet_afro.front.long_copper');
     }
 
@@ -151,5 +147,18 @@ class AvatarV3LayerResolver {
 
     result.sort((a, b) => a.zIndex.compareTo(b.zIndex));
     return result;
+  }
+
+  bool _shouldRenderStarterHair(AvatarV3Profile profile) {
+    if (profile.hair.type == AvatarV3HairType.bald ||
+        profile.hair.type == AvatarV3HairType.shaved) {
+      return false;
+    }
+
+    // Pass 2B rule:
+    // Until each hair family has finished art assets, every non-bald/non-shaved
+    // hair profile receives the starter ringlet-afro asset family instead of
+    // rendering bald/blank. Deliberate bald and shaved choices remain respected.
+    return true;
   }
 }

@@ -1,0 +1,28 @@
+{
+  "file": "assets/avatar_rive/base_avatar.riv",
+  "artboard": "Avatar",
+  "stateMachine": "AvatarState",
+  "numberInputs": {
+    "skinTone": "0.0-1.0",
+    "faceShape": "0.0-1.0",
+    "hairPack": "0.0-1.0",
+    "hairStyle": "0.0-1.0",
+    "hairColor": "0.0-1.0",
+    "bodyPreset": "0.0-1.0"
+  },
+  "booleanInputs": [
+    "freckles",
+    "vitiligo",
+    "hasFacialHair",
+    "hasGlasses"
+  ],
+  "styleTarget": "Apple/Meta-style polished 3D-inspired avatar",
+  "hardRejectIf": [
+    "hair looks like beard",
+    "hair covers mouth or chin",
+    "facial hair starts too high",
+    "skin details look like stickers",
+    "body presets do not visibly change",
+    "accessibility items look like props or jokes"
+  ]
+}

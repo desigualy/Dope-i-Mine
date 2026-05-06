@@ -1,0 +1,22 @@
+{
+  "engine": "Avatar Engine V4",
+  "runtime": "Rive",
+  "baseRigAssetPath": "assets/avatar_rive/base_avatar.riv",
+  "artboardName": "Avatar",
+  "stateMachineName": "AvatarState",
+  "numberInputs": [
+    "skinTone",
+    "faceShape",
+    "hairPack",
+    "hairStyle",
+    "hairColor",
+    "bodyPreset"
+  ],
+  "booleanInputs": [
+    "freckles",
+    "vitiligo",
+    "hasFacialHair",
+    "hasGlasses"
+  ],
+  "placeholderStrategy": "Show AvatarMissingRigDiagnostic until base_avatar.riv exists. Do not use the V3 blob renderer as public fallback."
+}

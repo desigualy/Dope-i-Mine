@@ -1,9 +1,91 @@
 import '../branding/pronunciation_option.dart';
 import '../tasks/task_state_snapshot.dart';
 
+enum SexAtBirth {
+  preferNotToSay,
+  female,
+  male,
+  intersex,
+}
+
+enum GenderIdentity {
+  preferNotToSay,
+  girl,
+  boy,
+  woman,
+  man,
+  nonBinary,
+  transGirl,
+  transBoy,
+  transWoman,
+  transMan,
+  genderFluid,
+  agender,
+  other,
+}
+
+enum PronounSet {
+  preferNotToSay,
+  sheHer,
+  heHim,
+  theyThem,
+  sheThey,
+  heThey,
+  custom,
+}
+
+extension SexAtBirthLabel on SexAtBirth {
+  String get label {
+    return switch (this) {
+      SexAtBirth.preferNotToSay => 'Prefer not to say',
+      SexAtBirth.female => 'Female',
+      SexAtBirth.male => 'Male',
+      SexAtBirth.intersex => 'Intersex',
+    };
+  }
+}
+
+extension GenderIdentityLabel on GenderIdentity {
+  String get label {
+    return switch (this) {
+      GenderIdentity.preferNotToSay => 'Prefer not to say',
+      GenderIdentity.girl => 'Girl',
+      GenderIdentity.boy => 'Boy',
+      GenderIdentity.woman => 'Woman',
+      GenderIdentity.man => 'Man',
+      GenderIdentity.nonBinary => 'Non-binary',
+      GenderIdentity.transGirl => 'Trans girl',
+      GenderIdentity.transBoy => 'Trans boy',
+      GenderIdentity.transWoman => 'Trans woman',
+      GenderIdentity.transMan => 'Trans man',
+      GenderIdentity.genderFluid => 'Gender-fluid',
+      GenderIdentity.agender => 'Agender',
+      GenderIdentity.other => 'Other',
+    };
+  }
+}
+
+extension PronounSetLabel on PronounSet {
+  String get label {
+    return switch (this) {
+      PronounSet.preferNotToSay => 'Prefer not to say',
+      PronounSet.sheHer => 'She/her',
+      PronounSet.heHim => 'He/him',
+      PronounSet.theyThem => 'They/them',
+      PronounSet.sheThey => 'She/they',
+      PronounSet.heThey => 'He/they',
+      PronounSet.custom => 'Custom',
+    };
+  }
+}
+
 class OnboardingState {
   const OnboardingState({
     this.ageBand = AgeBand.adult,
+    this.sexAtBirth = SexAtBirth.preferNotToSay,
+    this.genderIdentity = GenderIdentity.preferNotToSay,
+    this.pronouns = PronounSet.preferNotToSay,
+    this.customPronouns = '',
     this.assistantDisplayName = 'Dope-i',
     this.pronunciation = PronunciationOption.dopeEe,
     this.mode = SupportMode.audhd,
@@ -24,6 +106,10 @@ class OnboardingState {
   });
 
   final AgeBand ageBand;
+  final SexAtBirth sexAtBirth;
+  final GenderIdentity genderIdentity;
+  final PronounSet pronouns;
+  final String customPronouns;
   final String assistantDisplayName;
   final PronunciationOption pronunciation;
   final SupportMode mode;
@@ -46,8 +132,19 @@ class OnboardingState {
   final bool notificationsEnabled;
   final bool microphoneEnabled;
 
+  String get pronounDisplay {
+    if (pronouns == PronounSet.custom && customPronouns.trim().isNotEmpty) {
+      return customPronouns.trim();
+    }
+    return pronouns.label;
+  }
+
   OnboardingState copyWith({
     AgeBand? ageBand,
+    SexAtBirth? sexAtBirth,
+    GenderIdentity? genderIdentity,
+    PronounSet? pronouns,
+    String? customPronouns,
     String? assistantDisplayName,
     PronunciationOption? pronunciation,
     SupportMode? mode,
@@ -68,6 +165,10 @@ class OnboardingState {
   }) {
     return OnboardingState(
       ageBand: ageBand ?? this.ageBand,
+      sexAtBirth: sexAtBirth ?? this.sexAtBirth,
+      genderIdentity: genderIdentity ?? this.genderIdentity,
+      pronouns: pronouns ?? this.pronouns,
+      customPronouns: customPronouns ?? this.customPronouns,
       assistantDisplayName: assistantDisplayName ?? this.assistantDisplayName,
       pronunciation: pronunciation ?? this.pronunciation,
       mode: mode ?? this.mode,

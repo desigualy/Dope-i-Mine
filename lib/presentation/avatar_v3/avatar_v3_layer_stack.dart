@@ -4,6 +4,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../domain/avatar_v3/avatar_v3_asset_manifest.dart';
 import '../../domain/avatar_v3/avatar_v3_layer.dart';
 import '../../domain/avatar_v3/avatar_v3_profile.dart';
+import 'avatar_v3_inline_assets.dart';
+import 'hair/ringlet_afro/ringlet_afro_hair.dart';
 
 class AvatarV3LayerStack extends StatelessWidget {
   const AvatarV3LayerStack({
@@ -18,7 +20,9 @@ class AvatarV3LayerStack extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final layers = resolver.resolve(profile);
+
     return Stack(
+      key: const ValueKey<String>('avatar-v3-layer-stack'),
       fit: StackFit.expand,
       children: layers.map(_LayerWidget.new).toList(growable: false),
     );
@@ -32,11 +36,27 @@ class _LayerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget child = SvgPicture.asset(
-      layer.assetPath,
-      fit: BoxFit.contain,
-      alignment: Alignment.center,
-    );
+    Widget child;
+
+    switch (layer.id) {
+      case 'hair.ringlet_afro.back.long_copper':
+        child = const RingletAfroHair.back();
+      case 'hair.ringlet_afro.front.long_copper':
+        child = const RingletAfroHair.front();
+      default:
+        final inlineSvg = AvatarV3InlineAssets.svgFor(layer);
+        child = inlineSvg == null || inlineSvg.trim().isEmpty
+            ? SvgPicture.asset(
+                layer.assetPath,
+                fit: BoxFit.contain,
+                alignment: Alignment.center,
+              )
+            : SvgPicture.string(
+                inlineSvg,
+                fit: BoxFit.contain,
+                alignment: Alignment.center,
+              );
+    }
 
     if (layer.opacity < 1) {
       child = Opacity(opacity: layer.opacity, child: child);

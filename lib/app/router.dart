@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../presentation/auth/login_screen.dart';
 import '../presentation/auth/signup_screen.dart';
+import '../avatar_engine_v4/presentation/avatar_customizer_screen.dart';
 import '../presentation/branding/dope_i_intro_screen.dart';
 import '../presentation/branding/pronunciation_setup_screen.dart';
 import '../presentation/branding/skin_pack_shop_screen.dart';
@@ -20,6 +21,7 @@ import '../presentation/onboarding/onboarding_summary_screen.dart';
 import '../presentation/onboarding/permissions_screen.dart';
 import '../presentation/onboarding/sensory_preferences_screen.dart';
 import '../presentation/onboarding/avatar_setup_screen.dart';
+import '../presentation/onboarding/identity_screen.dart';
 import '../presentation/onboarding/voice_setup_screen.dart';
 import '../presentation/onboarding/voice_preferences_screen.dart';
 import '../presentation/onboarding/welcome_screen.dart';
@@ -133,6 +135,12 @@ final GoRouter appRouter = GoRouter(
       ),
     ),
     GoRoute(
+      path: '/onboarding/identity',
+      builder: (_, state) => IdentityScreen(
+        returnToSummary: state.uri.queryParameters['return'] == 'summary',
+      ),
+    ),
+    GoRoute(
       path: '/onboarding/avatar',
       builder: (_, state) => AvatarSetupScreen(
         returnToSummary: state.uri.queryParameters['return'] == 'summary',
@@ -173,6 +181,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: '/caregiver/assigned-routines',
         builder: (_, __) => const CaregiverAssignedRoutinesScreen()),
+    GoRoute(
+      path: '/avatar/customize',
+      builder: (_, __) => const AvatarCustomizerScreen(),
+    ),
     GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
     GoRoute(
         path: '/settings/voice',

@@ -76,7 +76,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               });
               try {
                 validateEmail(_emailController.text);
-                validatePassword(_passwordController.text);
+                validateLoginPassword(_passwordController.text);
                 final signedInUser =
                     await ref.read(authControllerProvider).signIn(
                           _emailController.text.trim(),

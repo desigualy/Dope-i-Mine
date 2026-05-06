@@ -8,6 +8,7 @@ environment:
   sdk: ">=3.3.0 <4.0.0"
 
 dependencies:
+  rive: ^0.13.20
   flutter:
     sdk: flutter
   flutter_localizations:
@@ -35,6 +36,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/avatar_rive/
     - assets/avatar_v3/
     - assets/app_store/
     - assets/audio/focus/

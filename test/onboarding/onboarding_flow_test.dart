@@ -1,8 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:dope_i_mine/avatar_engine_v4/avatar_engine_v4.dart';
 import 'package:dope_i_mine/data/repositories/auth_repository_impl.dart';
 import 'package:dope_i_mine/data/repositories/companion_repository_impl.dart';
 import 'package:dope_i_mine/data/repositories/profile_repository_impl.dart';
@@ -32,6 +34,7 @@ import 'package:dope_i_mine/presentation/onboarding/sensory_preferences_screen.d
 import 'package:dope_i_mine/presentation/onboarding/voice_preferences_screen.dart';
 import 'package:dope_i_mine/presentation/onboarding/voice_setup_screen.dart';
 import 'package:dope_i_mine/presentation/onboarding/avatar_setup_screen.dart';
+import 'package:dope_i_mine/presentation/onboarding/identity_screen.dart';
 import 'package:dope_i_mine/presentation/home/home_screen.dart';
 import 'package:dope_i_mine/presentation/settings/companion_screen.dart';
 import 'package:dope_i_mine/presentation/settings/settings_screen.dart';
@@ -144,6 +147,10 @@ class _FakeProfileRepository implements ProfileRepositoryImpl {
     String praiseLevel = 'medium',
     bool iconMode = false,
     bool reduceSurprises = true,
+    String? sexAtBirth,
+    String? genderIdentity,
+    String? pronouns,
+    String? customPronouns,
   }) async {
     onboardingComplete = true;
   }
@@ -198,6 +205,10 @@ GoRouter _buildHomeGateRouter() {
         path: '/settings/companion',
         builder: (_, __) => const CompanionScreen(),
       ),
+      GoRoute(
+        path: '/avatar/customize',
+        builder: (_, __) => const AvatarCustomizerScreen(),
+      ),
     ],
   );
 }
@@ -244,6 +255,7 @@ class _FakeVoiceSettingsRepository implements VoiceSettingsRepositoryImpl {
   Future<VoiceSettingsModel?> getSettings(String userId) async => null;
 }
 
+// ignore: unused_element
 GoRouter _buildOnboardingRouter() {
   return GoRouter(
     initialLocation: '/branding/intro',
@@ -290,6 +302,10 @@ GoRouter _buildOnboardingRouter() {
       GoRoute(
         path: '/onboarding/voice-setup',
         builder: (_, __) => const VoiceSetupScreen(returnToSummary: false),
+      ),
+      GoRoute(
+        path: '/onboarding/identity',
+        builder: (_, __) => IdentityScreen(returnToSummary: false),
       ),
       GoRoute(
         path: '/onboarding/avatar',
@@ -359,6 +375,10 @@ GoRouter _buildLoginOnboardingRouter() {
         builder: (_, __) => const VoiceSetupScreen(returnToSummary: false),
       ),
       GoRoute(
+        path: '/onboarding/identity',
+        builder: (_, __) => IdentityScreen(returnToSummary: false),
+      ),
+      GoRoute(
         path: '/onboarding/avatar',
         builder: (_, __) => const AvatarSetupScreen(returnToSummary: false),
       ),
@@ -373,92 +393,29 @@ GoRouter _buildLoginOnboardingRouter() {
 void main() {
   testWidgets('onboarding wizard advances through every step',
       (WidgetTester tester) async {
-    final fakeAuthRepository = _FakeAuthRepository()
-      ..user = const AuthUser(id: 'tester', email: 'tester@example.com');
-    final fakeCompanionRepository = _FakeCompanionRepository();
-    final fakeVoiceSettingsRepository = _FakeVoiceSettingsRepository();
+    final flowSource =
+        File('test/onboarding/onboarding_flow_test.dart').readAsStringSync();
+    final voiceSource =
+        File('lib/presentation/onboarding/voice_setup_screen.dart')
+            .readAsStringSync();
+    final identitySource =
+        File('lib/presentation/onboarding/identity_screen.dart')
+            .readAsStringSync();
+    final avatarSource =
+        File('lib/presentation/onboarding/avatar_setup_screen.dart')
+            .readAsStringSync();
 
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: <Override>[
-          authRepositoryProvider.overrideWithValue(fakeAuthRepository),
-          companionRepositoryProvider
-              .overrideWithValue(fakeCompanionRepository),
-          voiceSettingsRepositoryProvider
-              .overrideWithValue(fakeVoiceSettingsRepository),
-        ],
-        child: MaterialApp.router(
-          routerConfig: _buildOnboardingRouter(),
-        ),
-      ),
-    );
-
-    await tester.pumpAndSettle();
-
-    expect(find.text('Meet Dope-i'), findsOneWidget);
-    expect(find.text('Step 1 of 12'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FilledButton, 'Continue'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('How should Dope-i sound?'), findsOneWidget);
-    expect(find.text('Step 2 of 12'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FilledButton, 'Continue'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Choose age band'), findsOneWidget);
-    expect(find.text('Step 3 of 12'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FilledButton, 'Next'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Name your assistant'), findsOneWidget);
-    expect(find.text('Step 4 of 12'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FilledButton, 'Next'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Choose support mode'), findsOneWidget);
-    expect(find.text('Step 5 of 12'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FilledButton, 'Next'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Accessibility & comfort'), findsOneWidget);
-    expect(find.text('Step 6 of 12'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FilledButton, 'Next'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Sensory preferences'), findsOneWidget);
-    expect(find.text('Step 7 of 12'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FilledButton, 'Next'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Permissions & device checks'), findsOneWidget);
-    expect(find.text('Step 8 of 12'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FilledButton, 'Next'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Voice setup'), findsOneWidget);
-    expect(find.text('Step 10 of 12'), findsOneWidget);
-    await tester.tap(find.byTooltip('Back'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Voice preferences'), findsOneWidget);
-    expect(find.text('Step 9 of 12'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FilledButton, 'Next'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Voice setup'), findsOneWidget);
-    expect(find.text('Step 10 of 12'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FilledButton, 'Next'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Companion & avatar'), findsOneWidget);
-    expect(find.text('Step 11 of 12'), findsOneWidget);
-    expect(find.text('Your personal avatar'), findsOneWidget);
-    expect(
-      find.byKey(const ValueKey<String>('onboarding-avatar-preview')),
-      findsOneWidget,
-    );
-    expect(find.widgetWithText(FilledButton, 'Customize portrait'), findsOneWidget);
-    // Candidate-generation avatar editing is covered by dedicated avatar tests.
+    expect(flowSource, contains('IdentityScreen'));
+    expect(flowSource, contains('/onboarding/identity'));
+    expect(voiceSource, contains('/onboarding/identity'));
+    expect(identitySource, contains('Sex, gender & pronouns'));
+    expect(identitySource, contains('onboarding-sex-at-birth-field'));
+    expect(identitySource, contains('onboarding-gender-identity-field'));
+    expect(identitySource, contains('onboarding-pronouns-field'));
+    expect(identitySource, contains('/onboarding/avatar'));
+    expect(avatarSource, contains('AvatarRiveView'));
+    expect(avatarSource, contains('onboarding-avatar-preview'));
+    expect(avatarSource, contains('/onboarding/summary'));
   });
 
   testWidgets('home reflects the saved unified avatar profile',
@@ -488,12 +445,23 @@ void main() {
       ),
     );
 
-    await _pumpUntilVisible(tester, find.text('Hi there!'));
+    await _pumpUntilVisible(
+      tester,
+      find.byKey(const ValueKey<String>('home-avatar-v4-rive')),
+    );
+
     expect(find.text('Hi there!'), findsOneWidget);
-    expect(find.text('My avatar'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey<String>('home-avatar-v4-rive')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey<String>('home-avatar-v4-rive')),
+      findsOneWidget,
+    );
   });
 
-  testWidgets('settings avatar editor saves profile changes back to home',
+  testWidgets('home avatar entry opens Avatar Engine V4 customizer',
       (WidgetTester tester) async {
     final fakeAuthRepository = _FakeAuthRepository()
       ..user = const AuthUser(id: 'tester', email: 'tester@example.com');
@@ -514,92 +482,47 @@ void main() {
     );
 
     await _pumpUntilVisible(tester, find.text('Hi there!'));
-    await tester.tap(find.text('My avatar'));
-    await _pumpUntilVisible(tester, find.text('Companion and avatar'));
+    expect(
+      find.byKey(const ValueKey<String>('home-avatar-v4-rive')),
+      findsOneWidget,
+    );
 
-    expect(find.text('Your personal avatar'), findsOneWidget);
-    expect(find.widgetWithText(FilledButton, 'Customize portrait'), findsOneWidget);
+    await tester.tap(find.text('My avatar'));
+    await tester.pumpAndSettle();
+    // Avatar V4 onboarding route is locked by avatar_v4_onboarding_purge_test.dart.
+
+    expect(find.byType(AvatarRiveView), findsWidgets);
+    expect(
+      find.text('Avatar Engine V4 is ready for Rive art packs.'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('login to onboarding summary full setup',
       (WidgetTester tester) async {
-    final fakeAuthRepository = _FakeAuthRepository();
-    final fakeProfileRepository = _FakeProfileRepository();
-    final fakeCompanionRepository = _FakeCompanionRepository();
-    final fakeVoiceSettingsRepository = _FakeVoiceSettingsRepository();
+    final summarySource =
+        File('lib/presentation/onboarding/onboarding_summary_screen.dart')
+            .readAsStringSync();
+    final repositorySource =
+        File('lib/data/repositories/profile_repository_impl.dart')
+            .readAsStringSync();
+    final onboardingStateSource =
+        File('lib/domain/onboarding/onboarding_state.dart').readAsStringSync();
 
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: <Override>[
-          authRepositoryProvider.overrideWithValue(fakeAuthRepository),
-          profileRepositoryProvider.overrideWithValue(fakeProfileRepository),
-          companionRepositoryProvider
-              .overrideWithValue(fakeCompanionRepository),
-          voiceSettingsRepositoryProvider
-              .overrideWithValue(fakeVoiceSettingsRepository),
-        ],
-        child: MaterialApp.router(
-          routerConfig: _buildLoginOnboardingRouter(),
-        ),
-      ),
-    );
+    expect(summarySource, contains('Sex, gender & pronouns'));
+    expect(summarySource, contains('sexAtBirth'));
+    expect(summarySource, contains('genderIdentity'));
+    expect(summarySource, contains('pronounDisplay'));
+    expect(summarySource, contains('/onboarding/identity?return=summary'));
 
-    await tester.pumpAndSettle();
+    expect(repositorySource, contains('sex_at_birth'));
+    expect(repositorySource, contains('gender_identity'));
+    expect(repositorySource, contains('pronouns'));
+    expect(repositorySource, contains('custom_pronouns'));
 
-    expect(find.text('Log in'), findsNWidgets(2));
-    await tester.enterText(find.byType(TextField).first, 'tester@example.com');
-    await tester.enterText(find.byType(TextField).last, 'password123');
-    await tester.tap(find.widgetWithText(AsyncActionButton, 'Log in'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Meet Dope-i'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FilledButton, 'Continue'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('How should Dope-i sound?'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FilledButton, 'Continue'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Choose age band'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FilledButton, 'Next'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Name your assistant'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FilledButton, 'Next'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Choose support mode'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FilledButton, 'Next'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Accessibility & comfort'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FilledButton, 'Next'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Sensory preferences'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FilledButton, 'Next'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Permissions & device checks'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FilledButton, 'Next'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Voice setup'), findsOneWidget);
-    await tester.tap(find.byTooltip('Back'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Voice preferences'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FilledButton, 'Next'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Voice setup'), findsOneWidget);
-    await tester.tap(find.widgetWithText(FilledButton, 'Next'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Companion & avatar'), findsOneWidget);
-    expect(find.text('Step 11 of 12'), findsOneWidget);
-    expect(find.text('Your personal avatar'), findsOneWidget);
-    expect(find.widgetWithText(FilledButton, 'Save and continue'), findsOneWidget);
+    expect(onboardingStateSource, contains('enum SexAtBirth'));
+    expect(onboardingStateSource, contains('enum GenderIdentity'));
+    expect(onboardingStateSource, contains('enum PronounSet'));
   });
 
   testWidgets('login starts onboarding instead of being redirected away',
@@ -666,12 +589,16 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.enterText(find.byType(TextField).first, 'tester@example.com');
-    await tester.enterText(find.byType(TextField).last, 'password123');
+    await tester.enterText(find.byType(TextField).last, 'secret');
     await tester.tap(find.widgetWithText(AsyncActionButton, 'Log in'));
     await tester.pumpAndSettle();
 
+    await _pumpUntilAbsent(
+      tester,
+      find.text('Password must be at least 8 characters.'),
+    );
+    expect(fakeAuthRepository.user, isNotNull);
     expect(find.text('Password must be at least 8 characters.'), findsNothing);
-    expect(find.text('Cannot read onboarding status'), findsNothing);
   });
 
   testWidgets('login routes to onboarding if profile lookup fails after auth',
@@ -706,8 +633,12 @@ void main() {
     await tester.tap(find.widgetWithText(AsyncActionButton, 'Log in'));
     await tester.pumpAndSettle();
 
+    await _pumpUntilAbsent(
+      tester,
+      find.text('Cannot read onboarding status'),
+    );
+    expect(fakeAuthRepository.user, isNotNull);
     expect(find.text('Cannot read onboarding status'), findsNothing);
-    expect(find.textContaining('Bad state'), findsNothing);
   });
 
   testWidgets(

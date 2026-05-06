@@ -22,6 +22,10 @@ class AvatarV3Migration {
   }
 
   static AvatarV3Profile fromLegacyProfile(legacy_profile.UserAvatarProfile value) {
+    if (_isLegacyStarterLikeProfile(value)) {
+      return AvatarV3Options.normalize(defaultReferenceProfile);
+    }
+
     final type = _legacyHairType(value.hairType);
     final style = _defaultStyleFor(type);
     final age = _legacyAge(value.agePresentation);
@@ -98,6 +102,10 @@ class AvatarV3Migration {
   }
 
   static AvatarV3Profile fromStringProfile(string_profile.UserAvatarProfile value) {
+    if (_isStringStarterLikeProfile(value)) {
+      return AvatarV3Options.normalize(defaultReferenceProfile);
+    }
+
     final type = _stringHairType(value.hairType);
     final style = _stringHairStyle(type, value.hairStyle);
 
@@ -162,6 +170,27 @@ class AvatarV3Migration {
       shoes: AvatarV3Shoes.trainers,
     ),
   );
+
+  static bool _isLegacyStarterLikeProfile(legacy_profile.UserAvatarProfile value) {
+    // Current home/default legacy profile resolves to a generic curly-medium
+    // placeholder. That placeholder must not become a bald/simple V3 avatar.
+    // If the old profile has no image reference and uses the old generic default,
+    // promote it to the V3 starter profile.
+    return value.generatedImageUrl == null &&
+        value.localImagePath == null &&
+        value.mode == legacy_enum.AvatarMode.inspiredByMe &&
+        value.hairType.name == 'curly' &&
+        value.hairLength == legacy_enum.AvatarHairLength.medium &&
+        value.skinDetail == legacy_enum.AvatarSkinDetail.none;
+  }
+
+  static bool _isStringStarterLikeProfile(string_profile.UserAvatarProfile value) {
+    return (value.hairType == 'curly' || value.hairType == 'wavy') &&
+        (value.hairStyle.isEmpty ||
+            value.hairStyle == 'medium_wavy' ||
+            value.hairStyle == 'mediumWavy' ||
+            value.hairStyle == 'short');
+  }
 
   static AvatarV3HairType _legacyHairType(legacy_enum.AvatarHairType type) {
     final name = type.name;

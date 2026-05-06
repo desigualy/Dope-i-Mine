@@ -25,12 +25,12 @@ class _VoiceSetupScreenState extends ConsumerState<VoiceSetupScreen> {
     return OnboardingStepScaffold(
       title: 'Voice setup',
       stepNumber: 10,
-      totalSteps: 12,
+      totalSteps: 13,
       onBack: () => context.go(
         widget.returnToSummary ? '/onboarding/summary' : '/onboarding/voice',
       ),
       onNext: () => context.go(
-        widget.returnToSummary ? '/onboarding/summary' : '/onboarding/avatar',
+        widget.returnToSummary ? '/onboarding/summary' : '/onboarding/identity',
       ),
       nextLabel: widget.returnToSummary ? 'Done' : 'Next',
       child: SingleChildScrollView(
@@ -52,7 +52,8 @@ class _VoiceSetupScreenState extends ConsumerState<VoiceSetupScreen> {
             ),
             SwitchListTile(
               value: state.autoReadSteps,
-              onChanged: state.voiceEnabled ? controller.setAutoReadSteps : null,
+              onChanged:
+                  state.voiceEnabled ? controller.setAutoReadSteps : null,
               title: const Text('Auto-read steps'),
             ),
             SwitchListTile(

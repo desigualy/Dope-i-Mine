@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../avatar_engine_v4/avatar_engine_v4.dart';
 import '../../core/widgets/primary_scaffold.dart';
-import '../../domain/avatar/avatar_enums.dart' as user_avatar;
-import '../../domain/companion/dopei_mood.dart' as companion;
 import '../../domain/companion/avatar_config_model.dart';
+import '../../domain/companion/dopei_mood.dart' as companion;
 import '../avatar/current_user_avatar_provider.dart';
-import '../avatar/unified_user_avatar.dart';
-import '../core/widgets/dopei_avatar.dart';
 import '../core/controllers/avatar_controller.dart';
+import '../user_avatar/user_avatar_studio.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -63,8 +62,10 @@ class HomeScreen extends ConsumerWidget {
               ),
               icon: Icons.face_retouching_natural_rounded,
               color: Colors.tealAccent[700]!,
-              onPressed: () => context.push('/settings/companion'),
+              onPressed: () => context.push('/avatar/customize'),
             ),
+            const SizedBox(height: 20),
+            const UserAvatarStudioCard(),
             const SizedBox(height: 20),
             _MenuButton(
               title: 'New task',
@@ -108,36 +109,32 @@ class _HomeAvatarHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return configState.maybeWhen(
-      data: (config) => Center(
-        child: UnifiedUserAvatar(
-          key: const ValueKey<String>('home-unified-user-avatar'),
-          profile: config.toUserAvatarProfile(),
-          mood: _toUserAvatarMood(mood),
-          size: 132,
-        ),
-      ),
-      orElse: () => Align(
-        alignment: Alignment.center,
-        child: FloatingDopeiAvatar(
-          mood: mood,
-          size: 120,
-        ),
+    final config = configState.maybeWhen(
+      data: _v4ConfigFromLegacyCompanionConfig,
+      orElse: AvatarV4Config.starter,
+    );
+
+    return Center(
+      child: AvatarRiveView(
+        key: const ValueKey<String>('home-avatar-v4-rive'),
+        config: config,
+        size: 132,
       ),
     );
   }
 
-  user_avatar.DopeiMood _toUserAvatarMood(companion.DopeiMood mood) {
-    return switch (mood) {
-      companion.DopeiMood.focused => user_avatar.DopeiMood.focused,
-      companion.DopeiMood.happy => user_avatar.DopeiMood.happy,
-      companion.DopeiMood.celebration => user_avatar.DopeiMood.celebration,
-      companion.DopeiMood.overwhelmed => user_avatar.DopeiMood.overwhelmed,
-      companion.DopeiMood.calm => user_avatar.DopeiMood.calm,
-      companion.DopeiMood.encouraging => user_avatar.DopeiMood.encouraging,
-      companion.DopeiMood.proud => user_avatar.DopeiMood.proud,
-      companion.DopeiMood.neutral => user_avatar.DopeiMood.neutral,
-    };
+  AvatarV4Config _v4ConfigFromLegacyCompanionConfig(AvatarConfigModel config) {
+    final profile = config.toUserAvatarProfile();
+
+    return AvatarV4Config.starter().copyWith(
+      skinTone: 'legacy_${profile.skinTone.value.toRadixString(16)}',
+      hairPackId: 'hair_${profile.hairType.name}',
+      hairStyleId: '${profile.hairType.name}_${profile.hairLength.name}',
+      hairColor: 'legacy_${profile.hairColor.value.toRadixString(16)}',
+      freckles: profile.skinDetail.name == 'freckles',
+      facialHairStyleId: 'none',
+      updatedAtIso: DateTime.now().toUtc().toIso8601String(),
+    );
   }
 }
 

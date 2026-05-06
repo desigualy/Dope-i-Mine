@@ -6,7 +6,7 @@ import '../avatar_v3/avatar_v3_renderer.dart';
 class AvatarEngineBridge extends StatelessWidget {
   const AvatarEngineBridge({
     super.key,
-    required this.profile,
+    this.profile,
     this.size = 180,
   });
 
@@ -17,7 +17,7 @@ class AvatarEngineBridge extends StatelessWidget {
   Widget build(BuildContext context) {
     return AvatarV3Renderer(
       profile: AvatarV3Migration.fromAny(profile),
-      size: size,
+      size: size <= 0 ? 180 : size,
     );
   }
 }

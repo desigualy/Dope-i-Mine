@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/errors/user_facing_error_mapper.dart';
 import '../../core/widgets/error_banner.dart';
 import '../../domain/companion/avatar_config_model.dart';
+import '../../domain/onboarding/onboarding_state.dart';
 import '../../providers.dart';
 import 'onboarding_controller.dart';
 import 'widgets/onboarding_step_scaffold.dart';
@@ -23,7 +24,7 @@ class _OnboardingSummaryScreenState
   String? _errorText;
   late final Future<AvatarConfigModel?> _avatarConfigFuture;
 
-  static const int _totalSteps = 12;
+  static const int _totalSteps = 13;
 
   Widget _summaryRow({
     required String label,
@@ -92,6 +93,10 @@ class _OnboardingSummaryScreenState
                             pronunciation: state.pronunciation,
                             mode: state.mode,
                             voiceEnabled: state.voiceEnabled,
+                            sexAtBirth: state.sexAtBirth.name,
+                            genderIdentity: state.genderIdentity.name,
+                            pronouns: state.pronouns.name,
+                            customPronouns: state.customPronouns,
                             reducedAnimation: state.reducedAnimation,
                             largeText: state.largeText,
                             soundEnabled: state.soundEnabled,
@@ -151,6 +156,12 @@ class _OnboardingSummaryScreenState
               value: state.assistantDisplayName,
               onEdit: () =>
                   context.go('/onboarding/assistant-name?return=summary'),
+            ),
+            _summaryRow(
+              label: 'Sex, gender & pronouns',
+              value:
+                  'Sex at birth: ${state.sexAtBirth.label} · Gender: ${state.genderIdentity.label} · Pronouns: ${state.pronounDisplay}',
+              onEdit: () => context.go('/onboarding/identity?return=summary'),
             ),
             FutureBuilder<AvatarConfigModel?>(
               future: _avatarConfigFuture,

@@ -1,0 +1,29 @@
+{
+  "assetPath": "assets/avatar_rive/base_avatar.riv",
+  "requiredArtboard": "Avatar",
+  "requiredStateMachine": "AvatarState",
+  "requiredNumberInputs": [
+    "skinTone",
+    "faceShape",
+    "hairPack",
+    "hairStyle",
+    "hairColor",
+    "bodyPreset"
+  ],
+  "requiredBooleanInputs": [
+    "freckles",
+    "vitiligo",
+    "hasFacialHair",
+    "hasGlasses"
+  ],
+  "importTools": [
+    "tools/import_avatar_v4_base_rive.ps1",
+    "tools/verify_avatar_v4_base_rive.ps1"
+  ],
+  "runtimeChecks": [
+    "flutter analyze",
+    "flutter test",
+    "flutter run"
+  ],
+  "fallbackRule": "If base_avatar.riv is missing or invalid, show the missing-rig diagnostic. Do not restore the V3 blob renderer."
+}

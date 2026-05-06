@@ -1,0 +1,23 @@
+Place the production Rive file here:
+
+assets/avatar_rive/base_avatar.riv
+
+Do not rename it.
+
+Required:
+Artboard: Avatar
+State machine: AvatarState
+
+Required number inputs:
+skinTone
+faceShape
+hairPack
+hairStyle
+hairColor
+bodyPreset
+
+Required boolean inputs:
+freckles
+vitiligo
+hasFacialHair
+hasGlasses

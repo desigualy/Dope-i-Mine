@@ -1,3 +1,4 @@
+// ignore_for_file: prefer_const_declarations
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/local/local_avatar_v3_inventory_store.dart';

@@ -51,6 +51,10 @@ class ProfileRepositoryImpl {
     String praiseLevel = 'medium',
     bool iconMode = false,
     bool reduceSurprises = true,
+    String? sexAtBirth,
+    String? genderIdentity,
+    String? pronouns,
+    String? customPronouns,
   }) async {
     await ensureProfileExists(
       userId: userId,
@@ -82,6 +86,10 @@ class ProfileRepositoryImpl {
       'age_band': ageBand.name,
       'default_mode': _modeToDb(mode),
       'voice_enabled': voiceEnabled,
+      'sex_at_birth': sexAtBirth,
+      'gender_identity': genderIdentity,
+      'pronouns': pronouns,
+      'custom_pronouns': customPronouns,
       'onboarding_completed': true,
       'onboarding_completed_at': DateTime.now().toIso8601String(),
       'updated_at': DateTime.now().toIso8601String(),

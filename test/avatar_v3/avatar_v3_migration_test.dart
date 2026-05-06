@@ -1,3 +1,4 @@
+// ignore_for_file: prefer_const_declarations
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dope_i_mine/domain/avatar_v3/avatar_v3_enums.dart';
 import 'package:dope_i_mine/domain/avatar_v3/avatar_v3_migration.dart';

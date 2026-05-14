@@ -13,5 +13,6 @@ echo "Deploying Dope-i-Mine edge functions..."
 supabase functions deploy create-task
 supabase functions deploy breakdown-step
 supabase functions deploy overwhelm-rescue
+supabase functions deploy send-caregiver-invite
 
 echo "Functions deployed successfully!"

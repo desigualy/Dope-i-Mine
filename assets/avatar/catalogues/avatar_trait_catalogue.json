@@ -1,0 +1,5999 @@
+{
+  "schemaVersion": 1,
+  "principles": [
+    "Identity labels are optional self-description only.",
+    "Identity labels do not force appearance traits.",
+    "Appearance traits do not imply identity.",
+    "Core identity expression, accessibility items, cultural and religious headwear, body traits, skin tone, hair texture, and private abstract mode remain free."
+  ],
+  "traits": [
+    {
+      "id": "white",
+      "label": "White",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 1
+    },
+    {
+      "id": "black",
+      "label": "Black",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 2
+    },
+    {
+      "id": "mixed_heritage",
+      "label": "Mixed Heritage",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 3
+    },
+    {
+      "id": "latino_latina_latinx",
+      "label": "Latino / Latina / Latinx",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 4
+    },
+    {
+      "id": "middle_eastern",
+      "label": "Middle Eastern",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 5
+    },
+    {
+      "id": "west_asian",
+      "label": "West Asian",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 6
+    },
+    {
+      "id": "south_asian",
+      "label": "South Asian",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 7
+    },
+    {
+      "id": "east_asian",
+      "label": "East Asian",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 8
+    },
+    {
+      "id": "southeast_asian",
+      "label": "Southeast Asian",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 9
+    },
+    {
+      "id": "central_asian",
+      "label": "Central Asian",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 10
+    },
+    {
+      "id": "african",
+      "label": "African",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 11
+    },
+    {
+      "id": "caribbean",
+      "label": "Caribbean",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 12
+    },
+    {
+      "id": "european",
+      "label": "European",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 13
+    },
+    {
+      "id": "eastern_european",
+      "label": "Eastern European",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 14
+    },
+    {
+      "id": "russian",
+      "label": "Russian",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 15
+    },
+    {
+      "id": "native_american",
+      "label": "Native American",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 16
+    },
+    {
+      "id": "first_nations",
+      "label": "First Nations",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 17
+    },
+    {
+      "id": "aboriginal_australian",
+      "label": "Aboriginal Australian",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 18
+    },
+    {
+      "id": "maori",
+      "label": "Maori",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 19
+    },
+    {
+      "id": "pacific_islander",
+      "label": "Pacific Islander",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 20
+    },
+    {
+      "id": "samoan",
+      "label": "Samoan",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 21
+    },
+    {
+      "id": "tongan",
+      "label": "Tongan",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 22
+    },
+    {
+      "id": "fijian",
+      "label": "Fijian",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 23
+    },
+    {
+      "id": "kiwi_new_zealander",
+      "label": "Kiwi / New Zealander",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 24
+    },
+    {
+      "id": "roma",
+      "label": "Roma",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 25
+    },
+    {
+      "id": "jewish",
+      "label": "Jewish",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 26
+    },
+    {
+      "id": "arab",
+      "label": "Arab",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 27
+    },
+    {
+      "id": "persian",
+      "label": "Persian",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 28
+    },
+    {
+      "id": "turkish",
+      "label": "Turkish",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 29
+    },
+    {
+      "id": "north_african",
+      "label": "North African",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 30
+    },
+    {
+      "id": "prefer_not_to_say",
+      "label": "Prefer not to say",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 31
+    },
+    {
+      "id": "custom_identity",
+      "label": "Custom identity",
+      "category": "heritage_identity",
+      "description": "Optional self-description only. This identity label never changes face, skin, hair, nose, eye, or body traits.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 32
+    },
+    {
+      "id": "porcelain_cool",
+      "label": "Porcelain Cool",
+      "category": "skin_tone",
+      "description": "User-controlled skin tone or pigmentation trait. It is not inferred from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "skinTone.porcelain_cool",
+      "glbMaterialSlot": "skin_material",
+      "sortOrder": 1
+    },
+    {
+      "id": "porcelain_warm",
+      "label": "Porcelain Warm",
+      "category": "skin_tone",
+      "description": "User-controlled skin tone or pigmentation trait. It is not inferred from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "skinTone.porcelain_warm",
+      "glbMaterialSlot": "skin_material",
+      "sortOrder": 2
+    },
+    {
+      "id": "fair_cool",
+      "label": "Fair Cool",
+      "category": "skin_tone",
+      "description": "User-controlled skin tone or pigmentation trait. It is not inferred from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "skinTone.fair_cool",
+      "glbMaterialSlot": "skin_material",
+      "sortOrder": 3
+    },
+    {
+      "id": "fair_neutral",
+      "label": "Fair Neutral",
+      "category": "skin_tone",
+      "description": "User-controlled skin tone or pigmentation trait. It is not inferred from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "skinTone.fair_neutral",
+      "glbMaterialSlot": "skin_material",
+      "sortOrder": 4
+    },
+    {
+      "id": "fair_warm",
+      "label": "Fair Warm",
+      "category": "skin_tone",
+      "description": "User-controlled skin tone or pigmentation trait. It is not inferred from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "skinTone.fair_warm",
+      "glbMaterialSlot": "skin_material",
+      "sortOrder": 5
+    },
+    {
+      "id": "light_olive",
+      "label": "Light Olive",
+      "category": "skin_tone",
+      "description": "User-controlled skin tone or pigmentation trait. It is not inferred from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "skinTone.light_olive",
+      "glbMaterialSlot": "skin_material",
+      "sortOrder": 6
+    },
+    {
+      "id": "medium_olive",
+      "label": "Medium Olive",
+      "category": "skin_tone",
+      "description": "User-controlled skin tone or pigmentation trait. It is not inferred from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "skinTone.medium_olive",
+      "glbMaterialSlot": "skin_material",
+      "sortOrder": 7
+    },
+    {
+      "id": "tan_warm",
+      "label": "Tan Warm",
+      "category": "skin_tone",
+      "description": "User-controlled skin tone or pigmentation trait. It is not inferred from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "skinTone.tan_warm",
+      "glbMaterialSlot": "skin_material",
+      "sortOrder": 8
+    },
+    {
+      "id": "golden_brown",
+      "label": "Golden Brown",
+      "category": "skin_tone",
+      "description": "User-controlled skin tone or pigmentation trait. It is not inferred from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "skinTone.golden_brown",
+      "glbMaterialSlot": "skin_material",
+      "sortOrder": 9
+    },
+    {
+      "id": "medium_brown",
+      "label": "Medium Brown",
+      "category": "skin_tone",
+      "description": "User-controlled skin tone or pigmentation trait. It is not inferred from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "skinTone.medium_brown",
+      "glbMaterialSlot": "skin_material",
+      "sortOrder": 10
+    },
+    {
+      "id": "deep_brown",
+      "label": "Deep Brown",
+      "category": "skin_tone",
+      "description": "User-controlled skin tone or pigmentation trait. It is not inferred from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "skinTone.deep_brown",
+      "glbMaterialSlot": "skin_material",
+      "sortOrder": 11
+    },
+    {
+      "id": "very_deep_brown",
+      "label": "Very Deep Brown",
+      "category": "skin_tone",
+      "description": "User-controlled skin tone or pigmentation trait. It is not inferred from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "skinTone.very_deep_brown",
+      "glbMaterialSlot": "skin_material",
+      "sortOrder": 12
+    },
+    {
+      "id": "albinism_type_1",
+      "label": "Albinism type 1 pigmentation",
+      "category": "skin_tone",
+      "description": "User-controlled skin tone or pigmentation trait. It is not inferred from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "skinTone.albinism_type_1",
+      "glbMaterialSlot": "skin_material",
+      "sortOrder": 13
+    },
+    {
+      "id": "albinism_type_2",
+      "label": "Albinism type 2 pigmentation",
+      "category": "skin_tone",
+      "description": "User-controlled skin tone or pigmentation trait. It is not inferred from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "skinTone.albinism_type_2",
+      "glbMaterialSlot": "skin_material",
+      "sortOrder": 14
+    },
+    {
+      "id": "vitiligo_pattern_light",
+      "label": "Vitiligo Pattern Light",
+      "category": "skin_detail",
+      "description": "Optional skin detail controlled independently from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "skinDetail.vitiligo_pattern_light",
+      "glbMaterialSlot": "skin_detail_material",
+      "sortOrder": 1
+    },
+    {
+      "id": "vitiligo_pattern_medium",
+      "label": "Vitiligo Pattern Medium",
+      "category": "skin_detail",
+      "description": "Optional skin detail controlled independently from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "skinDetail.vitiligo_pattern_medium",
+      "glbMaterialSlot": "skin_detail_material",
+      "sortOrder": 2
+    },
+    {
+      "id": "vitiligo_pattern_deep",
+      "label": "Vitiligo Pattern Deep",
+      "category": "skin_detail",
+      "description": "Optional skin detail controlled independently from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "skinDetail.vitiligo_pattern_deep",
+      "glbMaterialSlot": "skin_detail_material",
+      "sortOrder": 3
+    },
+    {
+      "id": "freckles_light",
+      "label": "Freckles Light",
+      "category": "skin_detail",
+      "description": "Optional skin detail controlled independently from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "skinDetail.freckles_light",
+      "glbMaterialSlot": "skin_detail_material",
+      "sortOrder": 4
+    },
+    {
+      "id": "freckles_medium",
+      "label": "Freckles Medium",
+      "category": "skin_detail",
+      "description": "Optional skin detail controlled independently from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "skinDetail.freckles_medium",
+      "glbMaterialSlot": "skin_detail_material",
+      "sortOrder": 5
+    },
+    {
+      "id": "freckles_dense",
+      "label": "Freckles Dense",
+      "category": "skin_detail",
+      "description": "Optional skin detail controlled independently from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "skinDetail.freckles_dense",
+      "glbMaterialSlot": "skin_detail_material",
+      "sortOrder": 6
+    },
+    {
+      "id": "birthmarks",
+      "label": "Birthmarks",
+      "category": "skin_detail",
+      "description": "Optional skin detail controlled independently from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "skinDetail.birthmarks",
+      "glbMaterialSlot": "skin_detail_material",
+      "sortOrder": 7
+    },
+    {
+      "id": "scars",
+      "label": "Scars",
+      "category": "skin_detail",
+      "description": "Optional skin detail controlled independently from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "skinDetail.scars",
+      "glbMaterialSlot": "skin_detail_material",
+      "sortOrder": 8
+    },
+    {
+      "id": "mature_lines",
+      "label": "Mature Lines",
+      "category": "skin_detail",
+      "description": "Optional skin detail controlled independently from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "skinDetail.mature_lines",
+      "glbMaterialSlot": "skin_detail_material",
+      "sortOrder": 9
+    },
+    {
+      "id": "straight_fine",
+      "label": "Straight Fine",
+      "category": "hair_texture",
+      "description": "User-controlled hair texture. It does not imply heritage or identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairTexture.straight_fine",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 1
+    },
+    {
+      "id": "straight_thick",
+      "label": "Straight Thick",
+      "category": "hair_texture",
+      "description": "User-controlled hair texture. It does not imply heritage or identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairTexture.straight_thick",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 2
+    },
+    {
+      "id": "wavy_loose",
+      "label": "Wavy Loose",
+      "category": "hair_texture",
+      "description": "User-controlled hair texture. It does not imply heritage or identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairTexture.wavy_loose",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 3
+    },
+    {
+      "id": "wavy_thick",
+      "label": "Wavy Thick",
+      "category": "hair_texture",
+      "description": "User-controlled hair texture. It does not imply heritage or identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairTexture.wavy_thick",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 4
+    },
+    {
+      "id": "curly_loose",
+      "label": "Curly Loose",
+      "category": "hair_texture",
+      "description": "User-controlled hair texture. It does not imply heritage or identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairTexture.curly_loose",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 5
+    },
+    {
+      "id": "curly_medium",
+      "label": "Curly Medium",
+      "category": "hair_texture",
+      "description": "User-controlled hair texture. It does not imply heritage or identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairTexture.curly_medium",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 6
+    },
+    {
+      "id": "curly_tight",
+      "label": "Curly Tight",
+      "category": "hair_texture",
+      "description": "User-controlled hair texture. It does not imply heritage or identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairTexture.curly_tight",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 7
+    },
+    {
+      "id": "coily_soft",
+      "label": "Coily Soft",
+      "category": "hair_texture",
+      "description": "User-controlled hair texture. It does not imply heritage or identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairTexture.coily_soft",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 8
+    },
+    {
+      "id": "coily_dense",
+      "label": "Coily Dense",
+      "category": "hair_texture",
+      "description": "User-controlled hair texture. It does not imply heritage or identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairTexture.coily_dense",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 9
+    },
+    {
+      "id": "afro_textured",
+      "label": "Afro Textured",
+      "category": "hair_texture",
+      "description": "User-controlled hair texture. It does not imply heritage or identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairTexture.afro_textured",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 10
+    },
+    {
+      "id": "kinky_coil",
+      "label": "Kinky Coil",
+      "category": "hair_texture",
+      "description": "User-controlled hair texture. It does not imply heritage or identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairTexture.kinky_coil",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 11
+    },
+    {
+      "id": "locs",
+      "label": "Locs",
+      "category": "hair_style",
+      "description": "User-selected hair style or coverage option.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairStyle.locs",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 1
+    },
+    {
+      "id": "braids",
+      "label": "Braids",
+      "category": "hair_style",
+      "description": "User-selected hair style or coverage option.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairStyle.braids",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 2
+    },
+    {
+      "id": "cornrows",
+      "label": "Cornrows",
+      "category": "hair_style",
+      "description": "User-selected hair style or coverage option.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairStyle.cornrows",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 3
+    },
+    {
+      "id": "twists",
+      "label": "Twists",
+      "category": "hair_style",
+      "description": "User-selected hair style or coverage option.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairStyle.twists",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 4
+    },
+    {
+      "id": "protective_style",
+      "label": "Protective Style",
+      "category": "hair_style",
+      "description": "User-selected hair style or coverage option.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairStyle.protective_style",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 5
+    },
+    {
+      "id": "shaved",
+      "label": "Shaved",
+      "category": "hair_style",
+      "description": "User-selected hair style or coverage option.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairStyle.shaved",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 6
+    },
+    {
+      "id": "bald",
+      "label": "Bald",
+      "category": "hair_style",
+      "description": "User-selected hair style or coverage option.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairStyle.bald",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 7
+    },
+    {
+      "id": "covered",
+      "label": "Covered",
+      "category": "hair_style",
+      "description": "User-selected hair style or coverage option.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairStyle.covered",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 8
+    },
+    {
+      "id": "buzz_cut",
+      "label": "Buzz Cut",
+      "category": "hair_style",
+      "description": "User-selected hair style or coverage option.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairStyle.buzz_cut",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 9
+    },
+    {
+      "id": "short_crop",
+      "label": "Short Crop",
+      "category": "hair_style",
+      "description": "User-selected hair style or coverage option.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairStyle.short_crop",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 10
+    },
+    {
+      "id": "pixie",
+      "label": "Pixie",
+      "category": "hair_style",
+      "description": "User-selected hair style or coverage option.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairStyle.pixie",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 11
+    },
+    {
+      "id": "bob",
+      "label": "Bob",
+      "category": "hair_style",
+      "description": "User-selected hair style or coverage option.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairStyle.bob",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 12
+    },
+    {
+      "id": "curly_bob",
+      "label": "Curly Bob",
+      "category": "hair_style",
+      "description": "User-selected hair style or coverage option.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairStyle.curly_bob",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 13
+    },
+    {
+      "id": "shoulder_length",
+      "label": "Shoulder Length",
+      "category": "hair_style",
+      "description": "User-selected hair style or coverage option.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairStyle.shoulder_length",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 14
+    },
+    {
+      "id": "long_wavy",
+      "label": "Long Wavy",
+      "category": "hair_style",
+      "description": "User-selected hair style or coverage option.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairStyle.long_wavy",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 15
+    },
+    {
+      "id": "long_straight",
+      "label": "Long Straight",
+      "category": "hair_style",
+      "description": "User-selected hair style or coverage option.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairStyle.long_straight",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 16
+    },
+    {
+      "id": "ringlet_bob",
+      "label": "Ringlet Bob",
+      "category": "hair_style",
+      "description": "User-selected hair style or coverage option.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairStyle.ringlet_bob",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 17
+    },
+    {
+      "id": "full_afro",
+      "label": "Full Afro",
+      "category": "hair_style",
+      "description": "User-selected hair style or coverage option.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairStyle.full_afro",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 18
+    },
+    {
+      "id": "afro_puff",
+      "label": "Afro Puff",
+      "category": "hair_style",
+      "description": "User-selected hair style or coverage option.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairStyle.afro_puff",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 19
+    },
+    {
+      "id": "two_strand_twists",
+      "label": "Two Strand Twists",
+      "category": "hair_style",
+      "description": "User-selected hair style or coverage option.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairStyle.two_strand_twists",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 20
+    },
+    {
+      "id": "locs_shoulder",
+      "label": "Locs Shoulder",
+      "category": "hair_style",
+      "description": "User-selected hair style or coverage option.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairStyle.locs_shoulder",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 21
+    },
+    {
+      "id": "locs_long",
+      "label": "Locs Long",
+      "category": "hair_style",
+      "description": "User-selected hair style or coverage option.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairStyle.locs_long",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 22
+    },
+    {
+      "id": "braids_long",
+      "label": "Braids Long",
+      "category": "hair_style",
+      "description": "User-selected hair style or coverage option.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairStyle.braids_long",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 23
+    },
+    {
+      "id": "head_covered",
+      "label": "Head Covered",
+      "category": "hair_style",
+      "description": "User-selected hair style or coverage option.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairStyle.head_covered",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 24
+    },
+    {
+      "id": "shaved",
+      "label": "Shaved",
+      "category": "hair_length",
+      "description": "Optional hair length control for plugin-compatible art packs.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairLength.shaved",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 1
+    },
+    {
+      "id": "short",
+      "label": "Short",
+      "category": "hair_length",
+      "description": "Optional hair length control for plugin-compatible art packs.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairLength.short",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 2
+    },
+    {
+      "id": "medium",
+      "label": "Medium",
+      "category": "hair_length",
+      "description": "Optional hair length control for plugin-compatible art packs.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairLength.medium",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 3
+    },
+    {
+      "id": "shoulder_length",
+      "label": "Shoulder Length",
+      "category": "hair_length",
+      "description": "Optional hair length control for plugin-compatible art packs.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairLength.shoulder_length",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 4
+    },
+    {
+      "id": "long",
+      "label": "Long",
+      "category": "hair_length",
+      "description": "Optional hair length control for plugin-compatible art packs.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairLength.long",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 5
+    },
+    {
+      "id": "very_long",
+      "label": "Very Long",
+      "category": "hair_length",
+      "description": "Optional hair length control for plugin-compatible art packs.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairLength.very_long",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 6
+    },
+    {
+      "id": "bald",
+      "label": "Bald",
+      "category": "hair_length",
+      "description": "Optional hair length control for plugin-compatible art packs.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairLength.bald",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 7
+    },
+    {
+      "id": "covered",
+      "label": "Covered",
+      "category": "hair_length",
+      "description": "Optional hair length control for plugin-compatible art packs.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairLength.covered",
+      "glbMaterialSlot": "hair_mesh",
+      "sortOrder": 8
+    },
+    {
+      "id": "black",
+      "label": "Black",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.black",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 1
+    },
+    {
+      "id": "soft_black",
+      "label": "Soft Black",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.soft_black",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 2
+    },
+    {
+      "id": "dark_brown",
+      "label": "Dark Brown",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.dark_brown",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 3
+    },
+    {
+      "id": "medium_brown",
+      "label": "Medium Brown",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.medium_brown",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 4
+    },
+    {
+      "id": "light_brown",
+      "label": "Light Brown",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.light_brown",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 5
+    },
+    {
+      "id": "dark_blonde",
+      "label": "Dark Blonde",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.dark_blonde",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 6
+    },
+    {
+      "id": "blonde",
+      "label": "Blonde",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.blonde",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 7
+    },
+    {
+      "id": "platinum_blonde",
+      "label": "Platinum Blonde",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.platinum_blonde",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 8
+    },
+    {
+      "id": "white_blonde",
+      "label": "White Blonde",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.white_blonde",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 9
+    },
+    {
+      "id": "grey",
+      "label": "Grey",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.grey",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 10
+    },
+    {
+      "id": "silver",
+      "label": "Silver",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.silver",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 11
+    },
+    {
+      "id": "ginger",
+      "label": "Ginger",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.ginger",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 12
+    },
+    {
+      "id": "copper",
+      "label": "Copper",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.copper",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 13
+    },
+    {
+      "id": "auburn",
+      "label": "Auburn",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.auburn",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 14
+    },
+    {
+      "id": "strawberry_blonde",
+      "label": "Strawberry Blonde",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.strawberry_blonde",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 15
+    },
+    {
+      "id": "red_brown",
+      "label": "Red Brown",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.red_brown",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 16
+    },
+    {
+      "id": "albino_white",
+      "label": "Albinism white",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.albino_white",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 17
+    },
+    {
+      "id": "pastel",
+      "label": "Pastel",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.pastel",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 18
+    },
+    {
+      "id": "dyed_blue",
+      "label": "Dyed Blue",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.dyed_blue",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 19
+    },
+    {
+      "id": "dyed_purple",
+      "label": "Dyed Purple",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.dyed_purple",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 20
+    },
+    {
+      "id": "dyed_pink",
+      "label": "Dyed Pink",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.dyed_pink",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 21
+    },
+    {
+      "id": "dyed_green",
+      "label": "Dyed Green",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.dyed_green",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 22
+    },
+    {
+      "id": "custom_colour",
+      "label": "Custom Colour",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.custom_colour",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 23
+    },
+    {
+      "id": "copper_brown",
+      "label": "Copper Brown",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.copper_brown",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 24
+    },
+    {
+      "id": "brown",
+      "label": "Brown",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.brown",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 25
+    },
+    {
+      "id": "white",
+      "label": "White",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.white",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 26
+    },
+    {
+      "id": "blue",
+      "label": "Blue",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.blue",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 27
+    },
+    {
+      "id": "purple",
+      "label": "Purple",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.purple",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 28
+    },
+    {
+      "id": "pink",
+      "label": "Pink",
+      "category": "hair_colour",
+      "description": "User-controlled hair colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "hairColour.pink",
+      "glbMaterialSlot": "hair_material",
+      "sortOrder": 29
+    },
+    {
+      "id": "round",
+      "label": "Round",
+      "category": "face_shape",
+      "description": "User-controlled face shape. It is independent from heritage labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "faceShape.round",
+      "glbMaterialSlot": null,
+      "sortOrder": 1
+    },
+    {
+      "id": "soft_oval",
+      "label": "Soft Oval",
+      "category": "face_shape",
+      "description": "User-controlled face shape. It is independent from heritage labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "faceShape.soft_oval",
+      "glbMaterialSlot": null,
+      "sortOrder": 2
+    },
+    {
+      "id": "oval",
+      "label": "Oval",
+      "category": "face_shape",
+      "description": "User-controlled face shape. It is independent from heritage labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "faceShape.oval",
+      "glbMaterialSlot": null,
+      "sortOrder": 3
+    },
+    {
+      "id": "square",
+      "label": "Square",
+      "category": "face_shape",
+      "description": "User-controlled face shape. It is independent from heritage labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "faceShape.square",
+      "glbMaterialSlot": null,
+      "sortOrder": 4
+    },
+    {
+      "id": "rectangular",
+      "label": "Rectangular",
+      "category": "face_shape",
+      "description": "User-controlled face shape. It is independent from heritage labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "faceShape.rectangular",
+      "glbMaterialSlot": null,
+      "sortOrder": 5
+    },
+    {
+      "id": "heart",
+      "label": "Heart",
+      "category": "face_shape",
+      "description": "User-controlled face shape. It is independent from heritage labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "faceShape.heart",
+      "glbMaterialSlot": null,
+      "sortOrder": 6
+    },
+    {
+      "id": "diamond",
+      "label": "Diamond",
+      "category": "face_shape",
+      "description": "User-controlled face shape. It is independent from heritage labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "faceShape.diamond",
+      "glbMaterialSlot": null,
+      "sortOrder": 7
+    },
+    {
+      "id": "long",
+      "label": "Long",
+      "category": "face_shape",
+      "description": "User-controlled face shape. It is independent from heritage labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "faceShape.long",
+      "glbMaterialSlot": null,
+      "sortOrder": 8
+    },
+    {
+      "id": "broad",
+      "label": "Broad",
+      "category": "face_shape",
+      "description": "User-controlled face shape. It is independent from heritage labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "faceShape.broad",
+      "glbMaterialSlot": null,
+      "sortOrder": 9
+    },
+    {
+      "id": "narrow",
+      "label": "Narrow",
+      "category": "face_shape",
+      "description": "User-controlled face shape. It is independent from heritage labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "faceShape.narrow",
+      "glbMaterialSlot": null,
+      "sortOrder": 10
+    },
+    {
+      "id": "full_cheeked",
+      "label": "Full Cheeked",
+      "category": "face_shape",
+      "description": "User-controlled face shape. It is independent from heritage labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "faceShape.full_cheeked",
+      "glbMaterialSlot": null,
+      "sortOrder": 11
+    },
+    {
+      "id": "high_cheekbone",
+      "label": "High Cheekbone",
+      "category": "face_shape",
+      "description": "User-controlled face shape. It is independent from heritage labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "faceShape.high_cheekbone",
+      "glbMaterialSlot": null,
+      "sortOrder": 12
+    },
+    {
+      "id": "soft_jaw",
+      "label": "Soft Jaw",
+      "category": "face_shape",
+      "description": "User-controlled face shape. It is independent from heritage labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "faceShape.soft_jaw",
+      "glbMaterialSlot": null,
+      "sortOrder": 13
+    },
+    {
+      "id": "strong_jaw",
+      "label": "Strong Jaw",
+      "category": "face_shape",
+      "description": "User-controlled face shape. It is independent from heritage labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "faceShape.strong_jaw",
+      "glbMaterialSlot": null,
+      "sortOrder": 14
+    },
+    {
+      "id": "round",
+      "label": "Round",
+      "category": "eye_shape",
+      "description": "User-controlled eye shape. It is independent from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "eyeShape.round",
+      "glbMaterialSlot": null,
+      "sortOrder": 1
+    },
+    {
+      "id": "almond",
+      "label": "Almond",
+      "category": "eye_shape",
+      "description": "User-controlled eye shape. It is independent from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "eyeShape.almond",
+      "glbMaterialSlot": null,
+      "sortOrder": 2
+    },
+    {
+      "id": "hooded",
+      "label": "Hooded",
+      "category": "eye_shape",
+      "description": "User-controlled eye shape. It is independent from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "eyeShape.hooded",
+      "glbMaterialSlot": null,
+      "sortOrder": 3
+    },
+    {
+      "id": "monolid",
+      "label": "Monolid",
+      "category": "eye_shape",
+      "description": "User-controlled eye shape. It is independent from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "eyeShape.monolid",
+      "glbMaterialSlot": null,
+      "sortOrder": 4
+    },
+    {
+      "id": "deep_set",
+      "label": "Deep Set",
+      "category": "eye_shape",
+      "description": "User-controlled eye shape. It is independent from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "eyeShape.deep_set",
+      "glbMaterialSlot": null,
+      "sortOrder": 5
+    },
+    {
+      "id": "upturned",
+      "label": "Upturned",
+      "category": "eye_shape",
+      "description": "User-controlled eye shape. It is independent from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "eyeShape.upturned",
+      "glbMaterialSlot": null,
+      "sortOrder": 6
+    },
+    {
+      "id": "downturned",
+      "label": "Downturned",
+      "category": "eye_shape",
+      "description": "User-controlled eye shape. It is independent from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "eyeShape.downturned",
+      "glbMaterialSlot": null,
+      "sortOrder": 7
+    },
+    {
+      "id": "wide_set",
+      "label": "Wide Set",
+      "category": "eye_shape",
+      "description": "User-controlled eye shape. It is independent from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "eyeShape.wide_set",
+      "glbMaterialSlot": null,
+      "sortOrder": 8
+    },
+    {
+      "id": "close_set",
+      "label": "Close Set",
+      "category": "eye_shape",
+      "description": "User-controlled eye shape. It is independent from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "eyeShape.close_set",
+      "glbMaterialSlot": null,
+      "sortOrder": 9
+    },
+    {
+      "id": "soft_lidded",
+      "label": "Soft Lidded",
+      "category": "eye_shape",
+      "description": "User-controlled eye shape. It is independent from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "eyeShape.soft_lidded",
+      "glbMaterialSlot": null,
+      "sortOrder": 10
+    },
+    {
+      "id": "soft_almond",
+      "label": "Soft Almond",
+      "category": "eye_shape",
+      "description": "User-controlled eye shape. It is independent from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "eyeShape.soft_almond",
+      "glbMaterialSlot": null,
+      "sortOrder": 11
+    },
+    {
+      "id": "brown",
+      "label": "Brown",
+      "category": "eye_colour",
+      "description": "User-controlled eye colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "eyeColour.brown",
+      "glbMaterialSlot": "eye_material",
+      "sortOrder": 1
+    },
+    {
+      "id": "dark_brown",
+      "label": "Dark Brown",
+      "category": "eye_colour",
+      "description": "User-controlled eye colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "eyeColour.dark_brown",
+      "glbMaterialSlot": "eye_material",
+      "sortOrder": 2
+    },
+    {
+      "id": "black_brown",
+      "label": "Black Brown",
+      "category": "eye_colour",
+      "description": "User-controlled eye colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "eyeColour.black_brown",
+      "glbMaterialSlot": "eye_material",
+      "sortOrder": 3
+    },
+    {
+      "id": "hazel",
+      "label": "Hazel",
+      "category": "eye_colour",
+      "description": "User-controlled eye colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "eyeColour.hazel",
+      "glbMaterialSlot": "eye_material",
+      "sortOrder": 4
+    },
+    {
+      "id": "amber",
+      "label": "Amber",
+      "category": "eye_colour",
+      "description": "User-controlled eye colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "eyeColour.amber",
+      "glbMaterialSlot": "eye_material",
+      "sortOrder": 5
+    },
+    {
+      "id": "green",
+      "label": "Green",
+      "category": "eye_colour",
+      "description": "User-controlled eye colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "eyeColour.green",
+      "glbMaterialSlot": "eye_material",
+      "sortOrder": 6
+    },
+    {
+      "id": "blue",
+      "label": "Blue",
+      "category": "eye_colour",
+      "description": "User-controlled eye colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "eyeColour.blue",
+      "glbMaterialSlot": "eye_material",
+      "sortOrder": 7
+    },
+    {
+      "id": "grey",
+      "label": "Grey",
+      "category": "eye_colour",
+      "description": "User-controlled eye colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "eyeColour.grey",
+      "glbMaterialSlot": "eye_material",
+      "sortOrder": 8
+    },
+    {
+      "id": "light_blue",
+      "label": "Light Blue",
+      "category": "eye_colour",
+      "description": "User-controlled eye colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "eyeColour.light_blue",
+      "glbMaterialSlot": "eye_material",
+      "sortOrder": 9
+    },
+    {
+      "id": "violet_tint",
+      "label": "Violet Tint",
+      "category": "eye_colour",
+      "description": "User-controlled eye colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "eyeColour.violet_tint",
+      "glbMaterialSlot": "eye_material",
+      "sortOrder": 10
+    },
+    {
+      "id": "albinism_light",
+      "label": "Albinism Light",
+      "category": "eye_colour",
+      "description": "User-controlled eye colour or pigmentation trait.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "eyeColour.albinism_light",
+      "glbMaterialSlot": "eye_material",
+      "sortOrder": 11
+    },
+    {
+      "id": "soft_natural",
+      "label": "Soft Natural",
+      "category": "brow_style",
+      "description": "User-controlled brow style.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "browStyle.soft_natural",
+      "glbMaterialSlot": null,
+      "sortOrder": 1
+    },
+    {
+      "id": "straight",
+      "label": "Straight",
+      "category": "brow_style",
+      "description": "User-controlled brow style.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "browStyle.straight",
+      "glbMaterialSlot": null,
+      "sortOrder": 2
+    },
+    {
+      "id": "arched",
+      "label": "Arched",
+      "category": "brow_style",
+      "description": "User-controlled brow style.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "browStyle.arched",
+      "glbMaterialSlot": null,
+      "sortOrder": 3
+    },
+    {
+      "id": "full",
+      "label": "Full",
+      "category": "brow_style",
+      "description": "User-controlled brow style.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "browStyle.full",
+      "glbMaterialSlot": null,
+      "sortOrder": 4
+    },
+    {
+      "id": "fine",
+      "label": "Fine",
+      "category": "brow_style",
+      "description": "User-controlled brow style.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "browStyle.fine",
+      "glbMaterialSlot": null,
+      "sortOrder": 5
+    },
+    {
+      "id": "thick",
+      "label": "Thick",
+      "category": "brow_style",
+      "description": "User-controlled brow style.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "browStyle.thick",
+      "glbMaterialSlot": null,
+      "sortOrder": 6
+    },
+    {
+      "id": "sparse",
+      "label": "Sparse",
+      "category": "brow_style",
+      "description": "User-controlled brow style.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "browStyle.sparse",
+      "glbMaterialSlot": null,
+      "sortOrder": 7
+    },
+    {
+      "id": "button",
+      "label": "Button",
+      "category": "nose_shape",
+      "description": "User-controlled nose shape. It is independent from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "noseShape.button",
+      "glbMaterialSlot": null,
+      "sortOrder": 1
+    },
+    {
+      "id": "straight",
+      "label": "Straight",
+      "category": "nose_shape",
+      "description": "User-controlled nose shape. It is independent from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "noseShape.straight",
+      "glbMaterialSlot": null,
+      "sortOrder": 2
+    },
+    {
+      "id": "soft_round",
+      "label": "Soft Round",
+      "category": "nose_shape",
+      "description": "User-controlled nose shape. It is independent from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "noseShape.soft_round",
+      "glbMaterialSlot": null,
+      "sortOrder": 3
+    },
+    {
+      "id": "broad",
+      "label": "Broad",
+      "category": "nose_shape",
+      "description": "User-controlled nose shape. It is independent from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "noseShape.broad",
+      "glbMaterialSlot": null,
+      "sortOrder": 4
+    },
+    {
+      "id": "wide_bridge",
+      "label": "Wide Bridge",
+      "category": "nose_shape",
+      "description": "User-controlled nose shape. It is independent from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "noseShape.wide_bridge",
+      "glbMaterialSlot": null,
+      "sortOrder": 5
+    },
+    {
+      "id": "narrow_bridge",
+      "label": "Narrow Bridge",
+      "category": "nose_shape",
+      "description": "User-controlled nose shape. It is independent from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "noseShape.narrow_bridge",
+      "glbMaterialSlot": null,
+      "sortOrder": 6
+    },
+    {
+      "id": "aquiline",
+      "label": "Aquiline",
+      "category": "nose_shape",
+      "description": "User-controlled nose shape. It is independent from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "noseShape.aquiline",
+      "glbMaterialSlot": null,
+      "sortOrder": 7
+    },
+    {
+      "id": "roman",
+      "label": "Roman",
+      "category": "nose_shape",
+      "description": "User-controlled nose shape. It is independent from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "noseShape.roman",
+      "glbMaterialSlot": null,
+      "sortOrder": 8
+    },
+    {
+      "id": "flat_bridge",
+      "label": "Flat Bridge",
+      "category": "nose_shape",
+      "description": "User-controlled nose shape. It is independent from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "noseShape.flat_bridge",
+      "glbMaterialSlot": null,
+      "sortOrder": 9
+    },
+    {
+      "id": "rounded_tip",
+      "label": "Rounded Tip",
+      "category": "nose_shape",
+      "description": "User-controlled nose shape. It is independent from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "noseShape.rounded_tip",
+      "glbMaterialSlot": null,
+      "sortOrder": 10
+    },
+    {
+      "id": "defined_tip",
+      "label": "Defined Tip",
+      "category": "nose_shape",
+      "description": "User-controlled nose shape. It is independent from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "noseShape.defined_tip",
+      "glbMaterialSlot": null,
+      "sortOrder": 11
+    },
+    {
+      "id": "soft_natural",
+      "label": "Soft Natural",
+      "category": "nose_shape",
+      "description": "User-controlled nose shape. It is independent from identity labels.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "noseShape.soft_natural",
+      "glbMaterialSlot": null,
+      "sortOrder": 12
+    },
+    {
+      "id": "small",
+      "label": "Small",
+      "category": "mouth_shape",
+      "description": "User-controlled mouth and lip shape.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "mouthShape.small",
+      "glbMaterialSlot": null,
+      "sortOrder": 1
+    },
+    {
+      "id": "medium",
+      "label": "Medium",
+      "category": "mouth_shape",
+      "description": "User-controlled mouth and lip shape.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "mouthShape.medium",
+      "glbMaterialSlot": null,
+      "sortOrder": 2
+    },
+    {
+      "id": "full",
+      "label": "Full",
+      "category": "mouth_shape",
+      "description": "User-controlled mouth and lip shape.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "mouthShape.full",
+      "glbMaterialSlot": null,
+      "sortOrder": 3
+    },
+    {
+      "id": "wide",
+      "label": "Wide",
+      "category": "mouth_shape",
+      "description": "User-controlled mouth and lip shape.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "mouthShape.wide",
+      "glbMaterialSlot": null,
+      "sortOrder": 4
+    },
+    {
+      "id": "bow_shaped",
+      "label": "Bow Shaped",
+      "category": "mouth_shape",
+      "description": "User-controlled mouth and lip shape.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "mouthShape.bow_shaped",
+      "glbMaterialSlot": null,
+      "sortOrder": 5
+    },
+    {
+      "id": "soft_smile",
+      "label": "Soft Smile",
+      "category": "mouth_shape",
+      "description": "User-controlled mouth and lip shape.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "mouthShape.soft_smile",
+      "glbMaterialSlot": null,
+      "sortOrder": 6
+    },
+    {
+      "id": "neutral",
+      "label": "Neutral",
+      "category": "mouth_shape",
+      "description": "User-controlled mouth and lip shape.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "mouthShape.neutral",
+      "glbMaterialSlot": null,
+      "sortOrder": 7
+    },
+    {
+      "id": "thin_upper_full_lower",
+      "label": "Thin Upper Full Lower",
+      "category": "mouth_shape",
+      "description": "User-controlled mouth and lip shape.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "mouthShape.thin_upper_full_lower",
+      "glbMaterialSlot": null,
+      "sortOrder": 8
+    },
+    {
+      "id": "full_upper_full_lower",
+      "label": "Full Upper Full Lower",
+      "category": "mouth_shape",
+      "description": "User-controlled mouth and lip shape.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "mouthShape.full_upper_full_lower",
+      "glbMaterialSlot": null,
+      "sortOrder": 9
+    },
+    {
+      "id": "gentle_smile",
+      "label": "Gentle Smile",
+      "category": "mouth_shape",
+      "description": "User-controlled mouth and lip shape.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "mouthShape.gentle_smile",
+      "glbMaterialSlot": null,
+      "sortOrder": 10
+    },
+    {
+      "id": "wide_smile",
+      "label": "Wide Smile",
+      "category": "mouth_shape",
+      "description": "User-controlled mouth and lip shape.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "mouthShape.wide_smile",
+      "glbMaterialSlot": null,
+      "sortOrder": 11
+    },
+    {
+      "id": "none",
+      "label": "None",
+      "category": "facial_hair",
+      "description": "Optional facial hair style.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "facialHair.none",
+      "glbMaterialSlot": "facial_hair_mesh",
+      "sortOrder": 1
+    },
+    {
+      "id": "light_stubble",
+      "label": "Light Stubble",
+      "category": "facial_hair",
+      "description": "Optional facial hair style.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "facialHair.light_stubble",
+      "glbMaterialSlot": "facial_hair_mesh",
+      "sortOrder": 2
+    },
+    {
+      "id": "moustache",
+      "label": "Moustache",
+      "category": "facial_hair",
+      "description": "Optional facial hair style.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "facialHair.moustache",
+      "glbMaterialSlot": "facial_hair_mesh",
+      "sortOrder": 3
+    },
+    {
+      "id": "goatee",
+      "label": "Goatee",
+      "category": "facial_hair",
+      "description": "Optional facial hair style.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "facialHair.goatee",
+      "glbMaterialSlot": "facial_hair_mesh",
+      "sortOrder": 4
+    },
+    {
+      "id": "short_beard",
+      "label": "Short Beard",
+      "category": "facial_hair",
+      "description": "Optional facial hair style.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "facialHair.short_beard",
+      "glbMaterialSlot": "facial_hair_mesh",
+      "sortOrder": 5
+    },
+    {
+      "id": "full_beard",
+      "label": "Full Beard",
+      "category": "facial_hair",
+      "description": "Optional facial hair style.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "facialHair.full_beard",
+      "glbMaterialSlot": "facial_hair_mesh",
+      "sortOrder": 6
+    },
+    {
+      "id": "slender",
+      "label": "Slender",
+      "category": "body_type",
+      "description": "User-controlled body type for full-body plugin rendering.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_mesh",
+      "sortOrder": 1
+    },
+    {
+      "id": "average",
+      "label": "Average",
+      "category": "body_type",
+      "description": "User-controlled body type for full-body plugin rendering.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_mesh",
+      "sortOrder": 2
+    },
+    {
+      "id": "soft",
+      "label": "Soft",
+      "category": "body_type",
+      "description": "User-controlled body type for full-body plugin rendering.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_mesh",
+      "sortOrder": 3
+    },
+    {
+      "id": "broad",
+      "label": "Broad",
+      "category": "body_type",
+      "description": "User-controlled body type for full-body plugin rendering.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_mesh",
+      "sortOrder": 4
+    },
+    {
+      "id": "athletic",
+      "label": "Athletic",
+      "category": "body_type",
+      "description": "User-controlled body type for full-body plugin rendering.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_mesh",
+      "sortOrder": 5
+    },
+    {
+      "id": "stocky",
+      "label": "Stocky",
+      "category": "body_type",
+      "description": "User-controlled body type for full-body plugin rendering.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_mesh",
+      "sortOrder": 6
+    },
+    {
+      "id": "curvy",
+      "label": "Curvy",
+      "category": "body_type",
+      "description": "User-controlled body type for full-body plugin rendering.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_mesh",
+      "sortOrder": 7
+    },
+    {
+      "id": "larger",
+      "label": "Larger",
+      "category": "body_type",
+      "description": "User-controlled body type for full-body plugin rendering.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_mesh",
+      "sortOrder": 8
+    },
+    {
+      "id": "seated",
+      "label": "Seated",
+      "category": "body_type",
+      "description": "User-controlled body type for full-body plugin rendering.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_mesh",
+      "sortOrder": 9
+    },
+    {
+      "id": "petite_soft",
+      "label": "Petite Soft",
+      "category": "body_type",
+      "description": "User-controlled body type for full-body plugin rendering.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_mesh",
+      "sortOrder": 10
+    },
+    {
+      "id": "slim_soft",
+      "label": "Slim Soft",
+      "category": "body_type",
+      "description": "User-controlled body type for full-body plugin rendering.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_mesh",
+      "sortOrder": 11
+    },
+    {
+      "id": "average_soft",
+      "label": "Average Soft",
+      "category": "body_type",
+      "description": "User-controlled body type for full-body plugin rendering.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_mesh",
+      "sortOrder": 12
+    },
+    {
+      "id": "broad_soft",
+      "label": "Broad Soft",
+      "category": "body_type",
+      "description": "User-controlled body type for full-body plugin rendering.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_mesh",
+      "sortOrder": 13
+    },
+    {
+      "id": "larger_soft",
+      "label": "Larger Soft",
+      "category": "body_type",
+      "description": "User-controlled body type for full-body plugin rendering.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_mesh",
+      "sortOrder": 14
+    },
+    {
+      "id": "muscular_soft",
+      "label": "Muscular Soft",
+      "category": "body_type",
+      "description": "User-controlled body type for full-body plugin rendering.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_mesh",
+      "sortOrder": 15
+    },
+    {
+      "id": "seated_soft",
+      "label": "Seated Soft",
+      "category": "body_type",
+      "description": "User-controlled body type for full-body plugin rendering.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_mesh",
+      "sortOrder": 16
+    },
+    {
+      "id": "small",
+      "label": "Small",
+      "category": "body_size",
+      "description": "User-controlled body size presentation.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_mesh",
+      "sortOrder": 1
+    },
+    {
+      "id": "average",
+      "label": "Average",
+      "category": "body_size",
+      "description": "User-controlled body size presentation.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_mesh",
+      "sortOrder": 2
+    },
+    {
+      "id": "soft",
+      "label": "Soft",
+      "category": "body_size",
+      "description": "User-controlled body size presentation.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_mesh",
+      "sortOrder": 3
+    },
+    {
+      "id": "broad",
+      "label": "Broad",
+      "category": "body_size",
+      "description": "User-controlled body size presentation.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_mesh",
+      "sortOrder": 4
+    },
+    {
+      "id": "larger",
+      "label": "Larger",
+      "category": "body_size",
+      "description": "User-controlled body size presentation.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_mesh",
+      "sortOrder": 5
+    },
+    {
+      "id": "seated",
+      "label": "Seated",
+      "category": "body_size",
+      "description": "User-controlled body size presentation.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_mesh",
+      "sortOrder": 6
+    },
+    {
+      "id": "short",
+      "label": "Short",
+      "category": "height_presentation",
+      "description": "User-controlled height presentation.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_rig",
+      "sortOrder": 1
+    },
+    {
+      "id": "average_height",
+      "label": "Average Height",
+      "category": "height_presentation",
+      "description": "User-controlled height presentation.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_rig",
+      "sortOrder": 2
+    },
+    {
+      "id": "tall",
+      "label": "Tall",
+      "category": "height_presentation",
+      "description": "User-controlled height presentation.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_rig",
+      "sortOrder": 3
+    },
+    {
+      "id": "very_tall",
+      "label": "Very Tall",
+      "category": "height_presentation",
+      "description": "User-controlled height presentation.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_rig",
+      "sortOrder": 4
+    },
+    {
+      "id": "shorter",
+      "label": "Shorter",
+      "category": "height_presentation",
+      "description": "User-controlled height presentation.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_rig",
+      "sortOrder": 5
+    },
+    {
+      "id": "taller",
+      "label": "Taller",
+      "category": "height_presentation",
+      "description": "User-controlled height presentation.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_rig",
+      "sortOrder": 6
+    },
+    {
+      "id": "seated",
+      "label": "Seated",
+      "category": "height_presentation",
+      "description": "User-controlled height presentation.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "body_rig",
+      "sortOrder": 7
+    },
+    {
+      "id": "tshirt",
+      "label": "T-shirt",
+      "category": "clothing",
+      "description": "Free clothing option for full-body avatar rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "clothing_slot",
+      "sortOrder": 1
+    },
+    {
+      "id": "hoodie",
+      "label": "Hoodie",
+      "category": "clothing",
+      "description": "Free clothing option for full-body avatar rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "clothing_slot",
+      "sortOrder": 2
+    },
+    {
+      "id": "jumper",
+      "label": "Jumper",
+      "category": "clothing",
+      "description": "Free clothing option for full-body avatar rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "clothing_slot",
+      "sortOrder": 3
+    },
+    {
+      "id": "shirt",
+      "label": "Shirt",
+      "category": "clothing",
+      "description": "Free clothing option for full-body avatar rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "clothing_slot",
+      "sortOrder": 4
+    },
+    {
+      "id": "dress",
+      "label": "Dress",
+      "category": "clothing",
+      "description": "Free clothing option for full-body avatar rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "clothing_slot",
+      "sortOrder": 5
+    },
+    {
+      "id": "jacket",
+      "label": "Jacket",
+      "category": "clothing",
+      "description": "Free clothing option for full-body avatar rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "clothing_slot",
+      "sortOrder": 6
+    },
+    {
+      "id": "coat",
+      "label": "Coat",
+      "category": "clothing",
+      "description": "Free clothing option for full-body avatar rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "clothing_slot",
+      "sortOrder": 7
+    },
+    {
+      "id": "school_uniform",
+      "label": "School Uniform",
+      "category": "clothing",
+      "description": "Free clothing option for full-body avatar rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "clothing_slot",
+      "sortOrder": 8
+    },
+    {
+      "id": "sportswear",
+      "label": "Sportswear",
+      "category": "clothing",
+      "description": "Free clothing option for full-body avatar rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "clothing_slot",
+      "sortOrder": 9
+    },
+    {
+      "id": "sensory_soft_clothing",
+      "label": "Sensory Soft Clothing",
+      "category": "clothing",
+      "description": "Free clothing option for full-body avatar rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "clothing_slot",
+      "sortOrder": 10
+    },
+    {
+      "id": "loose_fit",
+      "label": "Loose Fit",
+      "category": "clothing",
+      "description": "Free clothing option for full-body avatar rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "clothing_slot",
+      "sortOrder": 11
+    },
+    {
+      "id": "smart_casual",
+      "label": "Smart Casual",
+      "category": "clothing",
+      "description": "Free clothing option for full-body avatar rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "clothing_slot",
+      "sortOrder": 12
+    },
+    {
+      "id": "traditional_outfit",
+      "label": "Traditional Outfit",
+      "category": "clothing",
+      "description": "Free clothing option for full-body avatar rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "clothing_slot",
+      "sortOrder": 13
+    },
+    {
+      "id": "custom_outfit",
+      "label": "Custom Outfit",
+      "category": "clothing",
+      "description": "Free clothing option for full-body avatar rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "clothing_slot",
+      "sortOrder": 14
+    },
+    {
+      "id": "starter_black_top",
+      "label": "Starter Black Top",
+      "category": "clothing",
+      "description": "Free clothing option for full-body avatar rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "clothing_slot",
+      "sortOrder": 15
+    },
+    {
+      "id": "hoodie_soft",
+      "label": "Hoodie Soft",
+      "category": "clothing",
+      "description": "Free clothing option for full-body avatar rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "clothing_slot",
+      "sortOrder": 16
+    },
+    {
+      "id": "school_top",
+      "label": "School Top",
+      "category": "clothing",
+      "description": "Free clothing option for full-body avatar rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "clothing_slot",
+      "sortOrder": 17
+    },
+    {
+      "id": "work_top",
+      "label": "Work Top",
+      "category": "clothing",
+      "description": "Free clothing option for full-body avatar rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "clothing_slot",
+      "sortOrder": 18
+    },
+    {
+      "id": "plain_tshirt",
+      "label": "Plain Tshirt",
+      "category": "clothing",
+      "description": "Free clothing option for full-body avatar rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "clothing_slot",
+      "sortOrder": 19
+    },
+    {
+      "id": "starter_jeans",
+      "label": "Starter Jeans",
+      "category": "clothing",
+      "description": "Free clothing option for full-body avatar rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "clothing_slot",
+      "sortOrder": 20
+    },
+    {
+      "id": "joggers",
+      "label": "Joggers",
+      "category": "clothing",
+      "description": "Free clothing option for full-body avatar rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "clothing_slot",
+      "sortOrder": 21
+    },
+    {
+      "id": "school_trousers",
+      "label": "School Trousers",
+      "category": "clothing",
+      "description": "Free clothing option for full-body avatar rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "clothing_slot",
+      "sortOrder": 22
+    },
+    {
+      "id": "work_trousers",
+      "label": "Work Trousers",
+      "category": "clothing",
+      "description": "Free clothing option for full-body avatar rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "clothing_slot",
+      "sortOrder": 23
+    },
+    {
+      "id": "skirt_soft",
+      "label": "Skirt Soft",
+      "category": "clothing",
+      "description": "Free clothing option for full-body avatar rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "clothing_slot",
+      "sortOrder": 24
+    },
+    {
+      "id": "none",
+      "label": "None",
+      "category": "outerwear",
+      "description": "Optional outerwear layer.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "outerwear_slot",
+      "sortOrder": 1
+    },
+    {
+      "id": "jacket",
+      "label": "Jacket",
+      "category": "outerwear",
+      "description": "Optional outerwear layer.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "outerwear_slot",
+      "sortOrder": 2
+    },
+    {
+      "id": "coat",
+      "label": "Coat",
+      "category": "outerwear",
+      "description": "Optional outerwear layer.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "outerwear_slot",
+      "sortOrder": 3
+    },
+    {
+      "id": "denim_jacket",
+      "label": "Denim Jacket",
+      "category": "outerwear",
+      "description": "Optional outerwear layer.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "outerwear_slot",
+      "sortOrder": 4
+    },
+    {
+      "id": "hoodie_zip",
+      "label": "Hoodie Zip",
+      "category": "outerwear",
+      "description": "Optional outerwear layer.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "outerwear_slot",
+      "sortOrder": 5
+    },
+    {
+      "id": "coat_soft",
+      "label": "Coat Soft",
+      "category": "outerwear",
+      "description": "Optional outerwear layer.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "outerwear_slot",
+      "sortOrder": 6
+    },
+    {
+      "id": "cardigan",
+      "label": "Cardigan",
+      "category": "outerwear",
+      "description": "Optional outerwear layer.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "outerwear_slot",
+      "sortOrder": 7
+    },
+    {
+      "id": "none",
+      "label": "None",
+      "category": "glasses",
+      "description": "Optional eyewear selection.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "glasses.none",
+      "glbMaterialSlot": "glasses_slot",
+      "sortOrder": 1
+    },
+    {
+      "id": "glasses",
+      "label": "Glasses",
+      "category": "glasses",
+      "description": "Optional eyewear selection.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "glasses.glasses",
+      "glbMaterialSlot": "glasses_slot",
+      "sortOrder": 2
+    },
+    {
+      "id": "reading_glasses",
+      "label": "Reading Glasses",
+      "category": "glasses",
+      "description": "Optional eyewear selection.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "glasses.reading_glasses",
+      "glbMaterialSlot": "glasses_slot",
+      "sortOrder": 3
+    },
+    {
+      "id": "sunglasses",
+      "label": "Sunglasses",
+      "category": "glasses",
+      "description": "Optional eyewear selection.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "glasses.sunglasses",
+      "glbMaterialSlot": "glasses_slot",
+      "sortOrder": 4
+    },
+    {
+      "id": "glasses_round",
+      "label": "Glasses Round",
+      "category": "glasses",
+      "description": "Optional eyewear selection.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "glasses.glasses_round",
+      "glbMaterialSlot": "glasses_slot",
+      "sortOrder": 5
+    },
+    {
+      "id": "glasses_square",
+      "label": "Glasses Square",
+      "category": "glasses",
+      "description": "Optional eyewear selection.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "glasses.glasses_square",
+      "glbMaterialSlot": "glasses_slot",
+      "sortOrder": 6
+    },
+    {
+      "id": "glasses",
+      "label": "Glasses",
+      "category": "accessibility_item",
+      "description": "Free accessibility item. Accessibility items are never monetised.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessibility_slot",
+      "sortOrder": 1
+    },
+    {
+      "id": "reading_glasses",
+      "label": "Reading Glasses",
+      "category": "accessibility_item",
+      "description": "Free accessibility item. Accessibility items are never monetised.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessibility_slot",
+      "sortOrder": 2
+    },
+    {
+      "id": "sunglasses",
+      "label": "Sunglasses",
+      "category": "accessibility_item",
+      "description": "Free accessibility item. Accessibility items are never monetised.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessibility_slot",
+      "sortOrder": 3
+    },
+    {
+      "id": "sensory_headphones",
+      "label": "Sensory Headphones",
+      "category": "accessibility_item",
+      "description": "Free accessibility item. Accessibility items are never monetised.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessibility_slot",
+      "sortOrder": 4
+    },
+    {
+      "id": "hearing_aid_left",
+      "label": "Hearing Aid Left",
+      "category": "accessibility_item",
+      "description": "Free accessibility item. Accessibility items are never monetised.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessibility_slot",
+      "sortOrder": 5
+    },
+    {
+      "id": "hearing_aid_right",
+      "label": "Hearing Aid Right",
+      "category": "accessibility_item",
+      "description": "Free accessibility item. Accessibility items are never monetised.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessibility_slot",
+      "sortOrder": 6
+    },
+    {
+      "id": "hearing_aids_both",
+      "label": "Hearing Aids Both",
+      "category": "accessibility_item",
+      "description": "Free accessibility item. Accessibility items are never monetised.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessibility_slot",
+      "sortOrder": 7
+    },
+    {
+      "id": "cochlear_implant_left",
+      "label": "Cochlear Implant Left",
+      "category": "accessibility_item",
+      "description": "Free accessibility item. Accessibility items are never monetised.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessibility_slot",
+      "sortOrder": 8
+    },
+    {
+      "id": "cochlear_implant_right",
+      "label": "Cochlear Implant Right",
+      "category": "accessibility_item",
+      "description": "Free accessibility item. Accessibility items are never monetised.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessibility_slot",
+      "sortOrder": 9
+    },
+    {
+      "id": "wheelchair",
+      "label": "Wheelchair",
+      "category": "accessibility_item",
+      "description": "Free accessibility item. Accessibility items are never monetised.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessibility_slot",
+      "sortOrder": 10
+    },
+    {
+      "id": "walking_stick",
+      "label": "Walking Stick",
+      "category": "accessibility_item",
+      "description": "Free accessibility item. Accessibility items are never monetised.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessibility_slot",
+      "sortOrder": 11
+    },
+    {
+      "id": "white_cane",
+      "label": "White Cane",
+      "category": "accessibility_item",
+      "description": "Free accessibility item. Accessibility items are never monetised.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessibility_slot",
+      "sortOrder": 12
+    },
+    {
+      "id": "crutches",
+      "label": "Crutches",
+      "category": "accessibility_item",
+      "description": "Free accessibility item. Accessibility items are never monetised.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessibility_slot",
+      "sortOrder": 13
+    },
+    {
+      "id": "prosthetic_arm_left",
+      "label": "Prosthetic Arm Left",
+      "category": "accessibility_item",
+      "description": "Free accessibility item. Accessibility items are never monetised.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessibility_slot",
+      "sortOrder": 14
+    },
+    {
+      "id": "prosthetic_arm_right",
+      "label": "Prosthetic Arm Right",
+      "category": "accessibility_item",
+      "description": "Free accessibility item. Accessibility items are never monetised.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessibility_slot",
+      "sortOrder": 15
+    },
+    {
+      "id": "prosthetic_leg_left",
+      "label": "Prosthetic Leg Left",
+      "category": "accessibility_item",
+      "description": "Free accessibility item. Accessibility items are never monetised.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessibility_slot",
+      "sortOrder": 16
+    },
+    {
+      "id": "prosthetic_leg_right",
+      "label": "Prosthetic Leg Right",
+      "category": "accessibility_item",
+      "description": "Free accessibility item. Accessibility items are never monetised.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessibility_slot",
+      "sortOrder": 17
+    },
+    {
+      "id": "medical_patch",
+      "label": "Medical Patch",
+      "category": "accessibility_item",
+      "description": "Free accessibility item. Accessibility items are never monetised.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessibility_slot",
+      "sortOrder": 18
+    },
+    {
+      "id": "feeding_tube_visible",
+      "label": "Feeding Tube Visible",
+      "category": "accessibility_item",
+      "description": "Free accessibility item. Accessibility items are never monetised.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessibility_slot",
+      "sortOrder": 19
+    },
+    {
+      "id": "oxygen_tube",
+      "label": "Oxygen Tube",
+      "category": "accessibility_item",
+      "description": "Free accessibility item. Accessibility items are never monetised.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessibility_slot",
+      "sortOrder": 20
+    },
+    {
+      "id": "communication_badge",
+      "label": "Communication Badge",
+      "category": "accessibility_item",
+      "description": "Free accessibility item. Accessibility items are never monetised.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessibility_slot",
+      "sortOrder": 21
+    },
+    {
+      "id": "cochlear_implant",
+      "label": "Cochlear Implant",
+      "category": "accessibility_item",
+      "description": "Free accessibility item. Accessibility items are never monetised.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessibility_slot",
+      "sortOrder": 22
+    },
+    {
+      "id": "prosthetic_arm",
+      "label": "Prosthetic Arm",
+      "category": "accessibility_item",
+      "description": "Free accessibility item. Accessibility items are never monetised.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessibility_slot",
+      "sortOrder": 23
+    },
+    {
+      "id": "prosthetic_leg",
+      "label": "Prosthetic Leg",
+      "category": "accessibility_item",
+      "description": "Free accessibility item. Accessibility items are never monetised.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessibility_slot",
+      "sortOrder": 24
+    },
+    {
+      "id": "hijab",
+      "label": "Hijab",
+      "category": "cultural_headwear",
+      "description": "Optional cultural or personal headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "headwear.hijab",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 1
+    },
+    {
+      "id": "khimar",
+      "label": "Khimar",
+      "category": "cultural_headwear",
+      "description": "Optional cultural or personal headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "headwear.khimar",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 2
+    },
+    {
+      "id": "turban",
+      "label": "Turban",
+      "category": "cultural_headwear",
+      "description": "Optional cultural or personal headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "headwear.turban",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 3
+    },
+    {
+      "id": "patka",
+      "label": "Patka",
+      "category": "cultural_headwear",
+      "description": "Optional cultural or personal headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "headwear.patka",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 4
+    },
+    {
+      "id": "dastar",
+      "label": "Dastar",
+      "category": "cultural_headwear",
+      "description": "Optional cultural or personal headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "headwear.dastar",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 5
+    },
+    {
+      "id": "headwrap",
+      "label": "Headwrap",
+      "category": "cultural_headwear",
+      "description": "Optional cultural or personal headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "headwear.headwrap",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 6
+    },
+    {
+      "id": "duku",
+      "label": "Duku",
+      "category": "cultural_headwear",
+      "description": "Optional cultural or personal headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "headwear.duku",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 7
+    },
+    {
+      "id": "gele",
+      "label": "Gele",
+      "category": "cultural_headwear",
+      "description": "Optional cultural or personal headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "headwear.gele",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 8
+    },
+    {
+      "id": "bonnet",
+      "label": "Bonnet",
+      "category": "cultural_headwear",
+      "description": "Optional cultural or personal headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "headwear.bonnet",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 9
+    },
+    {
+      "id": "keffiyeh",
+      "label": "Keffiyeh",
+      "category": "cultural_headwear",
+      "description": "Optional cultural or personal headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "headwear.keffiyeh",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 10
+    },
+    {
+      "id": "sari_dupatta",
+      "label": "Sari / dupatta",
+      "category": "cultural_headwear",
+      "description": "Optional cultural or personal headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "headwear.sari_dupatta",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 11
+    },
+    {
+      "id": "hood",
+      "label": "Hood",
+      "category": "cultural_headwear",
+      "description": "Optional cultural or personal headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "headwear.hood",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 12
+    },
+    {
+      "id": "beanie",
+      "label": "Beanie",
+      "category": "cultural_headwear",
+      "description": "Optional cultural or personal headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "headwear.beanie",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 13
+    },
+    {
+      "id": "cap",
+      "label": "Cap",
+      "category": "cultural_headwear",
+      "description": "Optional cultural or personal headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "headwear.cap",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 14
+    },
+    {
+      "id": "none",
+      "label": "None",
+      "category": "cultural_headwear",
+      "description": "Optional cultural or personal headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "headwear.none",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 15
+    },
+    {
+      "id": "custom",
+      "label": "Custom",
+      "category": "cultural_headwear",
+      "description": "Optional cultural or personal headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "headwear.custom",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 16
+    },
+    {
+      "id": "modest_hood",
+      "label": "Modest Hood",
+      "category": "cultural_headwear",
+      "description": "Optional cultural or personal headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "headwear.modest_hood",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 17
+    },
+    {
+      "id": "hijab",
+      "label": "Hijab",
+      "category": "religious_headwear",
+      "description": "Optional religious headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "religiousHeadwear.hijab",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 1
+    },
+    {
+      "id": "khimar",
+      "label": "Khimar",
+      "category": "religious_headwear",
+      "description": "Optional religious headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "religiousHeadwear.khimar",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 2
+    },
+    {
+      "id": "turban",
+      "label": "Turban",
+      "category": "religious_headwear",
+      "description": "Optional religious headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "religiousHeadwear.turban",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 3
+    },
+    {
+      "id": "patka",
+      "label": "Patka",
+      "category": "religious_headwear",
+      "description": "Optional religious headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "religiousHeadwear.patka",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 4
+    },
+    {
+      "id": "dastar",
+      "label": "Dastar",
+      "category": "religious_headwear",
+      "description": "Optional religious headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "religiousHeadwear.dastar",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 5
+    },
+    {
+      "id": "kippah",
+      "label": "Kippah",
+      "category": "religious_headwear",
+      "description": "Optional religious headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "religiousHeadwear.kippah",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 6
+    },
+    {
+      "id": "tichel",
+      "label": "Tichel",
+      "category": "religious_headwear",
+      "description": "Optional religious headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "religiousHeadwear.tichel",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 7
+    },
+    {
+      "id": "taqiyah",
+      "label": "Taqiyah",
+      "category": "religious_headwear",
+      "description": "Optional religious headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "religiousHeadwear.taqiyah",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 8
+    },
+    {
+      "id": "keffiyeh",
+      "label": "Keffiyeh",
+      "category": "religious_headwear",
+      "description": "Optional religious headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "religiousHeadwear.keffiyeh",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 9
+    },
+    {
+      "id": "sari_dupatta",
+      "label": "Sari / dupatta",
+      "category": "religious_headwear",
+      "description": "Optional religious headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "religiousHeadwear.sari_dupatta",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 10
+    },
+    {
+      "id": "headwrap",
+      "label": "Headwrap",
+      "category": "religious_headwear",
+      "description": "Optional religious headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "religiousHeadwear.headwrap",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 11
+    },
+    {
+      "id": "none",
+      "label": "None",
+      "category": "religious_headwear",
+      "description": "Optional religious headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "religiousHeadwear.none",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 12
+    },
+    {
+      "id": "custom",
+      "label": "Custom",
+      "category": "religious_headwear",
+      "description": "Optional religious headwear. Selection is user-controlled and does not imply identity.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": "religiousHeadwear.custom",
+      "glbMaterialSlot": "headwear_slot",
+      "sortOrder": 13
+    },
+    {
+      "id": "none",
+      "label": "None",
+      "category": "accessory",
+      "description": "Optional accessory for plugin rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessory_slot",
+      "sortOrder": 1
+    },
+    {
+      "id": "cap",
+      "label": "Cap",
+      "category": "accessory",
+      "description": "Optional accessory for plugin rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessory_slot",
+      "sortOrder": 2
+    },
+    {
+      "id": "watch",
+      "label": "Watch",
+      "category": "accessory",
+      "description": "Optional accessory for plugin rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessory_slot",
+      "sortOrder": 3
+    },
+    {
+      "id": "fidget_ring",
+      "label": "Fidget Ring",
+      "category": "accessory",
+      "description": "Optional accessory for plugin rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessory_slot",
+      "sortOrder": 4
+    },
+    {
+      "id": "necklace",
+      "label": "Necklace",
+      "category": "accessory",
+      "description": "Optional accessory for plugin rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessory_slot",
+      "sortOrder": 5
+    },
+    {
+      "id": "earrings",
+      "label": "Earrings",
+      "category": "accessory",
+      "description": "Optional accessory for plugin rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessory_slot",
+      "sortOrder": 6
+    },
+    {
+      "id": "bracelet",
+      "label": "Bracelet",
+      "category": "accessory",
+      "description": "Optional accessory for plugin rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessory_slot",
+      "sortOrder": 7
+    },
+    {
+      "id": "badge",
+      "label": "Badge",
+      "category": "accessory",
+      "description": "Optional accessory for plugin rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessory_slot",
+      "sortOrder": 8
+    },
+    {
+      "id": "bag",
+      "label": "Bag",
+      "category": "accessory",
+      "description": "Optional accessory for plugin rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessory_slot",
+      "sortOrder": 9
+    },
+    {
+      "id": "glasses_round",
+      "label": "Glasses Round",
+      "category": "accessory",
+      "description": "Optional accessory for plugin rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessory_slot",
+      "sortOrder": 10
+    },
+    {
+      "id": "glasses_square",
+      "label": "Glasses Square",
+      "category": "accessory",
+      "description": "Optional accessory for plugin rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessory_slot",
+      "sortOrder": 11
+    },
+    {
+      "id": "sensory_headphones",
+      "label": "Sensory Headphones",
+      "category": "accessory",
+      "description": "Optional accessory for plugin rendering.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "glb_full_body",
+        "hybrid"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": "accessory_slot",
+      "sortOrder": 12
+    },
+    {
+      "id": "rive_face",
+      "label": "Rive face",
+      "category": "render_backend",
+      "description": "Renderer option for the hybrid avatar system. External image generation is not used.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 1
+    },
+    {
+      "id": "rive_bust",
+      "label": "Rive bust",
+      "category": "render_backend",
+      "description": "Renderer option for the hybrid avatar system. External image generation is not used.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 2
+    },
+    {
+      "id": "glb_full_body",
+      "label": "GLB full body",
+      "category": "render_backend",
+      "description": "Renderer option for the hybrid avatar system. External image generation is not used.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 3
+    },
+    {
+      "id": "hybrid",
+      "label": "Hybrid",
+      "category": "render_backend",
+      "description": "Renderer option for the hybrid avatar system. External image generation is not used.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 4
+    },
+    {
+      "id": "private_abstract",
+      "label": "Private abstract",
+      "category": "render_backend",
+      "description": "Renderer option for the hybrid avatar system. External image generation is not used.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 5
+    },
+    {
+      "id": "face",
+      "label": "Face",
+      "category": "preview_mode",
+      "description": "Preview framing option for the avatar customizer.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 1
+    },
+    {
+      "id": "bust",
+      "label": "Bust",
+      "category": "preview_mode",
+      "description": "Preview framing option for the avatar customizer.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 2
+    },
+    {
+      "id": "full_body",
+      "label": "Full Body",
+      "category": "preview_mode",
+      "description": "Preview framing option for the avatar customizer.",
+      "free": true,
+      "identityProtected": false,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 3
+    },
+    {
+      "id": "private_abstract",
+      "label": "Private abstract",
+      "category": "private_mode",
+      "description": "Private abstract mode is free and keeps appearance intentionally abstract.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 1
+    },
+    {
+      "id": "private_abstract_off",
+      "label": "Private Abstract Off",
+      "category": "private_mode",
+      "description": "Private abstract mode is free and keeps appearance intentionally abstract.",
+      "free": true,
+      "identityProtected": true,
+      "requiresMinorSafeMode": false,
+      "renderBackendsSupported": [
+        "rive_face",
+        "rive_bust",
+        "glb_full_body",
+        "hybrid",
+        "private_abstract"
+      ],
+      "riveInputKey": null,
+      "glbMaterialSlot": null,
+      "sortOrder": 2
+    }
+  ]
+}

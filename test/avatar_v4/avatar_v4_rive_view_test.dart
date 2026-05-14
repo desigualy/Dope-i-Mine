@@ -27,7 +27,11 @@ void main() {
       find.byKey(const ValueKey<String>('avatar-v4-missing-rig-diagnostic')),
       findsOneWidget,
     );
-    expect(find.text('Avatar rig missing'), findsOneWidget);
+    expect(find.text('Avatar preview'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey<String>('avatar-v4-starter-visible-preview')),
+      findsOneWidget,
+    );
   });
 
   test('asset resolver reports missing rig without throwing', () async {

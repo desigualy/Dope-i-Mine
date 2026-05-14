@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../../core/widgets/primary_scaffold.dart';
 import '../../core/widgets/section_header.dart';
 
+import '../core/widgets/dopei_guide.dart';
+
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
@@ -17,6 +19,11 @@ class WelcomeScreen extends StatelessWidget {
           const SectionHeader(
             title: 'Overwhelmed by tasks? Meet Dope-i.',
             subtitle: 'Break big jobs into tiny wins. Built for ADHD, autism, AuDHD and real life.',
+          ),
+          const SizedBox(height: 32),
+          const DopeiGuide(
+            text: "Hi! I'm Dope-i. I'm here to help you shrink the big stuff until it feels manageable. We'll take it one tiny step at a time.",
+            mood: DopeiMood.happy,
           ),
           const Spacer(),
           SizedBox(

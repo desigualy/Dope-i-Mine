@@ -61,7 +61,9 @@ class _FakeAuthRepository implements AuthRepositoryImpl {
 
   @override
   Future<AuthUser?> signUp(
-      {required String email, required String password}) async {
+      {required String email,
+      required String password,
+      String accountType = 'user'}) async {
     const signedUpUser = AuthUser(id: 'tester', email: 'tester@example.com');
     user = signedUpUser;
     return signedUpUser;
@@ -69,6 +71,9 @@ class _FakeAuthRepository implements AuthRepositoryImpl {
 
   @override
   AuthUser? getCurrentUser() => user;
+
+  @override
+  Future<void> sendPasswordResetEmail(String email) async {}
 }
 
 class _FakeCompanionRepository implements CompanionRepositoryImpl {
@@ -114,14 +119,26 @@ class _FakeProfileRepository implements ProfileRepositoryImpl {
   _FakeProfileRepository({
     this.onboardingComplete = false,
     this.throwOnCompletionCheck = false,
+    this.accountType = 'user',
   });
 
   bool onboardingComplete;
   final bool throwOnCompletionCheck;
+  String accountType;
 
   @override
   Future<void> ensureProfileExists(
-      {required String userId, String? email}) async {}
+      {required String userId,
+      String? email,
+      String accountType = 'user'}) async {
+    if (accountType == 'caregiver' || this.accountType == 'caregiver') {
+      this.accountType = 'caregiver';
+    }
+  }
+
+  @override
+  Future<String> getAccountType(String userId) async =>
+      accountType == 'caregiver' ? 'caregiver' : 'user';
 
   @override
   Future<void> setOnboardingCompleted({
@@ -192,6 +209,12 @@ GoRouter _buildHomeGateRouter() {
       GoRoute(
         path: '/home',
         builder: (_, __) => const OnboardingGateScreen(child: HomeScreen()),
+      ),
+      GoRoute(
+        path: '/caregiver',
+        builder: (_, __) => const Scaffold(
+          body: Center(child: Text('Caregiver Support')),
+        ),
       ),
       GoRoute(
         path: '/branding/intro',
@@ -330,6 +353,12 @@ GoRouter _buildLoginOnboardingRouter() {
       GoRoute(
         path: '/home',
         builder: (_, __) => const OnboardingGateScreen(child: HomeScreen()),
+      ),
+      GoRoute(
+        path: '/caregiver',
+        builder: (_, __) => const Scaffold(
+          body: Center(child: Text('Caregiver Support')),
+        ),
       ),
       GoRoute(
         path: '/branding/intro',
@@ -487,6 +516,8 @@ void main() {
       findsOneWidget,
     );
 
+    await tester.ensureVisible(find.text('My avatar'));
+    await tester.pump();
     await tester.tap(find.text('My avatar'));
     await tester.pumpAndSettle();
     // Avatar V4 onboarding route is locked by avatar_v4_onboarding_purge_test.dart.
@@ -707,6 +738,41 @@ void main() {
   });
 
   testWidgets(
+      'already authenticated caregiver on login is redirected to caregiver dashboard',
+      (WidgetTester tester) async {
+    final fakeAuthRepository = _FakeAuthRepository()
+      ..user = const AuthUser(id: 'tester', email: 'tester@example.com');
+    final fakeProfileRepository = _FakeProfileRepository(
+      onboardingComplete: false,
+      accountType: 'caregiver',
+    );
+    final fakeCompanionRepository = _FakeCompanionRepository();
+    final fakeVoiceSettingsRepository = _FakeVoiceSettingsRepository();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: <Override>[
+          authRepositoryProvider.overrideWithValue(fakeAuthRepository),
+          profileRepositoryProvider.overrideWithValue(fakeProfileRepository),
+          companionRepositoryProvider
+              .overrideWithValue(fakeCompanionRepository),
+          voiceSettingsRepositoryProvider
+              .overrideWithValue(fakeVoiceSettingsRepository),
+        ],
+        child: MaterialApp.router(
+          routerConfig: _buildLoginOnboardingRouter(),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.text('Caregiver Support'), findsOneWidget);
+    expect(find.text('Meet Dope-i'), findsNothing);
+    expect(find.text('Hi there!'), findsNothing);
+  });
+
+  testWidgets(
       'login can still route to onboarding when sign-in returns a user before currentUser is readable',
       (WidgetTester tester) async {
     final fakeAuthRepository =
@@ -819,6 +885,32 @@ void main() {
     await _pumpUntilVisible(tester, find.text('Hi there!'));
 
     expect(find.text('Hi there!'), findsOneWidget);
+  });
+
+  testWidgets('home gate sends caregiver accounts to caregiver dashboard',
+      (WidgetTester tester) async {
+    final fakeAuthRepository = _FakeAuthRepository()
+      ..user = const AuthUser(id: 'tester', email: 'tester@example.com');
+    final fakeProfileRepository = _FakeProfileRepository(
+      onboardingComplete: false,
+      accountType: 'caregiver',
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: <Override>[
+          authRepositoryProvider.overrideWithValue(fakeAuthRepository),
+          profileRepositoryProvider.overrideWithValue(fakeProfileRepository),
+        ],
+        child: MaterialApp.router(routerConfig: _buildHomeGateRouter()),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.text('Caregiver Support'), findsOneWidget);
+    expect(find.text('Meet Dope-i'), findsNothing);
+    expect(find.text('Hi there!'), findsNothing);
   });
 
   testWidgets(

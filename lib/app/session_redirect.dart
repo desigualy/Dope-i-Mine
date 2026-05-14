@@ -7,6 +7,8 @@ String? sessionRedirect({
     '/',
     '/login',
     '/signup',
+    '/forgot-password',
+    '/reset-password',
   };
 
   // Routes that redirect to login if not authenticated

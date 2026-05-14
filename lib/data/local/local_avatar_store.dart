@@ -51,7 +51,8 @@ class LocalAvatarStore {
     await _store.remove(_avatarConfigKey);
   }
 
-  Future<void> saveSelectedCandidate(AvatarGenerationCandidate candidate) async {
+  Future<void> saveSelectedCandidate(
+      AvatarGenerationCandidate candidate) async {
     await _store.writeMap(_selectedKey, candidate.toJson());
   }
 
@@ -103,7 +104,7 @@ class LocalAvatarStore {
       id: 'offline_$id',
       imageUrl: 'data:image/svg+xml;utf8,${Uri.encodeComponent(svg)}',
       qualityScore: 0.72,
-      seed: 'offline_$id',
+      seed: color.toString(),
       variationStrength: AvatarVariationStrength.medium,
       providerId: 'offline_fallback',
       revisedPrompt: label,

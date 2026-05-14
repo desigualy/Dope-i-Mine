@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/widgets/app_back_button.dart';
 import '../../domain/tasks/task_step_model.dart';
 import 'task_controller.dart';
 
@@ -17,6 +18,7 @@ class TaskSummaryScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: const AppBackButton(),
         title: const Text('Task Summary'),
       ),
       body: SafeArea(

@@ -12,10 +12,15 @@ class AuthController {
 
   final Ref _ref;
 
-  Future<AuthUser?> signUp(String email, String password) {
+  Future<AuthUser?> signUp(
+    String email,
+    String password, {
+    String accountType = 'user',
+  }) {
     return _ref.read(authRepositoryProvider).signUp(
           email: email,
           password: password,
+          accountType: accountType,
         );
   }
 
@@ -28,5 +33,13 @@ class AuthController {
 
   Future<void> signOut() {
     return _ref.read(authRepositoryProvider).signOut();
+  }
+
+  Future<void> sendPasswordResetEmail(String email) {
+    return _ref.read(authRepositoryProvider).sendPasswordResetEmail(email);
+  }
+
+  Future<void> updatePassword(String password) {
+    return _ref.read(authRepositoryProvider).updatePassword(password);
   }
 }

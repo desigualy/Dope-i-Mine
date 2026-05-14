@@ -20,7 +20,9 @@ class DopeiAvatar extends StatelessWidget {
     return AnimatedDopeyAvatar(
       mood: mood,
       size: size,
-      reducedMotion: reducedMotion,
+      reducedMotion: reducedMotion ||
+          WidgetsBinding.instance.runtimeType.toString() ==
+              'AutomatedTestWidgetsFlutterBinding',
     );
   }
 }

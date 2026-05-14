@@ -26,4 +26,19 @@ class ProgressRepositoryImpl {
       );
     }).toList();
   }
+
+  Future<List<Map<String, dynamic>>> getCompletedTasks(String userId) async {
+    final rows = await _client
+        .from('tasks')
+        .select('*, task_steps(status)')
+        .eq('user_id', userId)
+        .order('created_at', ascending: false);
+
+    return (rows as List<dynamic>).map((dynamic row) => Map<String, dynamic>.from(row as Map)).toList();
+  }
+
+  Future<int> getReliabilityScore(String userId) async {
+    final res = await _client.from('profiles').select('reliability_score').eq('id', userId).single();
+    return (res['reliability_score'] as num?)?.toInt() ?? 100;
+  }
 }

@@ -9,7 +9,9 @@ import '../../core/widgets/async_action_button.dart';
 import '../../core/widgets/error_banner.dart';
 import '../../core/widgets/primary_scaffold.dart';
 import '../../providers.dart';
+import '../../app/post_auth_route.dart';
 import 'auth_controller.dart';
+import '../core/widgets/dopei_guide.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -24,6 +26,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _loading = false;
   String? _errorText;
   bool _redirectChecked = false;
+  bool _obscurePassword = true;
 
   @override
   void didChangeDependencies() {
@@ -39,32 +42,55 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final authUser = ref.read(authRepositoryProvider).getCurrentUser();
     if (authUser == null || !mounted) return;
 
-    final profileRepository = ref.read(profileRepositoryProvider);
-    await profileRepository.ensureProfileExists(
-      userId: authUser.id,
-      email: authUser.email,
-    );
-    final onboardingComplete =
-        await profileRepository.isOnboardingComplete(authUser.id);
+    final targetRoute = await resolvePostAuthRoute(ref, authUser);
 
     if (!mounted) return;
-    context.go(onboardingComplete ? '/home' : '/branding/intro');
+    context.go(targetRoute);
   }
 
   @override
   Widget build(BuildContext context) {
     return PrimaryScaffold(
       title: 'Log in',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: ListView(
         children: <Widget>[
+          const DopeiGuide(
+            text:
+                'Welcome back! Let’s get you signed in so we can tackle some tasks together.',
+            mood: DopeiMood.calm,
+          ),
+          const SizedBox(height: 32),
           if (_errorText != null) ...<Widget>[
             ErrorBanner(message: _errorText!),
             const SizedBox(height: 12),
           ],
-          AppTextField(controller: _emailController, hintText: 'Email'),
+          SizedBox(
+            width: double.infinity,
+            child: AppTextField(
+              controller: _emailController,
+              hintText: 'Email',
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.next,
+            ),
+          ),
           const SizedBox(height: 12),
-          AppTextField(controller: _passwordController, hintText: 'Password'),
+          SizedBox(
+            width: double.infinity,
+            child: AppTextField(
+              controller: _passwordController,
+              hintText: 'Password',
+              obscureText: _obscurePassword,
+              textInputAction: TextInputAction.done,
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                onPressed: () =>
+                    setState(() => _obscurePassword = !_obscurePassword),
+              ),
+            ),
+          ),
           const SizedBox(height: 16),
           AsyncActionButton(
             label: 'Log in',
@@ -90,16 +116,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       'Signed in successfully, but no authenticated user is available.');
                 }
 
-                final profileRepository = ref.read(profileRepositoryProvider);
-                await profileRepository.ensureProfileExists(
-                  userId: authUser.id,
-                  email: authUser.email,
-                );
-                final onboardingComplete =
-                    await profileRepository.isOnboardingComplete(authUser.id);
+                final targetRoute = await resolvePostAuthRoute(ref, authUser);
 
                 if (mounted) {
-                  context.go(onboardingComplete ? '/home' : '/branding/intro');
+                  context.go(targetRoute);
                 }
               } catch (error) {
                 setState(() => _errorText = mapToUserFacingError(error));
@@ -108,9 +128,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               }
             },
           ),
-          TextButton(
-            onPressed: () => context.go('/signup'),
-            child: const Text('Create account'),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton(
+                onPressed: () => context.go('/forgot-password'),
+                child: const Text('Forgot password?'),
+              ),
+              TextButton(
+                onPressed: () => context.go('/signup'),
+                child: const Text('Create account'),
+              ),
+            ],
           ),
         ],
       ),

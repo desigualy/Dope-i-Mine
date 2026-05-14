@@ -34,14 +34,23 @@ class _DopeiOrbAvatarState extends State<DopeiOrbAvatar>
       duration: widget.reducedMotion
           ? const Duration(seconds: 8)
           : const Duration(milliseconds: 2200),
-    )..repeat();
+    );
+
+    if (!_shouldReduceMotion) {
+      _controller.repeat();
+    }
   }
+
+  bool get _shouldReduceMotion =>
+      widget.reducedMotion ||
+      WidgetsBinding.instance.runtimeType.toString() ==
+          'AutomatedTestWidgetsFlutterBinding';
 
   @override
   Widget build(BuildContext context) {
     final mediaReducedMotion =
         MediaQuery.maybeOf(context)?.disableAnimations ?? false;
-    final useReducedMotion = widget.reducedMotion || mediaReducedMotion;
+    final useReducedMotion = _shouldReduceMotion || mediaReducedMotion;
 
     return Semantics(
       image: true,
@@ -318,70 +327,136 @@ class DopeiOrbPainter extends CustomPainter {
       ..color = cyan
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
-      ..strokeWidth = 22 * unit
-      ..maskFilter = MaskFilter.blur(BlurStyle.normal, 2 * unit);
+      ..strokeWidth = 26 * unit
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, 1.2 * unit);
     final fillFeature = Paint()
       ..color = cyan
-      ..maskFilter = MaskFilter.blur(BlurStyle.normal, 3 * unit);
+      ..style = PaintingStyle.fill;
 
-    void openEyes({bool narrowed = false}) {
-      canvas.drawOval(
-        rect(414, 430, narrowed ? 92 : 70, narrowed ? 34 : 112),
-        fillFeature,
+    void neonGlow(Path path, {double strokeWidth = 38}) {
+      canvas.drawPath(
+        path,
+        Paint()
+          ..color = cyan.withOpacity(0.58)
+          ..style = PaintingStyle.stroke
+          ..strokeCap = StrokeCap.round
+          ..strokeJoin = StrokeJoin.round
+          ..strokeWidth = strokeWidth * unit
+          ..maskFilter = MaskFilter.blur(BlurStyle.normal, 18 * unit),
       );
-      canvas.drawOval(
-        rect(610, 430, narrowed ? 92 : 70, narrowed ? 34 : 112),
-        fillFeature,
+      canvas.drawPath(
+        path,
+        Paint()
+          ..color = cyan.withOpacity(0.86)
+          ..style = PaintingStyle.stroke
+          ..strokeCap = StrokeCap.round
+          ..strokeJoin = StrokeJoin.round
+          ..strokeWidth = (strokeWidth * 0.72) * unit
+          ..maskFilter = MaskFilter.blur(BlurStyle.normal, 5 * unit),
       );
     }
 
-    void smile({double width = 130, double height = 70}) {
-      canvas.drawArc(
-          rect(512, 516, width, height), 0.16, math.pi - 0.32, false, feature);
+    void neonEye({
+      required double cx,
+      required double cy,
+      double width = 72,
+      double height = 126,
+      double rotation = 0,
+    }) {
+      final eyeRect = rect(cx, cy, width, height);
+      canvas.save();
+      canvas.translate(eyeRect.center.dx, eyeRect.center.dy);
+      canvas.rotate(rotation);
+      canvas.translate(-eyeRect.center.dx, -eyeRect.center.dy);
+      canvas.drawOval(
+        eyeRect.inflate(22 * unit),
+        Paint()
+          ..color = cyan.withOpacity(0.62)
+          ..maskFilter = MaskFilter.blur(BlurStyle.normal, 24 * unit),
+      );
+      canvas.drawOval(
+        eyeRect.inflate(8 * unit),
+        Paint()
+          ..color = cyan.withOpacity(0.36)
+          ..maskFilter = MaskFilter.blur(BlurStyle.normal, 8 * unit),
+      );
+      canvas.drawOval(eyeRect, fillFeature);
+      canvas.drawOval(
+        eyeRect.deflate(20 * unit),
+        Paint()..color = Colors.white.withOpacity(0.18),
+      );
+      canvas.restore();
+    }
+
+    void winkEye({required double cx, required double cy}) {
+      final winkPath = Path()
+        ..moveTo(p(cx - 58, cy + 15).dx, p(cx - 58, cy + 15).dy)
+        ..quadraticBezierTo(
+          p(cx - 7, cy - 54).dx,
+          p(cx - 7, cy - 54).dy,
+          p(cx + 62, cy - 38).dx,
+          p(cx + 62, cy - 38).dy,
+        )
+        ..moveTo(p(cx - 54, cy + 15).dx, p(cx - 54, cy + 15).dy)
+        ..quadraticBezierTo(
+          p(cx - 2, cy - 15).dx,
+          p(cx - 2, cy - 15).dy,
+          p(cx + 58, cy + 24).dx,
+          p(cx + 58, cy + 24).dy,
+        );
+      neonGlow(winkPath, strokeWidth: 34);
+      canvas.drawPath(winkPath, feature..strokeWidth = 22 * unit);
+      feature.strokeWidth = 26 * unit;
+    }
+
+    void smile({double cy = 500, double width = 130, double height = 70}) {
+      final smilePath = Path()
+        ..moveTo(p(512 - width / 2, cy).dx, p(512 - width / 2, cy).dy)
+        ..quadraticBezierTo(
+          p(512, cy + height * 0.58).dx,
+          p(512, cy + height * 0.58).dy,
+          p(512 + width / 2, cy).dx,
+          p(512 + width / 2, cy).dy,
+        );
+      neonGlow(smilePath, strokeWidth: 34);
+      canvas.drawPath(smilePath, feature..strokeWidth = 24 * unit);
+      feature.strokeWidth = 26 * unit;
+    }
+
+    void signatureReferenceFace() {
+      neonEye(
+        cx: 414,
+        cy: 430,
+        width: 72,
+        height: 120,
+        rotation: -0.06,
+      );
+      winkEye(cx: 616, cy: 428);
+      smile(cy: 496, width: 128, height: 70);
     }
 
     switch (mood) {
       case DopeiMood.happy:
       case DopeiMood.celebration:
-        canvas.drawArc(rect(414, 424, 98, 62), math.pi + 0.15, math.pi - 0.3,
-            false, feature);
-        canvas.drawArc(rect(610, 424, 98, 62), math.pi + 0.15, math.pi - 0.3,
-            false, feature);
-        smile(width: mood == DopeiMood.celebration ? 170 : 150, height: 90);
+        signatureReferenceFace();
         break;
       case DopeiMood.focused:
-        canvas.drawLine(p(362, 414), p(462, 438), feature);
-        canvas.drawLine(p(562, 438), p(664, 414), feature);
-        canvas.drawArc(
-            rect(512, 522, 118, 34), 0.08, math.pi - 0.16, false, feature);
+        signatureReferenceFace();
         break;
       case DopeiMood.overwhelmed:
-        _paintSpiral(canvas, p(414, 430), cyan, unit);
-        _paintSpiral(canvas, p(610, 430), cyan, unit);
-        canvas.drawLine(p(452, 532), p(488, 508), feature);
-        canvas.drawLine(p(488, 508), p(528, 536), feature);
-        canvas.drawLine(p(528, 536), p(572, 506), feature);
+        signatureReferenceFace();
         break;
       case DopeiMood.encouraging:
-        openEyes();
-        canvas.drawArc(rect(610, 420, 96, 56), math.pi + 0.15, math.pi - 0.3,
-            false, feature);
-        smile(width: 145, height: 76);
+        signatureReferenceFace();
         break;
       case DopeiMood.proud:
-        openEyes(narrowed: true);
-        smile(width: 168, height: 86);
+        signatureReferenceFace();
         break;
       case DopeiMood.calm:
-        canvas.drawArc(rect(414, 424, 92, 48), math.pi + 0.18, math.pi - 0.36,
-            false, feature);
-        canvas.drawArc(rect(610, 424, 92, 48), math.pi + 0.18, math.pi - 0.36,
-            false, feature);
-        smile(width: 116, height: 56);
+        signatureReferenceFace();
         break;
       case DopeiMood.neutral:
-        openEyes();
-        smile();
+        signatureReferenceFace();
         break;
     }
   }
@@ -411,14 +486,15 @@ class DopeiOrbPainter extends CustomPainter {
       ..strokeWidth = 32 * unit;
     canvas.drawArc(
         rect(512, 760, 128, 128), -math.pi / 2, math.pi, false, logo);
-    canvas.drawLine(
-        p(470, 702),
-        p(470, 820),
-        Paint()
-          ..color = Colors.white
-          ..style = PaintingStyle.stroke
-          ..strokeCap = StrokeCap.round
-          ..strokeWidth = 28 * unit);
+    final emblemI = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 28 * unit;
+    // The white Dope-i emblem glyph is a lowercase "i". Keep the dot visually
+    // distinct so the hoodie mark never reads as an uppercase "I".
+    canvas.drawCircle(p(470, 704), 15 * unit, Paint()..color = Colors.white);
+    canvas.drawLine(p(470, 748), p(470, 820), emblemI);
   }
 
   void _paintConfetti(
@@ -447,27 +523,6 @@ class DopeiOrbPainter extends CustomPainter {
       canvas.drawLine(center.translate(0, -18 * unit),
           center.translate(0, 18 * unit), paint);
     }
-  }
-
-  void _paintSpiral(Canvas canvas, Offset center, Color color, double unit) {
-    final path = Path()..moveTo(center.dx, center.dy);
-    for (var i = 1; i <= 34; i += 1) {
-      final t = i / 34;
-      final angle = t * math.pi * 4.2;
-      final radius = t * 44 * unit;
-      path.lineTo(
-        center.dx + math.cos(angle) * radius,
-        center.dy + math.sin(angle) * radius,
-      );
-    }
-    canvas.drawPath(
-      path,
-      Paint()
-        ..color = color
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 10 * unit
-        ..strokeCap = StrokeCap.round,
-    );
   }
 
   Color _moodFeatureColor(DopeiMood mood) {

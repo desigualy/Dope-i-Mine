@@ -5,7 +5,8 @@ class RewardPoints {
 
   static const int taskCompleted = 2;
   static const int missionCompleted = 30;
-  static const int sideQuestCompleted = 5;
+  static const int sideQuestCompleted = 10;
+  static const int sideQuestBreakdown = 2;
 
   static const int tasksPerSideQuest = 4;
   static const int pointsPerLevel = 100;

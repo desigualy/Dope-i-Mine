@@ -25,15 +25,19 @@ class OnboardingGateScreen extends ConsumerWidget {
       return unauthenticatedChild ?? const _GateLoadingScreen();
     }
 
-    return FutureBuilder<bool>(
-      future: _isOnboardingComplete(ref, authUser),
+    return FutureBuilder<_GateDecision>(
+      future: _loadGateDecision(ref, authUser),
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const _GateLoadingScreen();
         }
 
-        final onboardingComplete = snapshot.data == true;
-        final target = onboardingComplete ? completedTarget : '/branding/intro';
+        final decision = snapshot.data ?? const _GateDecision();
+        final target = decision.accountType == 'caregiver'
+            ? '/caregiver'
+            : decision.onboardingComplete
+                ? completedTarget
+                : '/branding/intro';
 
         if (target != null) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -55,16 +59,34 @@ class OnboardingGateScreen extends ConsumerWidget {
     }
   }
 
-  Future<bool> _isOnboardingComplete(WidgetRef ref, AuthUser authUser) async {
+  Future<_GateDecision> _loadGateDecision(
+    WidgetRef ref,
+    AuthUser authUser,
+  ) async {
     try {
       final repo = ref.read(profileRepositoryProvider);
       await repo.ensureProfileExists(
           userId: authUser.id, email: authUser.email);
-      return await repo.isOnboardingComplete(authUser.id);
+      final accountType = await repo.getAccountType(authUser.id);
+      final onboardingComplete = await repo.isOnboardingComplete(authUser.id);
+      return _GateDecision(
+        accountType: accountType,
+        onboardingComplete: onboardingComplete,
+      );
     } catch (_) {
-      return false;
+      return const _GateDecision();
     }
   }
+}
+
+class _GateDecision {
+  const _GateDecision({
+    this.accountType = 'user',
+    this.onboardingComplete = false,
+  });
+
+  final String accountType;
+  final bool onboardingComplete;
 }
 
 class _GateLoadingScreen extends StatelessWidget {

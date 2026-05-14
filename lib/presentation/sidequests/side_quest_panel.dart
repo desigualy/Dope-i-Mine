@@ -51,13 +51,15 @@ class _SideQuestPanelState extends ConsumerState<SideQuestPanel> {
     }
 
     // Prioritize side quests from the task creation result if the ID matches
-    final List<SideQuestModel> questsToShow =
+    final List<SideQuestModel> allQuests =
         (taskState.task?.id == widget.taskId && taskState.sideQuests.isNotEmpty)
             ? taskState.sideQuests
             : sideQuestState.maybeWhen(
                 data: (quests) => quests,
                 orElse: () => <SideQuestModel>[],
               );
+
+    final questsToShow = allQuests.where((q) => q.status != 'locked').toList();
 
     if (questsToShow.isEmpty) {
       return sideQuestState.when(
@@ -203,7 +205,7 @@ class _SideQuestPanelState extends ConsumerState<SideQuestPanel> {
     required bool isOverwhelmed,
   }) {
     final available = quests
-        .where((quest) => quest.status != 'completed')
+        .where((quest) => quest.status == 'available')
         .toList(growable: false);
     if (available.isEmpty) return null;
 

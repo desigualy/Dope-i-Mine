@@ -8,7 +8,15 @@ import '../../domain/companion/avatar_config_model.dart';
 import '../../domain/companion/dopei_mood.dart' as companion;
 import '../avatar/current_user_avatar_provider.dart';
 import '../core/controllers/avatar_controller.dart';
+import '../core/widgets/dopei_guide.dart';
 import '../user_avatar/user_avatar_studio.dart';
+
+String _getWelcomeMessage(WidgetRef ref) {
+  final hour = DateTime.now().hour;
+  if (hour < 12) return 'Good morning! Let\'s start your day with intention.';
+  if (hour < 17) return 'Good afternoon! Keep the momentum going.';
+  return 'Good evening! Let\'s wind things down gently.';
+}
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -29,7 +37,14 @@ class HomeScreen extends ConsumerWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: ListView(
+          physics: const BouncingScrollPhysics(),
           children: <Widget>[
+            const SizedBox(height: 16),
+            DopeiGuide(
+              text: _getWelcomeMessage(ref),
+              mood: DopeiMood.happy,
+            ),
+            const SizedBox(height: 24),
             const SizedBox(height: 16),
             _HomeAvatarHero(
               configState: userAvatarConfig,
@@ -89,6 +104,14 @@ class HomeScreen extends ConsumerWidget {
               icon: Icons.bar_chart_rounded,
               color: Colors.amber[700]!,
               onPressed: () => context.go('/progress'),
+            ),
+            const SizedBox(height: 12),
+            _MenuButton(
+              title: 'Caregiver support',
+              subtitle: 'Link helpers and manage shared support',
+              icon: Icons.diversity_1_rounded,
+              color: Colors.lightBlueAccent[700]!,
+              onPressed: () => context.go('/caregiver'),
             ),
             const SizedBox(height: 24),
           ],

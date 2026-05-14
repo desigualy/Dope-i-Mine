@@ -90,8 +90,12 @@ final progressRepositoryProvider = Provider<ProgressRepositoryImpl>((ref) {
 });
 
 final caregiverRepositoryProvider = Provider<CaregiverRepositoryImpl>((ref) {
-  return _requireClientRepo(
-      ref.watch(supabaseProvider), CaregiverRepositoryImpl.new);
+  final client = ref.watch(supabaseProvider);
+  if (client == null) throw StateError('Supabase client is required');
+  return CaregiverRepositoryImpl(
+    client: client,
+    userId: client.auth.currentUser?.id,
+  );
 });
 
 final caregiverAssignmentsRepositoryProvider =
@@ -129,6 +133,7 @@ final syncEngineProvider = Provider<SyncEngine>((ref) {
     queueService: ref.watch(syncQueueServiceProvider),
     connectivityController: ref.watch(connectivityControllerProvider.notifier),
     supabaseClient: ref.watch(supabaseProvider),
+    localTaskStore: ref.watch(localTaskStoreProvider),
   );
 });
 

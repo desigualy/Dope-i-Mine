@@ -33,19 +33,12 @@ class PointsEngine {
   }
 
   static int earnedSideQuestCount(List<TaskStepModel> steps) {
-    if (!allTasksCompleted(steps)) return 0;
-    final completedMicroTaskCount = steps
+    final completedSteps = steps
         .where((step) =>
-            isMicroTask(step) &&
-            isCompletableTaskStep(step) &&
+            step.depthLevel > 0 &&
             step.status == StepStatus.completed)
         .length;
-    final completedTaskCount = completedMicroTaskCount > 0
-        ? completedMicroTaskCount
-        : completableTaskSteps(steps)
-            .where((step) => step.status == StepStatus.completed)
-            .length;
-    return completedTaskCount ~/ RewardPoints.tasksPerSideQuest;
+    return completedSteps ~/ RewardPoints.tasksPerSideQuest;
   }
 
   static int taskPointsForCompletion(List<TaskStepModel> steps) {

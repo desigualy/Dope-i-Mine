@@ -31,6 +31,7 @@ Or deploy individually:
 supabase functions deploy create-task
 supabase functions deploy breakdown-step
 supabase functions deploy overwhelm-rescue
+supabase functions deploy send-caregiver-invite
 ```
 
 ## Function Overview
@@ -49,6 +50,12 @@ supabase functions deploy overwhelm-rescue
 - **Purpose**: Provides supportive actions and overwhelm management suggestions
 - **Input**: `{}` (empty body)
 - **Output**: `{ showOnlyCurrentStep: boolean, supportiveAction: string }`
+
+### send-caregiver-invite
+- **Purpose**: Sends the email used to connect a caregiver/support account after a pending caregiver relationship is created.
+- **Input**: `{ inviteId: string, targetUserEmail: string, role: string }`
+- **Output**: `{ ok: true, mode: 'magic_link' | 'auth_invite', inviteId: string, role: string }`
+- **Required secrets/env**: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`; optional `APP_BASE_URL` for the email redirect target.
 
 ## Testing
 After deployment, test functions using:

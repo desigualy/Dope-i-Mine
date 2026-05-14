@@ -86,7 +86,7 @@ class TaskController extends StateNotifier<TaskViewState> {
         task: result.task,
         steps: result.steps,
         minimumVersion: result.minimumVersion,
-        sideQuests: result.sideQuests,
+        sideQuests: result.sideQuests.map((q) => q.copyWith(status: 'locked')).toList(),
         showMinimumVersion: false,
         missionRewarded: false,
       );
@@ -144,8 +144,26 @@ class TaskController extends StateNotifier<TaskViewState> {
       if (additions.isNotEmpty) {
         state =
             state.copyWith(steps: <TaskStepModel>[...current, ...additions]);
+        _unlockBreakdownSideQuest();
       }
     }
+  }
+
+  void _unlockBreakdownSideQuest() {
+    final locked = state.sideQuests.where((q) => q.status == 'locked').toList();
+    if (locked.isEmpty) return;
+
+    final updated = state.sideQuests.map((q) {
+      if (q.id == locked.first.id) {
+        return q.copyWith(
+          status: 'available',
+          rewardXp: RewardPoints.sideQuestBreakdown,
+        );
+      }
+      return q;
+    }).toList();
+
+    state = state.copyWith(sideQuests: updated);
   }
 
   void updateStepCompletion(String stepId, String status) {
@@ -168,6 +186,10 @@ class TaskController extends StateNotifier<TaskViewState> {
       steps: updatedSteps,
       minimumVersion: updatedMinimumVersion,
     );
+
+    if (stepStatus == StepStatus.completed) {
+      unlockEarnedSideQuests(updatedSteps);
+    }
   }
 
   void updateSideQuestStatus(String sideQuestId, String status) {
@@ -188,7 +210,6 @@ class TaskController extends StateNotifier<TaskViewState> {
     }
 
     var unlockedOrFinishedCount = 0;
-    final newlyUnlocked = <SideQuestModel>[];
     final updatedSideQuests = state.sideQuests.map((quest) {
       final alreadyEarned = quest.status == 'available' ||
           quest.status == 'accepted' ||
@@ -199,20 +220,26 @@ class TaskController extends StateNotifier<TaskViewState> {
       }
       if (quest.status == 'locked' && unlockedOrFinishedCount < earnedCount) {
         unlockedOrFinishedCount++;
-        final unlocked = quest.copyWith(
+        return quest.copyWith(
           status: 'available',
           rewardXp: RewardPoints.sideQuestCompleted,
         );
-        newlyUnlocked.add(unlocked);
-        return unlocked;
       }
       return quest;
     }).toList();
 
-    if (newlyUnlocked.isNotEmpty) {
-      state = state.copyWith(sideQuests: updatedSideQuests);
-    }
-    return newlyUnlocked;
+    state = state.copyWith(sideQuests: updatedSideQuests);
+    return const <SideQuestModel>[]; // Return empty as we update state directly
+  }
+
+  Future<void> completeNextStep() async {
+    final nextStep = state.steps.firstWhere(
+      (step) => step.depthLevel > 0 && step.status != StepStatus.completed,
+      orElse: () => state.steps.first, // Fallback
+    );
+    if (nextStep.status == StepStatus.completed) return;
+
+    updateStepCompletion(nextStep.id, 'completed');
   }
 
   void markMissionRewarded() {

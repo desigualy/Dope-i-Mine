@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../domain/avatar/avatar_enums.dart';
+import '../../domain/companion/dopei_mood.dart' as companion;
+import 'dopei_orb_avatar.dart';
 
 class ImageDopeiAvatar extends StatelessWidget {
   const ImageDopeiAvatar({
@@ -57,12 +59,24 @@ class ImageDopeiAvatar extends StatelessWidget {
     return Semantics(
       image: true,
       label: mood.semanticLabel,
-      child: Image.asset(
-        assetPath,
-        width: size,
-        height: size,
-        fit: BoxFit.contain,
+      child: DopeiOrbAvatar(
+        mood: _companionMood,
+        size: size,
+        reducedMotion: reducedMotion,
       ),
     );
+  }
+
+  companion.DopeiMood get _companionMood {
+    return switch (mood) {
+      DopeiMood.neutral => companion.DopeiMood.neutral,
+      DopeiMood.focused => companion.DopeiMood.focused,
+      DopeiMood.happy => companion.DopeiMood.happy,
+      DopeiMood.celebration => companion.DopeiMood.celebration,
+      DopeiMood.overwhelmed => companion.DopeiMood.overwhelmed,
+      DopeiMood.calm => companion.DopeiMood.calm,
+      DopeiMood.encouraging => companion.DopeiMood.encouraging,
+      DopeiMood.proud => companion.DopeiMood.proud,
+    };
   }
 }

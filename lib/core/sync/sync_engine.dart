@@ -1,6 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../data/local/local_task_store.dart';
+import '../../data/repositories/task_repository_impl.dart';
+import '../../domain/tasks/task_state_snapshot.dart';
 import '../network/connectivity_controller.dart';
 import '../network/connectivity_status.dart';
 import 'sync_queue_item.dart';
@@ -11,11 +14,13 @@ class SyncEngine {
     required this.queueService,
     required this.connectivityController,
     this.supabaseClient,
+    this.localTaskStore,
   });
 
   final SyncQueueService queueService;
   final ConnectivityController connectivityController;
   final SupabaseClient? supabaseClient;
+  final LocalTaskStore? localTaskStore;
 
   Future<int> syncNow() async {
     final status = await connectivityController.refresh();
@@ -44,6 +49,8 @@ class SyncEngine {
         await _syncCompleteStep(item);
         return;
       case 'create_task':
+        await _syncCreateTask(item);
+        return;
       case 'breakdown_step':
       case 'avatar_update':
       case 'routine_update':
@@ -55,12 +62,46 @@ class SyncEngine {
     }
   }
 
+  Future<void> _syncCreateTask(SyncQueueItem item) async {
+    final payload = item.payload;
+    final localTaskId = payload['localTaskId'] as String?;
+    final userId = payload['userId'] as String?;
+    final sourceText = payload['sourceText'] as String?;
+    final snapshotJson = (payload['snapshot'] as Map?)?.cast<String, dynamic>();
+
+    if (userId == null || sourceText == null || snapshotJson == null) {
+      throw StateError('Cannot sync create_task without user/source/snapshot.');
+    }
+
+    final existingRemoteId = localTaskId == null
+        ? null
+        : await localTaskStore?.remoteIdFor(localTaskId);
+    if (existingRemoteId != null && existingRemoteId.isNotEmpty) return;
+
+    final result = await TaskRepositoryImpl(supabaseClient!).createTask(
+      userId: userId,
+      sourceText: sourceText,
+      snapshot: TaskStateSnapshot.fromJson(snapshotJson),
+    );
+
+    if (localTaskId != null && localTaskStore != null) {
+      await localTaskStore!.mapRemoteId(localTaskId, result.task.id);
+      await localTaskStore!.saveTaskBundle(LocalTaskBundle(
+        task: result.task,
+        steps: result.steps,
+        minimumVersion: result.minimumVersion,
+        sideQuests: result.sideQuests,
+      ));
+    }
+  }
+
   Future<void> _syncCompleteStep(SyncQueueItem item) async {
     final payload = item.payload;
     final userId = payload['userId'] as String?;
     final stepId = payload['stepId'] as String?;
     if (userId == null || stepId == null || stepId.startsWith('local_')) {
-      throw StateError('Cannot sync complete_step without remote user/step IDs.');
+      throw StateError(
+          'Cannot sync complete_step without remote user/step IDs.');
     }
 
     await supabaseClient!.from('task_steps').update(<String, dynamic>{

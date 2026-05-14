@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/widgets/app_back_button.dart';
 import '../../domain/tasks/task_state_snapshot.dart';
 import '../../domain/tasks/task_step_model.dart';
 import '../../providers.dart';
 import '../core/controllers/avatar_controller.dart';
-import '../core/widgets/dopei_avatar.dart';
 import '../overwhelm/overwhelm_controller.dart';
 import '../overwhelm/overwhelm_support_sheet.dart';
 import '../rewards/reward_controller.dart';
 import '../rewards/widgets/xp_bar.dart';
 import '../sidequests/side_quest_panel.dart';
+import '../core/widgets/dopei_guide.dart';
 import 'task_controller.dart';
 import 'task_session_controller.dart';
 import 'widgets/minimum_version_toggle.dart';
@@ -66,6 +67,7 @@ class TaskBreakdownScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: const AppBackButton(),
         title: Text(state.task?.normalizedTitle ?? 'Task breakdown'),
         actions: <Widget>[
           Padding(
@@ -113,6 +115,13 @@ class TaskBreakdownScreen extends ConsumerWidget {
                     : () => ref
                         .read(taskControllerProvider.notifier)
                         .clearFocusedSection(),
+              ),
+              const SizedBox(height: 16),
+              const DopeiGuide(
+                text: "Don't look at the whole list. Just find one tiny move that you can do right now. I'm right here with you.",
+                mood: DopeiMood.encouraging,
+                padding: EdgeInsets.zero,
+                size: 60,
               ),
               if (overwhelm.isActive) ...<Widget>[
                 const SizedBox(height: 12),
@@ -167,6 +176,15 @@ class TaskBreakdownScreen extends ConsumerWidget {
                     child: const Text('Resume'),
                   ),
                 ],
+              ),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  key: const ValueKey<String>('task-start-body-double-button'),
+                  onPressed: () => context.go('/body-double/start'),
+                  icon: const Icon(Icons.self_improvement_rounded),
+                  label: const Text('Start body double'),
+                ),
               ),
               const SizedBox(height: 8),
               if (visibleSteps.isEmpty)
@@ -492,9 +510,8 @@ class _StepProcessList extends StatelessWidget {
               child: StepCard(
                 step: child,
                 depthIndent: depth,
-                onBreakDownMore: child.depthLevel < 2
-                    ? () => onBreakDownMore(child)
-                    : null,
+                onBreakDownMore:
+                    child.depthLevel < 2 ? () => onBreakDownMore(child) : null,
                 onComplete: () => onComplete(child),
               ),
             ),

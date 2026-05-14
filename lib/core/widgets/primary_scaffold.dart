@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../offline/offline_status_banner.dart';
+import 'app_back_button.dart';
 
 class PrimaryScaffold extends StatelessWidget {
   const PrimaryScaffold({
@@ -9,6 +10,8 @@ class PrimaryScaffold extends StatelessWidget {
     required this.child,
     this.actions,
     this.leading,
+    this.showBackButton = true,
+    this.backFallbackRoute = '/home',
     this.floatingActionButton,
     this.showOfflineBanner = true,
   });
@@ -17,13 +20,18 @@ class PrimaryScaffold extends StatelessWidget {
   final Widget child;
   final List<Widget>? actions;
   final Widget? leading;
+  final bool showBackButton;
+  final String backFallbackRoute;
   final Widget? floatingActionButton;
   final bool showOfflineBanner;
 
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          leading: leading,
+          leading: leading ??
+              (showBackButton
+                  ? AppBackButton(fallbackRoute: backFallbackRoute)
+                  : null),
           title: Text(title),
           actions: actions,
         ),

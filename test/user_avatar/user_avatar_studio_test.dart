@@ -4,8 +4,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  void useTallViewport(WidgetTester tester) {
+    tester.view.physicalSize = const Size(800, 1400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+  }
+
   testWidgets('home page exposes Avatar Engine V4 entry point and core actions',
       (tester) async {
+    useTallViewport(tester);
+
     await tester.pumpWidget(
       const ProviderScope(
         child: MaterialApp(
@@ -26,30 +35,17 @@ void main() {
 
     expect(find.text('My avatar'), findsOneWidget);
 
-    await tester.scrollUntilVisible(
-      find.text('New task'),
-      300,
-      scrollable: find.byType(Scrollable).first,
-    );
     expect(find.text('New task'), findsOneWidget);
 
-    await tester.scrollUntilVisible(
-      find.text('My routines'),
-      300,
-      scrollable: find.byType(Scrollable).first,
-    );
     expect(find.text('My routines'), findsOneWidget);
 
-    await tester.scrollUntilVisible(
-      find.text('My progress'),
-      300,
-      scrollable: find.byType(Scrollable).first,
-    );
     expect(find.text('My progress'), findsOneWidget);
   });
 
   testWidgets('home avatar card remains available for editing flow',
       (tester) async {
+    useTallViewport(tester);
+
     await tester.pumpWidget(
       const ProviderScope(
         child: MaterialApp(

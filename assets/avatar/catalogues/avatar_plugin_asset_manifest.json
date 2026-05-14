@@ -1,0 +1,282 @@
+{
+  "schemaVersion": 1,
+  "pipeline": "Dope-i-Mine Avatar Engine V4 hybrid plugin renderer",
+  "rive": {
+    "bucket": "avatar-rive-rigs",
+    "assetPath": "assets/avatar_rive/base_avatar.riv",
+    "path": "base_avatar.riv",
+    "artboard": "Avatar",
+    "stateMachine": "AvatarState",
+    "requiredNumberInputs": [
+      "skinTone",
+      "hairStyle",
+      "hairColor",
+      "expression",
+      "previewMode"
+    ],
+    "requiredBooleanInputs": [
+      "hasGlasses"
+    ],
+    "inputs": {
+      "skinTone": {
+        "type": "number",
+        "values": {
+          "porcelain_cool": 0,
+          "porcelain_warm": 1,
+          "fair_cool": 2,
+          "fair_neutral": 3,
+          "fair_warm": 4,
+          "light_olive": 5,
+          "medium_olive": 6,
+          "tan_warm": 7,
+          "golden_brown": 8,
+          "medium_brown": 9,
+          "deep_brown": 10,
+          "very_deep_brown": 11,
+          "albinism_type_1": 12,
+          "albinism_type_2": 13
+        }
+      },
+      "hairColor": {
+        "type": "number",
+        "values": {
+          "black": 0,
+          "soft_black": 1,
+          "dark_brown": 2,
+          "medium_brown": 3,
+          "light_brown": 4,
+          "dark_blonde": 5,
+          "blonde": 6,
+          "platinum_blonde": 7,
+          "white_blonde": 8,
+          "grey": 9,
+          "silver": 10,
+          "ginger": 11,
+          "copper": 12,
+          "auburn": 13,
+          "strawberry_blonde": 14,
+          "red_brown": 15,
+          "albino_white": 16
+        }
+      },
+      "hasGlasses": {
+        "type": "boolean",
+        "values": {
+          "none": false,
+          "glasses": true,
+          "reading_glasses": true
+        }
+      },
+      "expression": {
+        "type": "number",
+        "values": {
+          "neutral": 0,
+          "happy": 1,
+          "focused": 2,
+          "calm": 3,
+          "proud": 4,
+          "celebration": 5
+        }
+      },
+      "previewMode": {
+        "type": "number",
+        "values": {
+          "face": 0,
+          "bust": 1,
+          "full_body": 2
+        }
+      }
+    }
+  },
+  "glb": {
+    "bucket": "avatar-glb-assets",
+    "baseBodyPath": "assets/avatar_glb/base_avatar.glb",
+    "path": "base_avatar.glb",
+    "materials": {
+      "skin_material": {
+        "traits": [
+          "porcelain_cool",
+          "fair_warm",
+          "light_olive",
+          "medium_brown",
+          "deep_brown",
+          "very_deep_brown",
+          "albinism_type_1",
+          "albinism_type_2"
+        ]
+      },
+      "hair_material": {
+        "traits": [
+          "black",
+          "soft_black",
+          "dark_brown",
+          "ginger",
+          "copper",
+          "auburn",
+          "strawberry_blonde",
+          "albino_white",
+          "silver"
+        ]
+      },
+      "eye_material": {
+        "traits": [
+          "brown",
+          "hazel",
+          "green",
+          "blue",
+          "grey",
+          "light_blue",
+          "violet_tint",
+          "albinism_light"
+        ]
+      },
+      "top_material": {
+        "traits": [
+          "tshirt",
+          "hoodie",
+          "jumper",
+          "shirt",
+          "dress",
+          "school_uniform",
+          "sensory_soft_clothing"
+        ]
+      },
+      "bottom_material": {
+        "traits": [
+          "trousers",
+          "leggings",
+          "skirt",
+          "shorts",
+          "school_uniform"
+        ]
+      },
+      "outerwear_material": {
+        "traits": [
+          "jacket",
+          "coat",
+          "smart_casual"
+        ]
+      },
+      "shoe_material": {
+        "traits": [
+          "trainers",
+          "school_shoes",
+          "boots",
+          "soft_shoes"
+        ]
+      }
+    },
+    "nodes": {
+      "head_anchor": [
+        "head"
+      ],
+      "hair_anchor": [
+        "hair_mesh_default"
+      ],
+      "headwear_anchor": [
+        "hijab",
+        "khimar",
+        "turban",
+        "patka",
+        "dastar",
+        "kippah",
+        "tichel",
+        "headwrap",
+        "duku",
+        "gele",
+        "bonnet",
+        "taqiyah",
+        "keffiyeh"
+      ],
+      "glasses_anchor": [
+        "glasses",
+        "reading_glasses",
+        "sunglasses"
+      ],
+      "left_ear_anchor": [
+        "hearing_aid_left",
+        "cochlear_implant_left"
+      ],
+      "right_ear_anchor": [
+        "hearing_aid_right",
+        "cochlear_implant_right"
+      ],
+      "accessibility_anchor": [
+        "sensory_headphones",
+        "walking_stick",
+        "white_cane",
+        "crutches",
+        "medical_patch",
+        "oxygen_tube",
+        "communication_badge"
+      ],
+      "wheelchair_anchor": [
+        "wheelchair"
+      ]
+    },
+    "morphTargets": {
+      "jaw_width": {
+        "min": 0,
+        "max": 1,
+        "default": 0.5
+      },
+      "cheek_fullness": {
+        "min": 0,
+        "max": 1,
+        "default": 0.5
+      },
+      "chin_length": {
+        "min": 0,
+        "max": 1,
+        "default": 0.5
+      },
+      "face_softness": {
+        "min": 0,
+        "max": 1,
+        "default": 0.5
+      }
+    }
+  },
+  "rules": {
+    "identityLabelsDoNotForceAppearance": true,
+    "appearanceDoesNotImplyIdentity": true,
+    "identityProtectedTraitsRemainFree": [
+      "skin_tone",
+      "hair_texture",
+      "hair_colour",
+      "body_type",
+      "accessibility_item",
+      "cultural_headwear",
+      "religious_headwear",
+      "private_abstract"
+    ]
+  },
+  "traits": {
+    "tan_warm": {
+      "traitId": "tan_warm",
+      "category": "skin_tone",
+      "riveInputKey": "skinTone",
+      "riveValue": 0.58,
+      "glbMaterialSlot": "skin_material",
+      "required": true
+    },
+    "long_wavy": {
+      "traitId": "long_wavy",
+      "category": "hair_style",
+      "riveInputKey": "hairStyle",
+      "riveValue": 0.62,
+      "glbMeshSlot": "hair_anchor"
+    },
+    "wheelchair": {
+      "traitId": "wheelchair",
+      "category": "accessibility_item",
+      "glbAssetPath": "assets/avatar_glb/accessibility/wheelchair.glb",
+      "glbMeshSlot": "wheelchair_anchor"
+    }
+  },
+  "checklist": [
+    "Base Rive rig is declared",
+    "Starter trait bindings resolve for tests",
+    "GLB accessibility assets include wheelchair binding"
+  ]
+}

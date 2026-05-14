@@ -426,7 +426,7 @@ class TaskRepositoryImpl {
         'title': quest['title'],
         'quest_type': quest['quest_type'] ?? quest['questType'] ?? 'bonus',
         'reward_xp': quest['reward_xp'] ?? quest['rewardXp'] ?? 10,
-        'status': 'available',
+        'status': 'locked',
       };
     }).toList();
 

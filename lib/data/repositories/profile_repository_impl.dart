@@ -14,11 +14,50 @@ class ProfileRepositoryImpl {
   Future<void> ensureProfileExists({
     required String userId,
     String? email,
+    String accountType = 'user',
   }) async {
-    await _client.from('users_profile').upsert(<String, dynamic>{
-      'id': userId,
-      if (email != null) 'email': email,
-    });
+    final existingAccountType = await getAccountType(userId);
+    final requestedAccountType =
+        accountType == 'caregiver' ? 'caregiver' : 'user';
+    final normalizedAccountType =
+        existingAccountType == 'caregiver' ? 'caregiver' : requestedAccountType;
+    try {
+      await _client.from('users_profile').upsert(<String, dynamic>{
+        'id': userId,
+        if (email != null) 'email': email,
+        'account_type': normalizedAccountType,
+      });
+    } catch (_) {
+      await _client.from('users_profile').upsert(<String, dynamic>{
+        'id': userId,
+        if (email != null) 'email': email,
+      });
+    }
+
+    if (normalizedAccountType == 'caregiver') {
+      try {
+        await _client.from('caregiver_profiles').upsert(<String, dynamic>{
+          'user_id': userId,
+          if (email != null) 'contact_email': email,
+          'verification_status': 'unverified',
+          'updated_at': DateTime.now().toIso8601String(),
+        });
+      } catch (_) {
+        // Older environments may not have caregiver_profiles until the latest
+        // migration is applied. Do not block login/profile bootstrap.
+      }
+    }
+
+    await _acceptPendingCaregiverInvitesForEmail(email);
+  }
+
+  Future<void> _acceptPendingCaregiverInvitesForEmail(String? email) async {
+    if (email == null || !email.contains('@')) return;
+    try {
+      await _client.rpc('accept_pending_caregiver_email_invites');
+    } catch (_) {
+      // Older environments may not have the RPC yet. Do not block login.
+    }
   }
 
   Future<void> setOnboardingCompleted({
@@ -125,6 +164,19 @@ class ProfileRepositoryImpl {
     return profileRow['onboarding_completed'] == true;
   }
 
+  Future<String> getAccountType(String userId) async {
+    try {
+      final profileRow = await _client
+          .from('users_profile')
+          .select('account_type')
+          .eq('id', userId)
+          .maybeSingle();
+      return profileRow?['account_type'] == 'caregiver' ? 'caregiver' : 'user';
+    } catch (_) {
+      return 'user';
+    }
+  }
+
   Future<SensorySettingsModel?> getSensorySettings(String userId) async {
     final row = await _client
         .from('sensory_settings')
@@ -143,7 +195,8 @@ class ProfileRepositoryImpl {
     });
   }
 
-  Future<void> updateSensorySettings(String userId, {
+  Future<void> updateSensorySettings(
+    String userId, {
     bool? reducedAnimation,
     bool? largeText,
     bool? soundEnabled,
@@ -155,7 +208,9 @@ class ProfileRepositoryImpl {
     final updates = <String, dynamic>{
       'updated_at': DateTime.now().toIso8601String(),
     };
-    if (reducedAnimation != null) updates['reduced_animation'] = reducedAnimation;
+    if (reducedAnimation != null) {
+      updates['reduced_animation'] = reducedAnimation;
+    }
     if (largeText != null) updates['large_text'] = largeText;
     if (soundEnabled != null) updates['sound_enabled'] = soundEnabled;
     if (softColors != null) updates['soft_colors'] = softColors;
@@ -163,7 +218,10 @@ class ProfileRepositoryImpl {
     if (iconMode != null) updates['icon_mode'] = iconMode;
     if (reduceSurprises != null) updates['reduce_surprises'] = reduceSurprises;
 
-    await _client.from('sensory_settings').update(updates).eq('user_id', userId);
+    await _client
+        .from('sensory_settings')
+        .update(updates)
+        .eq('user_id', userId);
   }
 
   String _modeToDb(SupportMode mode) {

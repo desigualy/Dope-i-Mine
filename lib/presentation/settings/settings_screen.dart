@@ -142,6 +142,26 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         },
                 ),
                 const Divider(),
+                const _SectionHeader(title: 'Body doubling'),
+                ListTile(
+                  title: const Text('Random body double safety'),
+                  subtitle: const Text(
+                    'Manage opt-in, preset/silent modes, and guardian approval.',
+                  ),
+                  leading: const Icon(Icons.shield_rounded),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => context.push('/body-double/random-settings'),
+                ),
+                ListTile(
+                  title: const Text('Body double moderation'),
+                  subtitle: const Text(
+                    'Moderator report review, audit events, restrictions, and lifecycle cleanup.',
+                  ),
+                  leading: const Icon(Icons.admin_panel_settings_rounded),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => context.push('/body-double/moderation'),
+                ),
+                const Divider(),
                 const _SectionHeader(title: 'Offline mode'),
                 const OfflineSyncPanel(),
                 const Divider(),

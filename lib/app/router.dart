@@ -1,17 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../presentation/auth/forgot_password_screen.dart';
 import '../presentation/auth/login_screen.dart';
+import '../presentation/auth/reset_password_screen.dart';
 import '../presentation/auth/signup_screen.dart';
 import '../avatar_engine_v4/presentation/avatar_customizer_screen.dart';
 import '../presentation/branding/dope_i_intro_screen.dart';
 import '../presentation/branding/pronunciation_setup_screen.dart';
 import '../presentation/branding/skin_pack_shop_screen.dart';
 import '../presentation/branding/voice_name_preview_screen.dart';
-import '../presentation/caregiver/caregiver_assigned_routines_screen.dart';
+import '../presentation/body_double/body_double_start_screen.dart';
+import '../presentation/body_double/body_double_moderation_screen.dart';
+import '../presentation/body_double/body_double_session_router_screen.dart';
+import '../presentation/body_double/body_double_summary_screen.dart';
+import '../presentation/body_double/random_body_double_settings_screen.dart';
 import '../presentation/caregiver/caregiver_assign_routine_screen.dart';
+import '../presentation/caregiver/caregiver_assign_task_screen.dart';
 import '../presentation/caregiver/caregiver_dashboard_screen.dart';
+import '../presentation/caregiver/caregiver_permissions_screen.dart';
+import '../presentation/caregiver/caregiver_progress_insights_screen.dart';
+import '../presentation/caregiver/caregiver_assigned_routines_screen.dart';
 import '../presentation/caregiver/link_caregiver_screen.dart';
+import '../presentation/caregiver/linked_user_detail_screen.dart';
 import '../presentation/home/home_screen.dart';
 import '../presentation/onboarding/age_band_screen.dart';
 import '../presentation/onboarding/assistant_name_screen.dart';
@@ -64,6 +75,12 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
     GoRoute(path: '/signup', builder: (_, __) => const SignupScreen()),
+    GoRoute(
+        path: '/forgot-password',
+        builder: (_, __) => const ForgotPasswordScreen()),
+    GoRoute(
+        path: '/reset-password',
+        builder: (_, __) => const ResetPasswordScreen()),
     GoRoute(
       path: '/home',
       builder: (_, __) => const OnboardingGateScreen(child: HomeScreen()),
@@ -156,6 +173,21 @@ final GoRouter appRouter = GoRouter(
         builder: (_, __) => const TaskBreakdownScreen()),
     GoRoute(
         path: '/tasks/summary', builder: (_, __) => const TaskSummaryScreen()),
+    GoRoute(
+        path: '/body-double/start',
+        builder: (_, __) => const BodyDoubleStartScreen()),
+    GoRoute(
+        path: '/body-double/session',
+        builder: (_, __) => const BodyDoubleSessionRouterScreen()),
+    GoRoute(
+        path: '/body-double/summary',
+        builder: (_, __) => const BodyDoubleSummaryScreen()),
+    GoRoute(
+        path: '/body-double/random-settings',
+        builder: (_, __) => const RandomBodyDoubleSettingsScreen()),
+    GoRoute(
+        path: '/body-double/moderation',
+        builder: (_, __) => const BodyDoubleModerationScreen()),
     GoRoute(path: '/progress', builder: (_, __) => const ProgressScreen()),
     GoRoute(path: '/routines', builder: (_, __) => const RoutineListScreen()),
     GoRoute(
@@ -171,13 +203,37 @@ final GoRouter appRouter = GoRouter(
         path: '/routines/run', builder: (_, __) => const RoutineRunScreen()),
     GoRoute(
         path: '/caregiver',
-        builder: (_, __) => const CaregiverDashboardScreen()),
+        builder: (_, state) => CaregiverDashboardScreen(
+              inviteId: state.uri.queryParameters['invite_id'],
+            )),
     GoRoute(
         path: '/caregiver/link',
         builder: (_, __) => const LinkCaregiverScreen()),
     GoRoute(
+        path: '/caregiver/user/:rid',
+        builder: (_, state) => LinkedUserDetailScreen(
+              relationshipId: state.pathParameters['rid']!,
+            )),
+    GoRoute(
         path: '/caregiver/assign-routine',
-        builder: (_, __) => const CaregiverAssignRoutineScreen()),
+        builder: (_, state) => CaregiverAssignRoutineScreen(
+              initialUserId: state.uri.queryParameters['uid'],
+            )),
+    GoRoute(
+        path: '/caregiver/assign-task',
+        builder: (_, state) => CaregiverAssignTaskScreen(
+              initialUserId: state.uri.queryParameters['uid'],
+            )),
+    GoRoute(
+        path: '/caregiver/permissions/:rid',
+        builder: (_, state) => CaregiverPermissionsScreen(
+              relationshipId: state.pathParameters['rid']!,
+            )),
+    GoRoute(
+        path: '/caregiver/insights/:rid',
+        builder: (_, state) => CaregiverProgressInsightsScreen(
+              relationshipId: state.pathParameters['rid']!,
+            )),
     GoRoute(
         path: '/caregiver/assigned-routines',
         builder: (_, __) => const CaregiverAssignedRoutinesScreen()),

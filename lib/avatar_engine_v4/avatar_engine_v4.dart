@@ -5,6 +5,8 @@ export 'data/avatar_v4_repository.dart';
 export 'data/avatar_v4_supabase_repository.dart';
 export 'data/avatar_v4_sync_service.dart';
 export 'domain/avatar_engine_mode.dart';
+export 'domain/avatar_plugin_asset_manifest.dart';
+export 'domain/avatar_trait_catalogue.dart';
 export 'domain/avatar_v4_asset_handoff.dart';
 export 'domain/avatar_v4_config.dart';
 export 'domain/avatar_v4_inventory.dart';

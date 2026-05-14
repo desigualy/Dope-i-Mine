@@ -44,6 +44,7 @@ class _FakeAuthRepository implements AuthRepositoryImpl {
   _FakeAuthRepository({this.persistCurrentUserOnSignIn = true});
 
   AuthUser? user;
+  String? updatedPassword;
   final bool persistCurrentUserOnSignIn;
 
   @override
@@ -74,6 +75,11 @@ class _FakeAuthRepository implements AuthRepositoryImpl {
 
   @override
   Future<void> sendPasswordResetEmail(String email) async {}
+
+  @override
+  Future<void> updatePassword(String password) async {
+    updatedPassword = password;
+  }
 }
 
 class _FakeCompanionRepository implements CompanionRepositoryImpl {

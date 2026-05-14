@@ -2,6 +2,22 @@
 .packages
 build/
 coverage/
+
+.flutter-plugins
+.flutter-plugins-dependencies
+
+.idea/
+.vscode/
+
 .env
+.env.*
+!.env.example
+
+*.iml
+*.log
+*.tmp
+*.zip
 
 build.zip
+dope_i_mine_debug_pass.patch
+APPLY_DEBUG_PASS.md

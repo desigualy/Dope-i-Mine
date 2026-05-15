@@ -9,7 +9,6 @@ import '../../domain/companion/dopei_mood.dart' as companion;
 import '../avatar/current_user_avatar_provider.dart';
 import '../core/controllers/avatar_controller.dart';
 import '../core/widgets/dopei_guide.dart';
-import '../user_avatar/user_avatar_studio.dart';
 
 String _getWelcomeMessage(WidgetRef ref) {
   final hour = DateTime.now().hour;
@@ -79,15 +78,21 @@ class HomeScreen extends ConsumerWidget {
               color: Colors.tealAccent[700]!,
               onPressed: () => context.push('/avatar/customize'),
             ),
-            const SizedBox(height: 20),
-            const UserAvatarStudioCard(),
-            const SizedBox(height: 20),
+            const SizedBox(height: 12),
             _MenuButton(
               title: 'New task',
               subtitle: 'Break down something new',
               icon: Icons.add_rounded,
               color: Colors.cyan[700]!,
               onPressed: () => context.go('/tasks/new'),
+            ),
+            const SizedBox(height: 12),
+            _MenuButton(
+              title: 'Body double',
+              subtitle: 'Get calm focus support while you work',
+              icon: Icons.self_improvement_rounded,
+              color: Colors.greenAccent[700]!,
+              onPressed: () => context.go('/body-double/start'),
             ),
             const SizedBox(height: 12),
             _MenuButton(

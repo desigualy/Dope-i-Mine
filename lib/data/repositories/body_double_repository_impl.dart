@@ -469,6 +469,7 @@ class BodyDoubleRepositoryImpl {
           'sender_id': invite.senderId,
           'receiver_id': invite.receiverId,
           'status': invite.status.name,
+          'is_spur_a_on': invite.isSpurAOn,
           'expires_at': invite.expiresAt.toIso8601String(),
           'created_at': invite.createdAt.toIso8601String(),
           'responded_at': invite.respondedAt?.toIso8601String(),

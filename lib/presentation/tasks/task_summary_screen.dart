@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/widgets/app_back_button.dart';
+import '../../core/widgets/primary_scaffold.dart';
+import '../../data/repositories/routine_templates.dart';
 import '../../domain/tasks/task_step_model.dart';
+import '../routines/routine_controller.dart';
 import 'task_controller.dart';
 
 class TaskSummaryScreen extends ConsumerWidget {
@@ -15,121 +17,100 @@ class TaskSummaryScreen extends ConsumerWidget {
     final completedSteps =
         state.steps.where((step) => step.status == StepStatus.completed).length;
     final totalSteps = state.steps.length;
+    final taskTitle = state.task?.normalizedTitle.trim().isNotEmpty == true
+        ? state.task!.normalizedTitle
+        : 'your task';
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: const AppBackButton(),
-        title: const Text('Task Summary'),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Icon(
-                Icons.check_circle,
-                color: Colors.green,
-                size: 64,
-              ),
-              const SizedBox(height: 24),
-              Text(
-                'Great Job!',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'You completed "${state.task?.normalizedTitle}"',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  children: <Widget>[
-                    Text(
-                      'Completion Summary',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Column(
-                          children: <Widget>[
-                            Text(
-                              '$completedSteps',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineSmall
-                                  ?.copyWith(
-                                    color: Colors.green,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Completed',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          ],
-                        ),
-                        Column(
-                          children: <Widget>[
-                            Text(
-                              '$totalSteps',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineSmall
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Total Steps',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    try {
-                      debugPrint('>>> Summary: Navigating to home');
-                      debugPrint('>>> Summary: Current task = ${state.task}');
-                      debugPrint(
-                          '>>> Summary: Steps count = ${state.steps.length}');
-                      context.go('/home');
-                    } catch (e, st) {
-                      debugPrint('ERROR: Summary navigation failed: $e');
-                      debugPrint('STACK: $st');
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Navigation error: $e')),
-                      );
-                    }
-                  },
-                  child: const Text('Return to Home'),
-                ),
-              ),
-            ],
+    return PrimaryScaffold(
+      title: 'Task complete',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          const Spacer(),
+          Icon(
+            Icons.celebration_rounded,
+            size: 72,
+            color: Theme.of(context).colorScheme.primary,
           ),
-        ),
+          const SizedBox(height: 16),
+          Text(
+            'Task complete',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            taskTitle,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Steps completed: $completedSteps / $totalSteps',
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'XP earned for completed steps.',
+            textAlign: TextAlign.center,
+          ),
+          const Spacer(),
+          OutlinedButton.icon(
+            onPressed: state.task == null
+                ? null
+                : () {
+                    final template = _templateFromTaskState(state);
+                    final existing = ref.read(savedTaskRoutineTemplatesProvider);
+                    ref.read(savedTaskRoutineTemplatesProvider.notifier).state =
+                        <RoutineTemplate>[
+                      template,
+                      ...existing.where((item) => item.id != template.id),
+                    ];
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Saved "${template.title}" as a template.'),
+                      ),
+                    );
+                  },
+            icon: const Icon(Icons.bookmark_add_rounded),
+            label: const Text('Save task as template'),
+          ),
+          const SizedBox(height: 12),
+          ElevatedButton.icon(
+            onPressed: () => context.go('/tasks/new'),
+            icon: const Icon(Icons.add_rounded),
+            label: const Text('Start another task'),
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton(
+            onPressed: () => context.go('/home'),
+            child: const Text('Back to home'),
+          ),
+        ],
       ),
     );
   }
+}
+
+RoutineTemplate _templateFromTaskState(TaskViewState state) {
+  final title = state.task?.normalizedTitle.trim().isNotEmpty == true
+      ? state.task!.normalizedTitle.trim()
+      : 'Saved task template';
+  final steps = state.steps
+      .where((step) => step.depthLevel > 0)
+      .map((step) => step.text.trim())
+      .where((step) => step.isNotEmpty)
+      .toList();
+  final fallbackSteps = state.steps
+      .map((step) => step.text.trim())
+      .where((step) => step.isNotEmpty)
+      .toList();
+
+  return RoutineTemplate(
+    id: 'saved_task_${state.task?.id ?? DateTime.now().microsecondsSinceEpoch}',
+    title: title,
+    category: 'saved_task',
+    ageBand: 'all',
+    steps: steps.isEmpty ? fallbackSteps : steps,
+  );
 }

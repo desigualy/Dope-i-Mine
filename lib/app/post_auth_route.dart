@@ -6,22 +6,24 @@ import '../providers.dart';
 Future<String> resolvePostAuthRoute(
   WidgetRef ref,
   AuthUser authUser, {
-  String accountType = 'user',
+  String? accountType,
 }) async {
   final profileRepository = ref.read(profileRepositoryProvider);
+
   await profileRepository.ensureProfileExists(
     userId: authUser.id,
     email: authUser.email,
-    accountType: accountType,
+    accountType: accountType ?? 'user',
   );
 
   final resolvedAccountType =
       await profileRepository.getAccountType(authUser.id);
-  if (resolvedAccountType == 'caregiver') {
-    return '/caregiver';
-  }
-
   final onboardingComplete =
       await profileRepository.isOnboardingComplete(authUser.id);
+
+  if (resolvedAccountType == 'caregiver') {
+    return onboardingComplete ? '/caregiver' : '/caregiver/confirm';
+  }
+
   return onboardingComplete ? '/home' : '/branding/intro';
 }

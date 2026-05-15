@@ -86,7 +86,7 @@ class TaskController extends StateNotifier<TaskViewState> {
         task: result.task,
         steps: result.steps,
         minimumVersion: result.minimumVersion,
-        sideQuests: result.sideQuests.map((q) => q.copyWith(status: 'locked')).toList(),
+        sideQuests: _lockedSideQuests(result.sideQuests),
         showMinimumVersion: false,
         missionRewarded: false,
       );
@@ -153,7 +153,7 @@ class TaskController extends StateNotifier<TaskViewState> {
     final locked = state.sideQuests.where((q) => q.status == 'locked').toList();
     if (locked.isEmpty) return;
 
-    final updated = state.sideQuests.map((q) {
+    final updated = state.sideQuests.map<SideQuestModel>((q) {
       if (q.id == locked.first.id) {
         return q.copyWith(
           status: 'available',
@@ -168,14 +168,14 @@ class TaskController extends StateNotifier<TaskViewState> {
 
   void updateStepCompletion(String stepId, String status) {
     final stepStatus = _statusFromString(status);
-    final updatedSteps = state.steps.map((step) {
+    final updatedSteps = state.steps.map<TaskStepModel>((step) {
       if (step.id == stepId) {
         return step.copyWith(status: stepStatus);
       }
       return step;
     }).toList();
 
-    final updatedMinimumVersion = state.minimumVersion.map((step) {
+    final updatedMinimumVersion = state.minimumVersion.map<TaskStepModel>((step) {
       if (step.id == stepId) {
         return step.copyWith(status: stepStatus);
       }
@@ -193,7 +193,7 @@ class TaskController extends StateNotifier<TaskViewState> {
   }
 
   void updateSideQuestStatus(String sideQuestId, String status) {
-    final updatedSideQuests = state.sideQuests.map((quest) {
+    final updatedSideQuests = state.sideQuests.map<SideQuestModel>((quest) {
       if (quest.id == sideQuestId) {
         return quest.copyWith(status: status);
       }
@@ -210,7 +210,7 @@ class TaskController extends StateNotifier<TaskViewState> {
     }
 
     var unlockedOrFinishedCount = 0;
-    final updatedSideQuests = state.sideQuests.map((quest) {
+    final updatedSideQuests = state.sideQuests.map<SideQuestModel>((quest) {
       final alreadyEarned = quest.status == 'available' ||
           quest.status == 'accepted' ||
           quest.status == 'completed';
@@ -259,5 +259,12 @@ class TaskController extends StateNotifier<TaskViewState> {
       default:
         return StepStatus.pending;
     }
+  }
+
+  List<SideQuestModel> _lockedSideQuests(List<dynamic> sideQuests) {
+    return sideQuests
+        .whereType<SideQuestModel>()
+        .map((quest) => quest.copyWith(status: 'locked'))
+        .toList();
   }
 }

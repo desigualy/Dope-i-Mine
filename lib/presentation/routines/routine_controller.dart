@@ -16,6 +16,8 @@ final selectedRoutineStepsProvider =
     StateProvider<List<RoutineStepModel>>((ref) => const <RoutineStepModel>[]);
 final routineDraftTemplateProvider =
     StateProvider<RoutineTemplate?>((ref) => null);
+final savedTaskRoutineTemplatesProvider =
+    StateProvider<List<RoutineTemplate>>((ref) => const <RoutineTemplate>[]);
 
 class RoutineController extends StateNotifier<AsyncValue<List<RoutineModel>>> {
   RoutineController(this._repository)

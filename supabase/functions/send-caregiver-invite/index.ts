@@ -75,7 +75,7 @@ serve(async (req) => {
             email: targetUserEmail,
             options: {
                 emailRedirectTo: redirectTo,
-                shouldCreateUser: true,
+                shouldCreateUser: false,
                 data: { caregiver_email_invite_id: inviteId, caregiver_role: role },
             },
         })
@@ -84,10 +84,12 @@ serve(async (req) => {
             return json({ ok: true, mode: 'magic_link', inviteId, role })
         }
 
-        // If OTP is blocked for some reason, try Supabase's built-in invite email.
-        // This uses the Auth email provider configured on the Supabase project.
+        // For new users, we use the inviteUserByEmail function. 
+        // We redirect them to /reset-password so they can set their initial password.
+        const newCaregiverRedirectTo = `${appBaseUrl.replace(/\/$/, '')}/reset-password?invite_id=${encodeURIComponent(inviteId)}`
+        
         const { error: authInviteError } = await admin.auth.admin.inviteUserByEmail(targetUserEmail, {
-            redirectTo,
+            redirectTo: newCaregiverRedirectTo,
             data: { caregiver_email_invite_id: inviteId, caregiver_role: role },
         })
 

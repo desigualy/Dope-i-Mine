@@ -34,7 +34,9 @@ class OnboardingGateScreen extends ConsumerWidget {
 
         final decision = snapshot.data ?? const _GateDecision();
         final target = decision.accountType == 'caregiver'
-            ? '/caregiver'
+            ? decision.onboardingComplete
+                ? '/caregiver'
+                : '/caregiver/confirm'
             : decision.onboardingComplete
                 ? completedTarget
                 : '/branding/intro';

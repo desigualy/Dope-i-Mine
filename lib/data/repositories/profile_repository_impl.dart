@@ -54,7 +54,16 @@ class ProfileRepositoryImpl {
   Future<void> _acceptPendingCaregiverInvitesForEmail(String? email) async {
     if (email == null || !email.contains('@')) return;
     try {
-      await _client.rpc('accept_pending_caregiver_email_invites');
+      final invites = await _client
+          .from('caregiver_email_invites')
+          .select('id')
+          .ilike('invitee_email', email)
+          .eq('status', 'pending')
+          .limit(1);
+
+      if ((invites as List).isNotEmpty) {
+        await _client.rpc('accept_pending_caregiver_email_invites');
+      }
     } catch (_) {
       // Older environments may not have the RPC yet. Do not block login.
     }

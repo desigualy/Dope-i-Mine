@@ -53,6 +53,8 @@ class TaskRepositoryImpl {
       }
     }
 
+    data = _adaptTaskDataToSnapshot(data, snapshot);
+
     final normalizedTitle =
         (data['normalizedTitle'] as String?)?.trim().isNotEmpty == true
             ? data['normalizedTitle'] as String
@@ -434,12 +436,12 @@ class TaskRepositoryImpl {
     try {
       final inserted = await _client.from('side_quests').insert(rows).select();
       return (inserted as List<dynamic>)
-          .map(
+          .map<SideQuestModel>(
               (row) => _sideQuestFromRow(Map<String, dynamic>.from(row as Map)))
           .toList();
     } catch (error) {
       debugPrint('Warning: Could not insert side quests: $error');
-      return rows.asMap().entries.map((entry) {
+      return rows.asMap().entries.map<SideQuestModel>((entry) {
         final row = entry.value;
         return SideQuestModel(
           id: 'temp_${DateTime.now().microsecondsSinceEpoch}_${entry.key}',
@@ -560,6 +562,197 @@ Map<String, dynamic> localTaskFallback(
     ],
     'sideQuests': _defaultSideQuests(),
   };
+}
+
+Map<String, dynamic> _adaptTaskDataToSnapshot(
+  Map<String, dynamic> data,
+  TaskStateSnapshot snapshot,
+) {
+  final adapted = Map<String, dynamic>.from(data);
+  final rawPrimary = (adapted['primarySteps'] as List<dynamic>? ?? const [])
+      .map((step) => Map<String, dynamic>.from(step as Map))
+      .toList();
+  final adaptedPrimary = _adaptPrimaryStepsToSnapshot(rawPrimary, snapshot);
+  final stepCount = adaptedPrimary.fold<int>(
+    0,
+    (total, section) =>
+        total +
+        1 +
+        ((section['substeps'] as List<dynamic>?)?.length ?? 0),
+  );
+
+  adapted['primarySteps'] = adaptedPrimary;
+  adapted['minimumVersionSteps'] = _minimumVersionForSnapshot(
+    adapted['normalizedTitle'] as String? ?? 'this task',
+    adaptedPrimary,
+    snapshot,
+  );
+  adapted['sideQuests'] = _sideQuestsForSnapshot(
+    adapted['sideQuests'] as List<dynamic>? ?? const <dynamic>[],
+    snapshot,
+  );
+  adapted['estimatedMinutes'] = _estimateMinutesForSnapshot(stepCount, snapshot);
+  adapted['effortBand'] = _effortBandForSnapshot(stepCount, snapshot);
+  return adapted;
+}
+
+List<Map<String, dynamic>> _adaptPrimaryStepsToSnapshot(
+  List<Map<String, dynamic>> sections,
+  TaskStateSnapshot snapshot,
+) {
+  var adapted = sections.map((section) => Map<String, dynamic>.from(section)).toList();
+
+  if (snapshot.stressLevel == StressLevel.overwhelmed ||
+      snapshot.stressLevel == StressLevel.shutdown ||
+      snapshot.energyLevel == EnergyLevel.empty) {
+    adapted = <Map<String, dynamic>>[
+      <String, dynamic>{
+        'text': 'Stabilise first',
+        'isOptional': false,
+        'depthLevel': 0,
+        'substeps': <Map<String, dynamic>>[
+          <String, dynamic>{'text': 'Put both feet on the floor'},
+          <String, dynamic>{'text': 'Take one slow breath out'},
+          <String, dynamic>{'text': 'Name the smallest safe next action'},
+        ],
+      },
+      ...adapted,
+    ];
+  }
+
+  if (snapshot.mode == SupportMode.adhd ||
+      snapshot.mode == SupportMode.executiveDysfunction ||
+      snapshot.mode == SupportMode.audhd) {
+    adapted = adapted.map((section) {
+      final copy = Map<String, dynamic>.from(section);
+      final substeps = (copy['substeps'] as List<dynamic>? ?? const <dynamic>[])
+          .map((step) => Map<String, dynamic>.from(step as Map))
+          .toList();
+      copy['substeps'] = <Map<String, dynamic>>[
+        <String, dynamic>{'text': 'Make this visible and easy to start'},
+        ...substeps,
+      ];
+      return copy;
+    }).toList();
+  }
+
+  if (snapshot.mode == SupportMode.autism || snapshot.mode == SupportMode.audhd) {
+    adapted = adapted.map((section) {
+      final copy = Map<String, dynamic>.from(section);
+      final substeps = (copy['substeps'] as List<dynamic>? ?? const <dynamic>[])
+          .map((step) => Map<String, dynamic>.from(step as Map))
+          .toList();
+      copy['substeps'] = <Map<String, dynamic>>[
+        ...substeps,
+        <String, dynamic>{'text': 'Check what changes before moving on'},
+      ];
+      return copy;
+    }).toList();
+  }
+
+  final maxSubsteps = switch (snapshot.timeAvailable) {
+    TimeAvailable.twoMinutes => 2,
+    TimeAvailable.fiveMinutes => 3,
+    TimeAvailable.fifteenMinutes => 6,
+    TimeAvailable.thirtyPlus => 999,
+  };
+  if (maxSubsteps < 999) {
+    adapted = adapted.take(snapshot.timeAvailable == TimeAvailable.twoMinutes ? 1 : 2).map((section) {
+      final copy = Map<String, dynamic>.from(section);
+      final substeps = (copy['substeps'] as List<dynamic>? ?? const <dynamic>[])
+          .map((step) => Map<String, dynamic>.from(step as Map))
+          .take(maxSubsteps)
+          .toList();
+      copy['substeps'] = substeps;
+      return copy;
+    }).toList();
+  }
+
+  return adapted;
+}
+
+List<Map<String, dynamic>> _minimumVersionForSnapshot(
+  String title,
+  List<Map<String, dynamic>> primarySteps,
+  TaskStateSnapshot snapshot,
+) {
+  String? firstSubstep;
+  for (final section in primarySteps) {
+    final substeps = section['substeps'] as List<dynamic>? ?? const <dynamic>[];
+    for (final step in substeps.whereType<Map>()) {
+      final text = step['text'] as String?;
+      if (text != null && text.trim().isNotEmpty) {
+        firstSubstep = text;
+        break;
+      }
+    }
+    if (firstSubstep != null) break;
+  }
+  final text = switch (snapshot.timeAvailable) {
+    TimeAvailable.twoMinutes => firstSubstep ?? 'Do the first visible part of $title',
+    TimeAvailable.fiveMinutes => 'Do one tiny starter step for $title',
+    TimeAvailable.fifteenMinutes => 'Do the first small section of $title',
+    TimeAvailable.thirtyPlus => 'Start $title and stop at the first clear checkpoint',
+  };
+  return <Map<String, dynamic>>[
+    <String, dynamic>{'text': text, 'depthLevel': 0},
+  ];
+}
+
+List<Map<String, dynamic>> _sideQuestsForSnapshot(
+  List<dynamic> existing,
+  TaskStateSnapshot snapshot,
+) {
+  final quests = existing
+      .whereType<Map>()
+      .map((quest) => Map<String, dynamic>.from(quest))
+      .toList();
+  if (snapshot.energyLevel == EnergyLevel.low || snapshot.energyLevel == EnergyLevel.empty) {
+    quests.insert(0, <String, dynamic>{
+      'title': 'Protect your energy: stop after one useful step',
+      'quest_type': 'energy_care',
+      'reward_xp': 10,
+    });
+  }
+  if (snapshot.stressLevel == StressLevel.overwhelmed ||
+      snapshot.stressLevel == StressLevel.shutdown) {
+    quests.insert(0, <String, dynamic>{
+      'title': 'Do a 30-second reset before starting',
+      'quest_type': 'regulation',
+      'reward_xp': 10,
+    });
+  }
+  return quests.take(4).toList();
+}
+
+int _estimateMinutesForSnapshot(int stepCount, TaskStateSnapshot snapshot) {
+  final base = switch (snapshot.timeAvailable) {
+    TimeAvailable.twoMinutes => 2,
+    TimeAvailable.fiveMinutes => 5,
+    TimeAvailable.fifteenMinutes => 15,
+    TimeAvailable.thirtyPlus => (stepCount * 3).clamp(30, 90),
+  };
+  final energyMultiplier = switch (snapshot.energyLevel) {
+    EnergyLevel.high => 0.9,
+    EnergyLevel.medium => 1.0,
+    EnergyLevel.low => 1.2,
+    EnergyLevel.empty => 1.4,
+  };
+  return (base * energyMultiplier).round();
+}
+
+String _effortBandForSnapshot(int stepCount, TaskStateSnapshot snapshot) {
+  if (snapshot.energyLevel == EnergyLevel.empty ||
+      snapshot.stressLevel == StressLevel.shutdown ||
+      snapshot.timeAvailable == TimeAvailable.twoMinutes) {
+    return 'micro';
+  }
+  if (snapshot.energyLevel == EnergyLevel.low ||
+      snapshot.stressLevel == StressLevel.overwhelmed ||
+      snapshot.timeAvailable == TimeAvailable.fiveMinutes) {
+    return 'low';
+  }
+  return _effortBandFor(stepCount);
 }
 
 @visibleForTesting
@@ -993,4 +1186,6 @@ bool _containsAnyToken(String text, List<String> tokens) {
   final lower = text.toLowerCase();
   return tokens.any((t) => lower.contains(t));
 }
+
+
 

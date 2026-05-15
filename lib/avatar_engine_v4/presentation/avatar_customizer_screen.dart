@@ -10,6 +10,7 @@ import 'avatar_reference_image_panel.dart';
 import 'avatar_rive_view.dart';
 
 import '../../presentation/core/widgets/dopei_guide.dart';
+import '../../presentation/user_avatar/user_avatar_studio.dart';
 
 class AvatarCustomizerScreen extends ConsumerStatefulWidget {
   const AvatarCustomizerScreen({
@@ -71,6 +72,8 @@ class _AvatarCustomizerScreenState
             text: "You can change your look anytime. There's no wrong way to be you!",
             mood: DopeiMood.happy,
           ),
+          const SizedBox(height: 24),
+          const UserAvatarStudioCard(),
           if (_errorMessage != null) ...<Widget>[
             const SizedBox(height: 12),
             Text(

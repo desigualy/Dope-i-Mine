@@ -18,6 +18,7 @@ import '../presentation/body_double/random_body_double_settings_screen.dart';
 import '../presentation/caregiver/caregiver_assign_routine_screen.dart';
 import '../presentation/caregiver/caregiver_assign_task_screen.dart';
 import '../presentation/caregiver/caregiver_dashboard_screen.dart';
+import '../presentation/caregiver/caregiver_confirm_screen.dart';
 import '../presentation/caregiver/caregiver_permissions_screen.dart';
 import '../presentation/caregiver/caregiver_progress_insights_screen.dart';
 import '../presentation/caregiver/caregiver_assigned_routines_screen.dart';
@@ -201,6 +202,9 @@ final GoRouter appRouter = GoRouter(
         builder: (_, __) => const RoutineDetailScreen()),
     GoRoute(
         path: '/routines/run', builder: (_, __) => const RoutineRunScreen()),
+    GoRoute(
+        path: '/caregiver/confirm',
+        builder: (_, __) => const CaregiverConfirmScreen()),
     GoRoute(
         path: '/caregiver',
         builder: (_, state) => CaregiverDashboardScreen(

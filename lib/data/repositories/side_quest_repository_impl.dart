@@ -16,7 +16,7 @@ class SideQuestRepositoryImpl {
         .inFilter('status', <String>['available', 'accepted'])
         .order('created_at');
 
-    return (rows as List<dynamic>).map((dynamic row) {
+    return (rows as List<dynamic>).map<SideQuestModel>((dynamic row) {
       final map = Map<String, dynamic>.from(row as Map);
       return SideQuestModel(
         id: map['id'] as String,

@@ -19,14 +19,14 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
     try {
       final res = await client.from('caregiver_relationships').select('''
             *,
-            caregiver:caregiver_user_id(display_name),
-            supported:supported_user_id(display_name)
+            caregiver:users_profile!caregiver_relationships_caregiver_user_id_fkey(display_name, email),
+            supported:users_profile!caregiver_relationships_supported_user_id_fkey(display_name, email)
           ''');
 
       return (res as List<dynamic>).map((json) {
         final Map<String, dynamic> data = Map<String, dynamic>.from(json);
-        data['caregiver_name'] = json['caregiver']?['display_name'];
-        data['supported_name'] = json['supported']?['display_name'];
+        data['caregiver_name'] = json['caregiver']?['display_name'] ?? json['caregiver']?['email'];
+        data['supported_name'] = json['supported']?['display_name'] ?? json['supported']?['email'];
         return CaregiverRelationship.fromJson(data);
       }).toList();
     } catch (e) {

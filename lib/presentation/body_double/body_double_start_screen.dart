@@ -18,6 +18,8 @@ class BodyDoubleStartScreen extends ConsumerStatefulWidget {
 
 class _BodyDoubleStartScreenState extends ConsumerState<BodyDoubleStartScreen> {
   final _friendIdController = TextEditingController();
+  final List<_TrustedBodyDoublePerson> _trustedPeople =
+      <_TrustedBodyDoublePerson>[];
   BodyDoubleSessionType _type = BodyDoubleSessionType.quickStart;
   BodyDoublePrivacyLevel _friendPrivacyLevel = BodyDoublePrivacyLevel.titleOnly;
   BodyDoubleCommunicationMode _randomCommunicationMode =
@@ -33,6 +35,37 @@ class _BodyDoubleStartScreenState extends ConsumerState<BodyDoubleStartScreen> {
   void dispose() {
     _friendIdController.dispose();
     super.dispose();
+  }
+
+  void _addTrustedPeopleFromInput() {
+    final identifiers = _parseTrustedPersonIdentifiers(_friendIdController.text);
+    if (identifiers.isEmpty) return;
+
+    setState(() {
+      for (final identifier in identifiers) {
+        if (_trustedPeople.any((person) => person.identifier == identifier)) {
+          continue;
+        }
+        _trustedPeople.add(_TrustedBodyDoublePerson(identifier: identifier));
+      }
+      _friendIdController.clear();
+    });
+  }
+
+  void _removeTrustedPerson(String identifier) {
+    setState(() {
+      _trustedPeople.removeWhere((person) => person.identifier == identifier);
+    });
+  }
+
+  void _setSpurAOn(String identifier, bool value) {
+    setState(() {
+      final index = _trustedPeople.indexWhere(
+        (person) => person.identifier == identifier,
+      );
+      if (index == -1) return;
+      _trustedPeople[index] = _trustedPeople[index].copyWith(isSpurAOn: value);
+    });
   }
 
   @override
@@ -139,19 +172,83 @@ class _BodyDoubleStartScreenState extends ConsumerState<BodyDoubleStartScreen> {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Friend body doubling only starts after they accept. You control '
-            'what they can see, and either person can leave anytime.',
+            'Add as many trusted people as you want. Friend body doubling only '
+            'starts after someone accepts. You control what they can see, and '
+            'anyone can leave anytime.',
           ),
           const SizedBox(height: 12),
           TextField(
             key: const ValueKey<String>('friend-body-double-user-id-field'),
             controller: _friendIdController,
             decoration: const InputDecoration(
-              labelText: 'Invite friends (IDs or Emails, comma-separated)',
+              labelText: 'Trusted people (IDs or emails, comma-separated)',
               border: OutlineInputBorder(),
               hintText: 'user1@example.com, friend_id_123',
             ),
+            onSubmitted: (_) => _addTrustedPeopleFromInput(),
           ),
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              key: const ValueKey<String>('add-trusted-body-double-people-button'),
+              onPressed: _addTrustedPeopleFromInput,
+              icon: const Icon(Icons.playlist_add_rounded),
+              label: const Text('Add trusted people'),
+            ),
+          ),
+          if (_trustedPeople.isNotEmpty) ...<Widget>[
+            const SizedBox(height: 12),
+            Text(
+              'Trusted people',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '${_trustedPeople.length} added — no limit. You can mark multiple people as spur-a-ons.',
+            ),
+            const SizedBox(height: 8),
+            ..._trustedPeople.map(
+              (person) => Card(
+                child: Column(
+                  children: <Widget>[
+                    ListTile(
+                      leading: Icon(
+                        person.isSpurAOn
+                            ? Icons.bolt_rounded
+                            : Icons.person_outline_rounded,
+                      ),
+                      title: Text(person.identifier),
+                      subtitle: Text(
+                        person.isSpurAOn
+                            ? 'Spur-a-on: can offer extra encouragement'
+                            : 'Trusted body double invitee',
+                      ),
+                      trailing: IconButton(
+                        tooltip: 'Remove trusted person',
+                        icon: const Icon(Icons.close_rounded),
+                        onPressed: () => _removeTrustedPerson(person.identifier),
+                      ),
+                    ),
+                    SwitchListTile(
+                      key: ValueKey<String>(
+                        'spur-a-on-toggle-${person.identifier}',
+                      ),
+                      title: const Text('Designate as spur-a-on'),
+                      subtitle: const Text(
+                        'Spur-a-ons are trusted people who can cheer you on and nudge gently.',
+                      ),
+                      value: person.isSpurAOn,
+                      onChanged: (value) =>
+                          _setSpurAOn(person.identifier, value),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
           const SizedBox(height: 12),
           DropdownButtonFormField<BodyDoublePrivacyLevel>(
             key: const ValueKey<String>('friend-body-double-privacy-field'),
@@ -186,27 +283,26 @@ class _BodyDoubleStartScreenState extends ConsumerState<BodyDoubleStartScreen> {
           OutlinedButton.icon(
             key: const ValueKey<String>('start-friend-body-double-button'),
             onPressed: () async {
+              _addTrustedPeopleFromInput();
               final authUser = ref.read(authRepositoryProvider).getCurrentUser();
-              final input = _friendIdController.text.trim();
-              if (authUser == null || input.isEmpty) return;
+              if (authUser == null || _trustedPeople.isEmpty) return;
 
-              final receiverIds = input.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
-              
-              for (final receiverId in receiverIds) {
+              for (final person in _trustedPeople) {
                 await ref
                     .read(bodyDoubleControllerProvider.notifier)
                     .createFriendInvite(
                       senderId: authUser.id,
-                      receiverId: receiverId,
+                      receiverId: person.identifier,
                       taskId: taskState.task?.id,
                       taskTitle: taskState.task?.normalizedTitle,
                       privacyLevel: _friendPrivacyLevel,
+                      isSpurAOn: person.isSpurAOn,
                     );
               }
               if (mounted) context.go('/body-double/session');
             },
             icon: const Icon(Icons.person_add_alt_1_rounded),
-            label: const Text('Send invitations'),
+            label: const Text('Send invitations to trusted people'),
           ),
           const SizedBox(height: 24),
           const Divider(),
@@ -331,6 +427,33 @@ class _BodyDoubleStartScreenState extends ConsumerState<BodyDoubleStartScreen> {
   }
 }
 
+class _TrustedBodyDoublePerson {
+  const _TrustedBodyDoublePerson({
+    required this.identifier,
+    this.isSpurAOn = false,
+  });
+
+  final String identifier;
+  final bool isSpurAOn;
+
+  _TrustedBodyDoublePerson copyWith({bool? isSpurAOn}) {
+    return _TrustedBodyDoublePerson(
+      identifier: identifier,
+      isSpurAOn: isSpurAOn ?? this.isSpurAOn,
+    );
+  }
+}
+
+List<String> _parseTrustedPersonIdentifiers(String input) {
+  final seen = <String>{};
+  return input
+      .split(RegExp(r'[,\n;]+'))
+      .map((value) => value.trim())
+      .where((value) => value.isNotEmpty)
+      .where(seen.add)
+      .toList(growable: false);
+}
+
 class _PendingFriendInvites extends ConsumerWidget {
   const _PendingFriendInvites({required this.invites});
 
@@ -406,6 +529,7 @@ class _PendingFriendInvites extends ConsumerWidget {
     );
   }
 }
+
 
 
 

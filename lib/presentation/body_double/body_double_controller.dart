@@ -377,6 +377,7 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
     String? taskId,
     String? taskTitle,
     BodyDoublePrivacyLevel privacyLevel = BodyDoublePrivacyLevel.titleOnly,
+    bool isSpurAOn = false,
     int expiresInMinutes = 60,
   }) async {
     final now = DateTime.now();
@@ -414,6 +415,7 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
       status: BodyDoubleInviteStatus.pending,
       expiresAt: now.add(Duration(minutes: expiresInMinutes)),
       createdAt: now,
+      isSpurAOn: isSpurAOn,
     );
     
     await _repository.saveFriendInvite(invite);
@@ -421,8 +423,9 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
     state = state.copyWith(
       activeSession: session,
       friendInvites: <BodyDoubleInvite>[...state.friendInvites, invite],
-      gentlePrompt:
-          'Invite sent. The shared session starts only if they accept.',
+      gentlePrompt: isSpurAOn
+          ? 'Spur-a-on invite sent. They can offer extra encouragement if they accept.'
+          : 'Invite sent. The shared session starts only if they accept.',
     );
   }
 

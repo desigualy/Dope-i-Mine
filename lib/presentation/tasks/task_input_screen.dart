@@ -8,10 +8,13 @@ import '../../core/widgets/app_text_field.dart';
 import '../../core/widgets/error_banner.dart';
 import '../../core/widgets/primary_scaffold.dart';
 import '../../core/widgets/state_chip_selector.dart';
+import '../../domain/auth/auth_user.dart';
 import '../../domain/tasks/task_state_snapshot.dart';
 import '../../providers.dart';
 import 'task_controller.dart';
 import 'task_session_controller.dart';
+
+const String _localTaskUserId = 'local_user';
 
 class TaskInputScreen extends ConsumerStatefulWidget {
   const TaskInputScreen({super.key});
@@ -104,16 +107,11 @@ class _TaskInputScreenState extends ConsumerState<TaskInputScreen> {
                         ref
                             .read(taskControllerProvider.notifier)
                             .toggleMinimumVersion(false);
-                        final authUser =
-                            ref.read(authRepositoryProvider).getCurrentUser();
-                        debugPrint('Current user: $authUser');
-                        if (authUser == null) {
-                          throw Exception('Not authenticated');
-                        }
+                        final userId = _resolveTaskUserId(ref);
                         await ref
                             .read(taskControllerProvider.notifier)
                             .createTask(
-                              userId: authUser.id,
+                              userId: userId,
                               sourceText: _taskController.text.trim(),
                               snapshot: TaskStateSnapshot(
                                 mode: _mode,
@@ -137,4 +135,17 @@ class _TaskInputScreenState extends ConsumerState<TaskInputScreen> {
       ),
     );
   }
+}
+
+String _resolveTaskUserId(WidgetRef ref) {
+  try {
+    final AuthUser? authUser = ref.read(authRepositoryProvider).getCurrentUser();
+    if (authUser != null && authUser.id.trim().isNotEmpty) {
+      return authUser.id;
+    }
+  } catch (error) {
+    debugPrint('Task auth lookup failed; using local task user: $error');
+  }
+
+  return _localTaskUserId;
 }

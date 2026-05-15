@@ -219,7 +219,7 @@ class OfflineFirstTaskRepository {
         .toList()
         .asMap()
         .entries
-        .map((entry) => TaskStepModel(
+        .map<TaskStepModel>((entry) => TaskStepModel(
               id: 'local_min_${now}_${entry.key}',
               taskId: taskId,
               text: entry.value['text'] as String? ?? 'Do the smallest first step',
@@ -234,7 +234,7 @@ class OfflineFirstTaskRepository {
         .toList()
         .asMap()
         .entries
-        .map((entry) => SideQuestModel(
+        .map<SideQuestModel>((entry) => SideQuestModel(
               id: 'local_sidequest_${now}_${entry.key}',
               title: entry.value['title'] as String? ?? 'Tiny bonus action',
               questType: (entry.value['quest_type'] ?? entry.value['questType'] ?? 'bonus') as String,

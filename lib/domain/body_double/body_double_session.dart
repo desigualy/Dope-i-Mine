@@ -350,6 +350,7 @@ class BodyDoubleInvite {
     required this.status,
     required this.expiresAt,
     required this.createdAt,
+    this.isSpurAOn = false,
     this.respondedAt,
   });
 
@@ -360,10 +361,12 @@ class BodyDoubleInvite {
   final BodyDoubleInviteStatus status;
   final DateTime expiresAt;
   final DateTime createdAt;
+  final bool isSpurAOn;
   final DateTime? respondedAt;
 
   BodyDoubleInvite copyWith({
     BodyDoubleInviteStatus? status,
+    bool? isSpurAOn,
     DateTime? respondedAt,
   }) {
     return BodyDoubleInvite(
@@ -374,6 +377,7 @@ class BodyDoubleInvite {
       status: status ?? this.status,
       expiresAt: expiresAt,
       createdAt: createdAt,
+      isSpurAOn: isSpurAOn ?? this.isSpurAOn,
       respondedAt: respondedAt ?? this.respondedAt,
     );
   }
@@ -387,6 +391,7 @@ class BodyDoubleInvite {
       'status': status.name,
       'expiresAt': expiresAt.toIso8601String(),
       'createdAt': createdAt.toIso8601String(),
+      'isSpurAOn': isSpurAOn,
       'respondedAt': respondedAt?.toIso8601String(),
     };
   }
@@ -406,6 +411,9 @@ class BodyDoubleInvite {
           DateTime.now(),
       createdAt: DateTime.tryParse(json['createdAt'] as String? ?? '') ??
           DateTime.now(),
+      isSpurAOn: json['isSpurAOn'] as bool? ??
+          json['is_spur_a_on'] as bool? ??
+          false,
       respondedAt: DateTime.tryParse(json['respondedAt'] as String? ?? ''),
     );
   }

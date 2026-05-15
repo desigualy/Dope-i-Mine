@@ -96,10 +96,10 @@ class _LinkCaregiverScreenState extends ConsumerState<LinkCaregiverScreen> {
                 ? null
                 : () async {
                     if (_emailController.text.trim().isEmpty) return;
-                    await ref
+                    final sent = await ref
                         .read(caregiverControllerProvider.notifier)
                         .sendRequest(_emailController.text.trim(), _selectedRole);
-                    if (mounted && state.error == null) {
+                    if (mounted && sent) {
                       context.pop();
                     }
                   },

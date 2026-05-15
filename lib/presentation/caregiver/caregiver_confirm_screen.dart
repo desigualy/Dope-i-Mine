@@ -142,7 +142,7 @@ class _CaregiverConfirmScreenState
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.check_circle_rounded),
-            label: Text(_saving ? 'Confirming...' : 'Confirm caregiver mode'),
+            label: Text(_saving ? 'Confirming...' : 'Confirm and continue'),
           ),
           const SizedBox(height: 12),
           OutlinedButton(

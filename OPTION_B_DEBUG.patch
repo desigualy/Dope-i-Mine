@@ -1,0 +1,146 @@
+diff -ru /mnt/data/repo_orig/lib/avatar_engine_v4/presentation/avatar_customizer_screen.dart /mnt/data/repo_work/lib/avatar_engine_v4/presentation/avatar_customizer_screen.dart
+--- /mnt/data/repo_orig/lib/avatar_engine_v4/presentation/avatar_customizer_screen.dart	2026-05-15 15:42:43.000000000 +0000
++++ /mnt/data/repo_work/lib/avatar_engine_v4/presentation/avatar_customizer_screen.dart	2026-05-15 17:54:25.785316738 +0000
+@@ -73,6 +73,13 @@
+             mood: DopeiMood.happy,
+           ),
+           const SizedBox(height: 24),
++          AvatarReferenceImagePanel(
++            userId: userId,
++            isOnline: isOnline,
++            service: ref.watch(avatarV4ReferenceImageServiceProvider),
++            onUploaded: _registerReferenceUpload,
++          ),
++          const SizedBox(height: 24),
+           const UserAvatarStudioCard(),
+           if (_errorMessage != null) ...<Widget>[
+             const SizedBox(height: 12),
+@@ -92,13 +99,6 @@
+             ),
+           ],
+           const SizedBox(height: 24),
+-          AvatarReferenceImagePanel(
+-            userId: userId,
+-            isOnline: isOnline,
+-            service: ref.watch(avatarV4ReferenceImageServiceProvider),
+-            onUploaded: _registerReferenceUpload,
+-          ),
+-          const SizedBox(height: 24),
+           _AvatarTraitLibrarySection(
+             config: config,
+             catalogue: ref.watch(avatarTraitCatalogueProvider).valueOrNull,
+diff -ru /mnt/data/repo_orig/lib/presentation/progress/progress_controller.dart /mnt/data/repo_work/lib/presentation/progress/progress_controller.dart
+--- /mnt/data/repo_orig/lib/presentation/progress/progress_controller.dart	2026-05-11 06:25:49.000000000 +0000
++++ /mnt/data/repo_work/lib/presentation/progress/progress_controller.dart	2026-05-15 17:54:25.784522471 +0000
+@@ -29,12 +29,14 @@
+       final logs = await _repository.getRecentProgress(userId);
+       final tasks = await _repository.getCompletedTasks(userId);
+       final reliability = await _repository.getReliabilityScore(userId);
++      final recentTaskContext = await _repository.getRecentTaskContext(userId);
+ 
+       state = AsyncValue.data(ProgressViewState(
+         stats: stats,
+         logs: logs,
+         completedTasks: tasks,
+         reliabilityScore: reliability,
++        recentTaskContext: recentTaskContext,
+       ));
+     } catch (_) {
+       state = AsyncValue.data(ProgressViewState.initial());
+diff -ru /mnt/data/repo_orig/test/onboarding/onboarding_flow_test.dart /mnt/data/repo_work/test/onboarding/onboarding_flow_test.dart
+--- /mnt/data/repo_orig/test/onboarding/onboarding_flow_test.dart	2026-05-14 15:52:44.000000000 +0000
++++ /mnt/data/repo_work/test/onboarding/onboarding_flow_test.dart	2026-05-15 17:54:25.786321227 +0000
+@@ -35,6 +35,7 @@
+ import 'package:dope_i_mine/presentation/onboarding/voice_setup_screen.dart';
+ import 'package:dope_i_mine/presentation/onboarding/avatar_setup_screen.dart';
+ import 'package:dope_i_mine/presentation/onboarding/identity_screen.dart';
++import 'package:dope_i_mine/presentation/caregiver/caregiver_confirm_screen.dart';
+ import 'package:dope_i_mine/presentation/home/home_screen.dart';
+ import 'package:dope_i_mine/presentation/settings/companion_screen.dart';
+ import 'package:dope_i_mine/presentation/settings/settings_screen.dart';
+@@ -223,6 +224,10 @@
+         ),
+       ),
+       GoRoute(
++        path: '/caregiver/confirm',
++        builder: (_, __) => const CaregiverConfirmScreen(),
++      ),
++      GoRoute(
+         path: '/branding/intro',
+         builder: (_, __) => const DopeIIntroScreen(returnToSummary: false),
+       ),
+@@ -367,6 +372,10 @@
+         ),
+       ),
+       GoRoute(
++        path: '/caregiver/confirm',
++        builder: (_, __) => const CaregiverConfirmScreen(),
++      ),
++      GoRoute(
+         path: '/branding/intro',
+         builder: (_, __) => const DopeIIntroScreen(returnToSummary: false),
+       ),
+@@ -744,7 +753,7 @@
+   });
+ 
+   testWidgets(
+-      'already authenticated caregiver on login is redirected to caregiver dashboard',
++      'already authenticated caregiver on login is redirected to caregiver confirmation',
+       (WidgetTester tester) async {
+     final fakeAuthRepository = _FakeAuthRepository()
+       ..user = const AuthUser(id: 'tester', email: 'tester@example.com');
+@@ -773,7 +782,8 @@
+ 
+     await tester.pumpAndSettle();
+ 
+-    expect(find.text('Caregiver Support'), findsOneWidget);
++    expect(find.text('Confirm caregiver mode'), findsOneWidget);
++    expect(find.text('Caregiver Support'), findsNothing);
+     expect(find.text('Meet Dope-i'), findsNothing);
+     expect(find.text('Hi there!'), findsNothing);
+   });
+@@ -893,7 +903,7 @@
+     expect(find.text('Hi there!'), findsOneWidget);
+   });
+ 
+-  testWidgets('home gate sends caregiver accounts to caregiver dashboard',
++  testWidgets('home gate sends unconfirmed caregiver accounts to caregiver confirmation',
+       (WidgetTester tester) async {
+     final fakeAuthRepository = _FakeAuthRepository()
+       ..user = const AuthUser(id: 'tester', email: 'tester@example.com');
+@@ -914,7 +924,35 @@
+ 
+     await tester.pumpAndSettle();
+ 
++    expect(find.text('Confirm caregiver mode'), findsOneWidget);
++    expect(find.text('Caregiver Support'), findsNothing);
++    expect(find.text('Meet Dope-i'), findsNothing);
++    expect(find.text('Hi there!'), findsNothing);
++  });
++
++  testWidgets('home gate sends confirmed caregiver accounts to caregiver dashboard',
++      (WidgetTester tester) async {
++    final fakeAuthRepository = _FakeAuthRepository()
++      ..user = const AuthUser(id: 'tester', email: 'tester@example.com');
++    final fakeProfileRepository = _FakeProfileRepository(
++      onboardingComplete: true,
++      accountType: 'caregiver',
++    );
++
++    await tester.pumpWidget(
++      ProviderScope(
++        overrides: <Override>[
++          authRepositoryProvider.overrideWithValue(fakeAuthRepository),
++          profileRepositoryProvider.overrideWithValue(fakeProfileRepository),
++        ],
++        child: MaterialApp.router(routerConfig: _buildHomeGateRouter()),
++      ),
++    );
++
++    await tester.pumpAndSettle();
++
+     expect(find.text('Caregiver Support'), findsOneWidget);
++    expect(find.text('Confirm caregiver mode'), findsNothing);
+     expect(find.text('Meet Dope-i'), findsNothing);
+     expect(find.text('Hi there!'), findsNothing);
+   });

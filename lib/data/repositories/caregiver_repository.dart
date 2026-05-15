@@ -4,6 +4,7 @@ import '../../domain/body_double/body_double_session.dart';
 abstract class CaregiverRepository {
   Future<List<CaregiverRelationship>> loadRelationships();
   Future<List<CaregiverEmailInvite>> loadEmailInvites();
+  Future<void> cancelEmailInvite(String inviteId);
   Future<CaregiverRelationship?> createRelationshipRequest({
     required String targetUserEmail,
     required CaregiverRole role,
@@ -14,6 +15,7 @@ abstract class CaregiverRepository {
     required CaregiverRole role,
   });
   Future<CaregiverRelationship?> acceptEmailInvite(String inviteId);
+  Future<bool> sendPasswordSetupEmailForAcceptedInvite(String inviteId);
   Future<void> respondToRelationshipRequest({
     required String relationshipId,
     required bool accept,

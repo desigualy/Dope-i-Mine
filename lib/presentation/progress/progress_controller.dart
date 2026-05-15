@@ -29,12 +29,14 @@ class ProgressController
       final logs = await _repository.getRecentProgress(userId);
       final tasks = await _repository.getCompletedTasks(userId);
       final reliability = await _repository.getReliabilityScore(userId);
+      final recentTaskContext = await _repository.getRecentTaskContext(userId);
 
       state = AsyncValue.data(ProgressViewState(
         stats: stats,
         logs: logs,
         completedTasks: tasks,
         reliabilityScore: reliability,
+        recentTaskContext: recentTaskContext,
       ));
     } catch (_) {
       state = AsyncValue.data(ProgressViewState.initial());

@@ -32,15 +32,21 @@ class _CaregiverDashboardScreenState
     final inviteId = widget.inviteId?.trim();
     if (_inviteHandled || inviteId == null || inviteId.isEmpty) return;
     _inviteHandled = true;
-    final accepted = await ref
-        .read(caregiverControllerProvider.notifier)
-        .acceptEmailInvite(inviteId);
+    final controller = ref.read(caregiverControllerProvider.notifier);
+    final accepted = await controller.acceptEmailInvite(inviteId);
+    final passwordSetupHandled = accepted
+        ? await controller.sendPasswordSetupEmailForAcceptedInvite(inviteId)
+        : false;
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(accepted
-            ? 'Caregiver invite accepted.'
-            : 'Could not accept caregiver invite.'),
+        content: Text(
+          accepted
+              ? passwordSetupHandled
+                  ? 'Caregiver invite accepted. Check your inbox to create your password.'
+                  : 'Caregiver invite accepted.'
+              : 'Could not accept caregiver invite.',
+        ),
       ),
     );
     if (accepted) context.go('/caregiver');
@@ -154,22 +160,66 @@ class _CaregiverDashboardScreenState
   }
 }
 
-class _EmailInviteCard extends StatelessWidget {
+class _EmailInviteCard extends ConsumerWidget {
   const _EmailInviteCard({required this.invite});
 
   final CaregiverEmailInvite invite;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Card(
+      key: ValueKey<String>('caregiver-pending-invite-${invite.id}'),
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         leading: const CircleAvatar(child: Icon(Icons.email_outlined)),
         title: Text(invite.inviteeEmail),
-        subtitle:
-            Text('${invite.role.name.toUpperCase()} • ${invite.status.name}'),
-        trailing: const Icon(Icons.hourglass_top_rounded),
+        subtitle: Text(
+          '${invite.role.name.toUpperCase()} • pending invite',
+        ),
+        trailing: IconButton(
+          key: ValueKey<String>('cancel-caregiver-invite-${invite.id}'),
+          tooltip: 'Cancel pending invite',
+          icon: const Icon(Icons.delete_outline_rounded),
+          onPressed: () => _confirmCancelInvite(context, ref, invite),
+        ),
       ),
+    );
+  }
+
+  Future<void> _confirmCancelInvite(
+    BuildContext context,
+    WidgetRef ref,
+    CaregiverEmailInvite invite,
+  ) async {
+    final shouldCancel = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Cancel pending invite?'),
+        content: Text(
+          'This will remove the pending caregiver invite for ${invite.inviteeEmail}. They will not be able to accept this invite afterwards.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Keep invite'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Cancel invite'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldCancel != true || !context.mounted) return;
+
+    await ref
+        .read(caregiverControllerProvider.notifier)
+        .cancelPendingInvite(invite.id);
+
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Invite for ${invite.inviteeEmail} cancelled.')),
     );
   }
 }
@@ -229,6 +279,7 @@ class _RelationshipCard extends ConsumerWidget {
     };
 
     return Card(
+      key: ValueKey<String>('caregiver-relationship-${relationship.id}'),
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
         onTap: () => context.push('/caregiver/user/${relationship.id}'),
@@ -254,7 +305,8 @@ class _RelationshipCard extends ConsumerWidget {
                     Text(
                       relationship.relationshipLabel ??
                           relationship.caregiverName ??
-                          'Unknown',
+                          relationship.supportedName ??
+                          'Support person',
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     Text(
@@ -270,15 +322,24 @@ class _RelationshipCard extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.check_circle_outline,
-                          color: Colors.green),
+                      key: ValueKey<String>(
+                        'accept-caregiver-relationship-${relationship.id}',
+                      ),
+                      tooltip: 'Accept caregiver request',
+                      icon: const Icon(
+                        Icons.check_circle_outline,
+                        color: Colors.green,
+                      ),
                       onPressed: () => ref
                           .read(caregiverControllerProvider.notifier)
                           .respondToRequest(relationship.id, true),
                     ),
                     IconButton(
-                      icon:
-                          const Icon(Icons.cancel_outlined, color: Colors.red),
+                      key: ValueKey<String>(
+                        'decline-caregiver-relationship-${relationship.id}',
+                      ),
+                      tooltip: 'Decline caregiver request',
+                      icon: const Icon(Icons.cancel_outlined, color: Colors.red),
                       onPressed: () => ref
                           .read(caregiverControllerProvider.notifier)
                           .respondToRequest(relationship.id, false),
@@ -286,11 +347,67 @@ class _RelationshipCard extends ConsumerWidget {
                   ],
                 )
               else
-                const Icon(Icons.chevron_right_rounded, color: Colors.grey),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      key: ValueKey<String>(
+                        'remove-caregiver-relationship-${relationship.id}',
+                      ),
+                      tooltip: 'Remove support link',
+                      icon: const Icon(Icons.link_off_rounded),
+                      onPressed: () =>
+                          _confirmRemoveRelationship(context, ref, relationship),
+                    ),
+                    const Icon(Icons.chevron_right_rounded, color: Colors.grey),
+                  ],
+                ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _confirmRemoveRelationship(
+    BuildContext context,
+    WidgetRef ref,
+    CaregiverRelationship relationship,
+  ) async {
+    final displayName = relationship.relationshipLabel ??
+        relationship.caregiverName ??
+        relationship.supportedName ??
+        'this support person';
+
+    final shouldRemove = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Remove caregiver?'),
+        content: Text(
+          'This removes the active support link with $displayName. They will no longer be able to view or manage your caregiver support features.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Keep link'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Remove link'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldRemove != true || !context.mounted) return;
+
+    await ref
+        .read(caregiverControllerProvider.notifier)
+        .revokeRelationship(relationship.id);
+
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Support link with $displayName removed.')),
     );
   }
 }

@@ -143,9 +143,7 @@ String _resolveTaskUserId(WidgetRef ref) {
     if (authUser != null && authUser.id.trim().isNotEmpty) {
       return authUser.id;
     }
-  } catch (error) {
-    debugPrint('Task auth lookup failed; using local task user: $error');
-  }
+  } catch (_) {}
 
   return _localTaskUserId;
 }

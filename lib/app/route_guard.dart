@@ -1,30 +1,49 @@
 import 'package:flutter/foundation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
-bool Function()? _isAuthenticatedOverride;
+import 'route_auth_state_service.dart';
 
-/// Test-only hook to override route auth checks.
+RouteAuthStateService _routeAuthStateService =
+    const SupabaseRouteAuthStateService();
+
+/// Injects the route auth state service used by [isAuthenticated].
+///
+/// Production keeps the default Supabase-backed service. Tests can inject an
+/// in-memory implementation so route decisions do not touch Supabase.instance.
+@visibleForTesting
+void setRouteAuthStateService(RouteAuthStateService service) {
+  _routeAuthStateService = service;
+}
+
+/// Restores the production Supabase-backed route auth state service.
+@visibleForTesting
+void resetRouteAuthStateService() {
+  _routeAuthStateService = const SupabaseRouteAuthStateService();
+}
+
+/// Backwards-compatible test hook for older tests.
 @visibleForTesting
 void setIsAuthenticatedOverride(bool Function()? override) {
-  _isAuthenticatedOverride = override;
+  if (override == null) {
+    resetRouteAuthStateService();
+    return;
+  }
+
+  setRouteAuthStateService(_CallbackRouteAuthStateService(override));
 }
 
+/// Backwards-compatible reset hook for older tests.
 @visibleForTesting
 void clearIsAuthenticatedOverride() {
-  _isAuthenticatedOverride = null;
+  resetRouteAuthStateService();
 }
 
-bool isAuthenticated() {
-  if (_isAuthenticatedOverride != null) {
-    return _isAuthenticatedOverride!();
-  }
+bool isAuthenticated() => _routeAuthStateService.isAuthenticated;
 
-  try {
-    final user = Supabase.instance.client.auth.currentUser;
-    debugPrint('isAuthenticated check: user=$user');
-    return user != null;
-  } catch (e) {
-    debugPrint('isAuthenticated error: $e');
-    return false;
-  }
+class _CallbackRouteAuthStateService implements RouteAuthStateService {
+  const _CallbackRouteAuthStateService(this._readAuthenticated);
+
+  final bool Function() _readAuthenticated;
+
+  @override
+  bool get isAuthenticated => _readAuthenticated();
 }

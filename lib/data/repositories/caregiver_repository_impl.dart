@@ -25,9 +25,14 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
 
       return (res as List<dynamic>).map((json) {
         final Map<String, dynamic> data = Map<String, dynamic>.from(json);
-        data['caregiver_name'] = json['caregiver']?['display_name'] ?? json['caregiver']?['email'];
-        data['supported_name'] = json['supported']?['display_name'] ?? json['supported']?['email'];
+        data['caregiver_name'] =
+            json['caregiver']?['display_name'] ?? json['caregiver']?['email'];
+        data['supported_name'] =
+            json['supported']?['display_name'] ?? json['supported']?['email'];
         return CaregiverRelationship.fromJson(data);
+      }).where((relationship) {
+        return relationship.status == CaregiverRelationshipStatus.accepted ||
+            relationship.status == CaregiverRelationshipStatus.pending;
       }).toList();
     } catch (e) {
       return [];
@@ -45,10 +50,32 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
           .order('created_at', ascending: false);
       return (res as List<dynamic>)
           .map((json) => CaregiverEmailInvite.fromJson(json))
+          .where((invite) => invite.status == CaregiverEmailInviteStatus.pending)
           .toList();
     } catch (e) {
       debugPrint('Caregiver email invites load failed: $e');
       return [];
+    }
+  }
+
+  @override
+  Future<void> cancelEmailInvite(String inviteId) async {
+    if (userId == null) return;
+    final trimmedInviteId = inviteId.trim();
+    if (trimmedInviteId.isEmpty) return;
+
+    try {
+      await client.rpc(
+        'cancel_caregiver_email_invite',
+        params: <String, dynamic>{'p_invite_id': trimmedInviteId},
+      );
+    } catch (_) {
+      await client
+          .from('caregiver_email_invites')
+          .update(<String, dynamic>{'status': 'revoked'})
+          .eq('id', trimmedInviteId)
+          .eq('inviter_user_id', userId!)
+          .eq('status', 'pending');
     }
   }
 
@@ -69,6 +96,10 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
               'invitee_email': email,
               'role': role.name,
               'status': 'pending',
+              'accepted_user_id': null,
+              'accepted_at': null,
+              'requires_password_setup': false,
+              'password_setup_sent_at': null,
               'expires_at': DateTime.now()
                   .add(const Duration(days: 30))
                   .toIso8601String(),
@@ -173,6 +204,31 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
   }
 
   @override
+  Future<bool> sendPasswordSetupEmailForAcceptedInvite(String inviteId) async {
+    final trimmedInviteId = inviteId.trim();
+    if (trimmedInviteId.isEmpty) return false;
+
+    try {
+      final response = await client.functions.invoke(
+        'send-caregiver-password-setup',
+        body: <String, dynamic>{'inviteId': trimmedInviteId},
+      );
+
+      final data = response.data;
+      if (data is Map) {
+        return data['ok'] == true &&
+            (data['sent'] == true ||
+                data['alreadySent'] == true ||
+                data['notRequired'] == true);
+      }
+      return false;
+    } catch (error) {
+      debugPrint('Caregiver password setup email failed: $error');
+      return false;
+    }
+  }
+
+  @override
   Future<void> respondToRelationshipRequest({
     required String relationshipId,
     required bool accept,
@@ -187,12 +243,22 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
 
   @override
   Future<void> revokeRelationship(String relationshipId) async {
+    final trimmedRelationshipId = relationshipId.trim();
+    if (trimmedRelationshipId.isEmpty) return;
+
     try {
+      await client.rpc(
+        'revoke_caregiver_relationship',
+        params: <String, dynamic>{
+          'p_relationship_id': trimmedRelationshipId,
+        },
+      );
+    } catch (_) {
       await client.from('caregiver_relationships').update({
         'status': 'revoked',
         'revoked_at': DateTime.now().toIso8601String(),
-      }).eq('id', relationshipId);
-    } catch (_) {}
+      }).eq('id', trimmedRelationshipId);
+    }
   }
 
   @override

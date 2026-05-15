@@ -73,6 +73,13 @@ class _AvatarCustomizerScreenState
             mood: DopeiMood.happy,
           ),
           const SizedBox(height: 24),
+          AvatarReferenceImagePanel(
+            userId: userId,
+            isOnline: isOnline,
+            service: ref.watch(avatarV4ReferenceImageServiceProvider),
+            onUploaded: _registerReferenceUpload,
+          ),
+          const SizedBox(height: 24),
           const UserAvatarStudioCard(),
           if (_errorMessage != null) ...<Widget>[
             const SizedBox(height: 12),
@@ -91,13 +98,6 @@ class _AvatarCustomizerScreenState
               textAlign: TextAlign.center,
             ),
           ],
-          const SizedBox(height: 24),
-          AvatarReferenceImagePanel(
-            userId: userId,
-            isOnline: isOnline,
-            service: ref.watch(avatarV4ReferenceImageServiceProvider),
-            onUploaded: _registerReferenceUpload,
-          ),
           const SizedBox(height: 24),
           _AvatarTraitLibrarySection(
             config: config,

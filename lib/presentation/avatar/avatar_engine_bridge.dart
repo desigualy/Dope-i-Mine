@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../domain/avatar_v3/avatar_v3_migration.dart';
-import '../avatar_v3/avatar_v3_renderer.dart';
+import '../../avatar_engine_v4/domain/avatar_v4_profile_mapper.dart';
+import '../../avatar_engine_v4/presentation/avatar_rive_view.dart';
 
 class AvatarEngineBridge extends StatelessWidget {
   const AvatarEngineBridge({
@@ -15,9 +15,16 @@ class AvatarEngineBridge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AvatarV3Renderer(
-      profile: AvatarV3Migration.fromAny(profile),
-      size: size <= 0 ? 180 : size,
+    final safeSize = size <= 0 ? 180.0 : size;
+
+    return SizedBox.square(
+      key: const ValueKey<String>('avatar-v4-engine-bridge'),
+      dimension: safeSize,
+      child: AvatarRiveView(
+        key: const ValueKey<String>('avatar-v4-engine-bridge-rive-view'),
+        config: AvatarV4ProfileMapper.fromAny(profile),
+        size: safeSize,
+      ),
     );
   }
 }

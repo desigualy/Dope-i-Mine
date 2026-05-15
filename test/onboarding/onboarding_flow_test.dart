@@ -35,6 +35,7 @@ import 'package:dope_i_mine/presentation/onboarding/voice_preferences_screen.dar
 import 'package:dope_i_mine/presentation/onboarding/voice_setup_screen.dart';
 import 'package:dope_i_mine/presentation/onboarding/avatar_setup_screen.dart';
 import 'package:dope_i_mine/presentation/onboarding/identity_screen.dart';
+import 'package:dope_i_mine/presentation/caregiver/caregiver_confirm_screen.dart';
 import 'package:dope_i_mine/presentation/home/home_screen.dart';
 import 'package:dope_i_mine/presentation/settings/companion_screen.dart';
 import 'package:dope_i_mine/presentation/settings/settings_screen.dart';
@@ -223,6 +224,10 @@ GoRouter _buildHomeGateRouter() {
         ),
       ),
       GoRoute(
+        path: '/caregiver/confirm',
+        builder: (_, __) => const CaregiverConfirmScreen(),
+      ),
+      GoRoute(
         path: '/branding/intro',
         builder: (_, __) => const DopeIIntroScreen(returnToSummary: false),
       ),
@@ -365,6 +370,10 @@ GoRouter _buildLoginOnboardingRouter() {
         builder: (_, __) => const Scaffold(
           body: Center(child: Text('Caregiver Support')),
         ),
+      ),
+      GoRoute(
+        path: '/caregiver/confirm',
+        builder: (_, __) => const CaregiverConfirmScreen(),
       ),
       GoRoute(
         path: '/branding/intro',
@@ -744,7 +753,7 @@ void main() {
   });
 
   testWidgets(
-      'already authenticated caregiver on login is redirected to caregiver dashboard',
+      'already authenticated caregiver on login is redirected to caregiver confirmation',
       (WidgetTester tester) async {
     final fakeAuthRepository = _FakeAuthRepository()
       ..user = const AuthUser(id: 'tester', email: 'tester@example.com');
@@ -773,7 +782,8 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.text('Caregiver Support'), findsOneWidget);
+    expect(find.text('Confirm caregiver mode'), findsOneWidget);
+    expect(find.text('Caregiver Support'), findsNothing);
     expect(find.text('Meet Dope-i'), findsNothing);
     expect(find.text('Hi there!'), findsNothing);
   });
@@ -893,7 +903,7 @@ void main() {
     expect(find.text('Hi there!'), findsOneWidget);
   });
 
-  testWidgets('home gate sends caregiver accounts to caregiver dashboard',
+  testWidgets('home gate sends unconfirmed caregiver accounts to caregiver confirmation',
       (WidgetTester tester) async {
     final fakeAuthRepository = _FakeAuthRepository()
       ..user = const AuthUser(id: 'tester', email: 'tester@example.com');
@@ -914,7 +924,35 @@ void main() {
 
     await tester.pumpAndSettle();
 
+    expect(find.text('Confirm caregiver mode'), findsOneWidget);
+    expect(find.text('Caregiver Support'), findsNothing);
+    expect(find.text('Meet Dope-i'), findsNothing);
+    expect(find.text('Hi there!'), findsNothing);
+  });
+
+  testWidgets('home gate sends confirmed caregiver accounts to caregiver dashboard',
+      (WidgetTester tester) async {
+    final fakeAuthRepository = _FakeAuthRepository()
+      ..user = const AuthUser(id: 'tester', email: 'tester@example.com');
+    final fakeProfileRepository = _FakeProfileRepository(
+      onboardingComplete: true,
+      accountType: 'caregiver',
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: <Override>[
+          authRepositoryProvider.overrideWithValue(fakeAuthRepository),
+          profileRepositoryProvider.overrideWithValue(fakeProfileRepository),
+        ],
+        child: MaterialApp.router(routerConfig: _buildHomeGateRouter()),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
     expect(find.text('Caregiver Support'), findsOneWidget);
+    expect(find.text('Confirm caregiver mode'), findsNothing);
     expect(find.text('Meet Dope-i'), findsNothing);
     expect(find.text('Hi there!'), findsNothing);
   });

@@ -28,6 +28,7 @@ class CaregiverState {
     List<CaregiverAssignedRoutine>? assignedRoutines,
     bool? isLoading,
     String? error,
+    bool clearError = false,
   }) {
     return CaregiverState(
       relationships: relationships ?? this.relationships,
@@ -35,7 +36,7 @@ class CaregiverState {
       assignedTasks: assignedTasks ?? this.assignedTasks,
       assignedRoutines: assignedRoutines ?? this.assignedRoutines,
       isLoading: isLoading ?? this.isLoading,
-      error: error ?? this.error,
+      error: clearError ? null : error ?? this.error,
     );
   }
 }
@@ -62,7 +63,7 @@ class CaregiverController extends StateNotifier<CaregiverState> {
   final CaregiverRepository _repository;
 
   Future<void> refresh() async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isLoading: true, clearError: true);
     final relationships = await _repository.loadRelationships();
     final emailInvites = await _repository.loadEmailInvites();
     final tasks = await _repository.loadAssignedTasks();
@@ -76,8 +77,8 @@ class CaregiverController extends StateNotifier<CaregiverState> {
     );
   }
 
-  Future<void> sendRequest(String email, CaregiverRole role) async {
-    state = state.copyWith(isLoading: true);
+  Future<bool> sendRequest(String email, CaregiverRole role) async {
+    state = state.copyWith(isLoading: true, clearError: true);
     final result = await _repository.createEmailInvite(
       targetUserEmail: email,
       role: role,
@@ -87,13 +88,21 @@ class CaregiverController extends StateNotifier<CaregiverState> {
         isLoading: false,
         error: 'Could not create or send caregiver invite.',
       );
-    } else {
-      await refresh();
+      return false;
     }
+
+    await refresh();
+    return true;
+  }
+
+  Future<void> cancelPendingInvite(String inviteId) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+    await _repository.cancelEmailInvite(inviteId);
+    await refresh();
   }
 
   Future<bool> acceptEmailInvite(String inviteId) async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isLoading: true, clearError: true);
     final result = await _repository.acceptEmailInvite(inviteId);
     if (result == null) {
       state = state.copyWith(
@@ -107,6 +116,11 @@ class CaregiverController extends StateNotifier<CaregiverState> {
     return true;
   }
 
+
+  Future<bool> sendPasswordSetupEmailForAcceptedInvite(String inviteId) {
+    return _repository.sendPasswordSetupEmailForAcceptedInvite(inviteId);
+  }
+
   Future<void> respondToRequest(String relationshipId, bool accept) async {
     await _repository.respondToRelationshipRequest(
       relationshipId: relationshipId,
@@ -116,6 +130,7 @@ class CaregiverController extends StateNotifier<CaregiverState> {
   }
 
   Future<void> revokeRelationship(String relationshipId) async {
+    state = state.copyWith(isLoading: true, clearError: true);
     await _repository.revokeRelationship(relationshipId);
     await refresh();
   }

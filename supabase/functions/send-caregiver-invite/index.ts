@@ -55,7 +55,7 @@ serve(async (req) => {
 
         const { data: invite, error: inviteError } = await admin
             .from('caregiver_email_invites')
-            .select('id, inviter_user_id, invitee_email, role, status')
+            .select('id, inviter_user_id, invitee_email, role, status, requires_password_setup, password_setup_sent_at')
             .eq('id', inviteId)
             .single()
 
@@ -81,12 +81,24 @@ serve(async (req) => {
         })
 
         if (!otpError) {
-            return json({ ok: true, mode: 'magic_link', inviteId, role })
+            const { error: clearSetupError } = await admin
+                .from('caregiver_email_invites')
+                .update({
+                    requires_password_setup: false,
+                    password_setup_sent_at: null,
+                })
+                .eq('id', inviteId)
+
+            if (clearSetupError) return json({ error: clearSetupError.message }, 502)
+
+            return json({ ok: true, mode: 'magic_link', inviteId, role, requiresPasswordSetup: false })
         }
 
-        // For new users, we use the inviteUserByEmail function. 
-        // We redirect them to /reset-password so they can set their initial password.
-        const newCaregiverRedirectTo = `${appBaseUrl.replace(/\/$/, '')}/reset-password?invite_id=${encodeURIComponent(inviteId)}`
+        // For suggested caregivers who do not yet have an account, the first
+        // email confirms the address and opens the caregiver invite in-app.
+        // After the invite is accepted, the app triggers a separate recovery
+        // email so they can set their first password and sign in normally.
+        const newCaregiverRedirectTo = `${appBaseUrl.replace(/\/$/, '')}/caregiver?invite_id=${encodeURIComponent(inviteId)}&setup_password=1`
         
         const { error: authInviteError } = await admin.auth.admin.inviteUserByEmail(targetUserEmail, {
             redirectTo: newCaregiverRedirectTo,
@@ -98,7 +110,17 @@ serve(async (req) => {
             return json({ error: authInviteError.message, otpError: otpError.message }, 502)
         }
 
-        return json({ ok: true, mode: 'auth_invite', inviteId, role })
+        const { error: markSetupRequiredError } = await admin
+            .from('caregiver_email_invites')
+            .update({
+                requires_password_setup: true,
+                password_setup_sent_at: null,
+            })
+            .eq('id', inviteId)
+
+        if (markSetupRequiredError) return json({ error: markSetupRequiredError.message }, 502)
+
+        return json({ ok: true, mode: 'auth_invite', inviteId, role, requiresPasswordSetup: true })
     } catch (error) {
         console.error('send-caregiver-invite failed:', error)
         return json({ error: error instanceof Error ? error.message : String(error) }, 500)

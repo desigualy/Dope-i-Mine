@@ -58,8 +58,6 @@ final GoRouter appRouter = GoRouter(
   redirect: (BuildContext context, GoRouterState state) {
     final authenticated = isAuthenticated();
     final location = state.matchedLocation;
-    debugPrint(
-        'Router redirect: authenticated=$authenticated, location=$location');
     return sessionRedirect(
       authenticated: authenticated,
       location: location,

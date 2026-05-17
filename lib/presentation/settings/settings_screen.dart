@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/widgets/primary_scaffold.dart';
 import '../../providers.dart';
 import '../auth/auth_controller.dart';
+import '../onboarding/onboarding_controller.dart';
 import 'offline_sync_panel.dart';
 import 'theme_controller.dart';
 
@@ -82,11 +83,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final id = authUser?.id ?? userId;
 
     if (id != null) {
-      await ref.read(profileRepositoryProvider).setOnboardingCompleted(
-            userId: id,
-            completed: false,
-          );
+      try {
+        await ref.read(profileRepositoryProvider).setOnboardingCompleted(
+              userId: id,
+              completed: false,
+            );
+      } catch (e) {
+        debugPrint('Failed to reset onboarding on backend: $e');
+      }
     }
+
+    // Reset the wizard controller so they start completely fresh
+    ref.invalidate(onboardingControllerProvider);
 
     if (context.mounted) {
       context.go('/branding/intro');

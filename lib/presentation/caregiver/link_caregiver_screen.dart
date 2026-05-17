@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../core/errors/user_facing_error_mapper.dart';
 import '../../core/validators/auth_validators.dart';
 import '../../domain/caregiver/caregiver_models.dart';
+import '../voice/voice_input_button.dart';
+import '../voice/voice_controller.dart';
 import 'caregiver_controller.dart';
 
 class LinkCaregiverScreen extends ConsumerStatefulWidget {
@@ -80,10 +82,13 @@ class _LinkCaregiverScreenState extends ConsumerState<LinkCaregiverScreen> {
           const SizedBox(height: 32),
           TextField(
             controller: _emailController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Email Address',
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.email_outlined),
+              border: const OutlineInputBorder(),
+              prefixIcon: const Icon(Icons.email_outlined),
+              suffixIcon: VoiceInputButton(
+                onTextChanged: (text) => _emailController.text = text,
+              ),
             ),
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.next,
@@ -122,9 +127,25 @@ class _LinkCaregiverScreenState extends ConsumerState<LinkCaregiverScreen> {
             },
           ),
           const SizedBox(height: 24),
-          const Text(
-            'Choose a Role',
-            style: TextStyle(fontWeight: FontWeight.bold),
+          Row(
+            children: [
+              const Expanded(
+                child: Text(
+                  'Choose a Role',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              IconButton(
+                tooltip: 'Read roles aloud',
+                icon: const Icon(Icons.volume_up_rounded, size: 20),
+                onPressed: () {
+                  const text = 'Choose a role: Monitor, for light support, can see summaries and send nudges. '
+                      'Caregiver, for general support, can help manage routines and tasks. '
+                      'Overseer, for high support, can assign routines and view safety alerts.';
+                  ref.read(voiceControllerProvider).speakStep(text);
+                },
+              ),
+            ],
           ),
           const SizedBox(height: 12),
           _RoleSelectionCard(

@@ -6,9 +6,7 @@ import 'package:speech_to_text/speech_to_text.dart';
 
 final voiceIoControllerProvider =
     ChangeNotifierProvider<VoiceIoController>((ref) {
-  final controller = VoiceIoController();
-  ref.onDispose(controller.dispose);
-  return controller;
+  return VoiceIoController();
 });
 
 enum VoiceInputStatus {

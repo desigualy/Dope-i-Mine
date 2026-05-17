@@ -11,6 +11,8 @@ import '../../core/widgets/state_chip_selector.dart';
 import '../../domain/auth/auth_user.dart';
 import '../../domain/tasks/task_state_snapshot.dart';
 import '../../providers.dart';
+import '../voice/voice_input_button.dart';
+import '../voice/voice_controller.dart';
 import 'task_controller.dart';
 import 'task_session_controller.dart';
 
@@ -37,6 +39,18 @@ class _TaskInputScreenState extends ConsumerState<TaskInputScreen> {
 
     return PrimaryScaffold(
       title: 'New task',
+      actions: <Widget>[
+        IconButton(
+          tooltip: 'Read screen aloud',
+          icon: const Icon(Icons.volume_up_rounded),
+          onPressed: () {
+            final text = _taskController.text.trim().isNotEmpty
+                ? 'Your currently typed task is: ${_taskController.text}'
+                : 'What do you need to do? Type it or tap the microphone to say it, then choose your mode, energy, stress level, and available time to break it down.';
+            ref.read(voiceControllerProvider).speakStep(text);
+          },
+        ),
+      ],
       child: ListView(
         children: <Widget>[
           if (_errorText != null) ...<Widget>[
@@ -47,6 +61,9 @@ class _TaskInputScreenState extends ConsumerState<TaskInputScreen> {
             controller: _taskController,
             hintText: 'What do you need to do?',
             maxLines: 3,
+            suffixIcon: VoiceInputButton(
+              onTextChanged: (text) => _taskController.text = text,
+            ),
           ),
           const SizedBox(height: 16),
           StateChipSelector<SupportMode>(

@@ -11,6 +11,8 @@ import '../../data/repositories/routine_templates.dart';
 import '../../domain/routines/routine_model.dart';
 import '../../domain/routines/routine_step_model.dart';
 import '../../providers.dart';
+import '../voice/voice_input_button.dart';
+import '../voice/voice_controller.dart';
 import 'routine_controller.dart';
 
 class RoutineBuilderScreen extends ConsumerStatefulWidget {
@@ -132,6 +134,9 @@ class _RoutineBuilderScreenState extends ConsumerState<RoutineBuilderScreen> {
                       AppTextField(
                         controller: _titleController,
                         hintText: 'e.g. Cosy morning launchpad',
+                        suffixIcon: VoiceInputButton(
+                          onTextChanged: (text) => _titleController.text = text,
+                        ),
                       ),
                       const SizedBox(height: 12),
                       AppTextField(
@@ -151,6 +156,16 @@ class _RoutineBuilderScreenState extends ConsumerState<RoutineBuilderScreen> {
                 _StepsHeader(
                   count: _stepControllers.length,
                   onAddStep: _addStep,
+                  speakSteps: () {
+                    final stepsText = _stepControllers
+                        .map((controller) => controller.text.trim())
+                        .where((text) => text.isNotEmpty)
+                        .toList();
+                    final text = stepsText.isEmpty
+                        ? "You haven't written any steps yet."
+                        : "Your routine steps are: ${stepsText.join(', then ')}.";
+                    ref.read(voiceControllerProvider).speakStep(text);
+                  },
                 ),
                 const SizedBox(height: 10),
                 ..._stepControllers.asMap().entries.map(
@@ -567,26 +582,37 @@ class _QuickAddCard extends StatelessWidget {
   }
 }
 
-class _StepsHeader extends StatelessWidget {
-  const _StepsHeader({required this.count, required this.onAddStep});
+class _StepsHeader extends ConsumerWidget {
+  const _StepsHeader({required this.count, required this.onAddStep, required this.speakSteps});
 
   final int count;
   final VoidCallback onAddStep;
+  final VoidCallback speakSteps;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Row(
       children: <Widget>[
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
-                'Your routine path',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge
-                    ?.copyWith(fontWeight: FontWeight.w900),
+              Row(
+                children: [
+                  Text(
+                    'Your routine path',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(fontWeight: FontWeight.w900),
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    tooltip: 'Read all steps aloud',
+                    icon: const Icon(Icons.volume_up_rounded, size: 20),
+                    onPressed: speakSteps,
+                  ),
+                ],
               ),
               Text(
                 '$count editable ${count == 1 ? 'step' : 'steps'}',
@@ -854,6 +880,9 @@ class _StepEditorTile extends StatelessWidget {
                 controller: controller,
                 hintText: 'Step ${index + 1}: make it tiny and clear',
                 maxLines: 2,
+                suffixIcon: VoiceInputButton(
+                  onTextChanged: (text) => controller.text = text,
+                ),
               ),
             ),
             const SizedBox(width: 4),

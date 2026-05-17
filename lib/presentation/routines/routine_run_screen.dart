@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/errors/user_facing_error_mapper.dart';
 import '../../core/widgets/empty_state_card.dart';
 import '../../core/widgets/primary_scaffold.dart';
+import '../voice/voice_controller.dart';
 import 'routine_run_controller.dart';
 
 class RoutineRunScreen extends ConsumerWidget {
@@ -75,9 +76,21 @@ class RoutineRunScreen extends ConsumerWidget {
           Card(
             child: Padding(
               padding: const EdgeInsets.all(20),
-              child: Text(
-                step.stepText,
-                style: Theme.of(context).textTheme.headlineSmall,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      step.stepText,
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  IconButton(
+                    tooltip: 'Speak step',
+                    icon: const Icon(Icons.volume_up_rounded, size: 28),
+                    onPressed: () => ref.read(voiceControllerProvider).speakStep(step.stepText),
+                  ),
+                ],
               ),
             ),
           ),

@@ -8,6 +8,7 @@ import '../../core/widgets/primary_scaffold.dart';
 import '../../domain/routines/routine_model.dart';
 import '../../domain/routines/routine_step_model.dart';
 import '../../providers.dart';
+import '../voice/voice_controller.dart';
 import 'routine_controller.dart';
 import 'routine_run_controller.dart';
 
@@ -52,12 +53,32 @@ class RoutineDetailScreen extends ConsumerWidget {
           Row(
             children: <Widget>[
               Expanded(
-                child: Text(
-                  'Step-by-step path',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(fontWeight: FontWeight.w900),
+                child: Row(
+                  children: [
+                    Text(
+                      'Step-by-step path',
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge
+                          ?.copyWith(fontWeight: FontWeight.w900),
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      tooltip: 'Read path aloud',
+                      icon: const Icon(Icons.volume_up_rounded, size: 20),
+                      onPressed: () {
+                        if (steps.isEmpty) {
+                          ref.read(voiceControllerProvider).speakStep('This routine has no steps yet.');
+                        } else {
+                          final stepsText = steps.map((s) => s.stepText).toList();
+                          ref.read(voiceControllerProvider).speakStep(
+                            'The routine, ${routine.title}, has ${steps.length} steps. '
+                            'They are: ${stepsText.join(', then ')}.'
+                          );
+                        }
+                      },
+                    ),
+                  ],
                 ),
               ),
               Text(

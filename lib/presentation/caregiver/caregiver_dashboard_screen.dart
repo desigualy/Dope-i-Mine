@@ -6,6 +6,7 @@ import '../../core/widgets/app_back_button.dart';
 import '../../domain/caregiver/caregiver_models.dart';
 import '../../providers.dart';
 import '../core/widgets/empty_state_card.dart';
+import '../voice/voice_controller.dart';
 import 'caregiver_controller.dart';
 import 'linked_user_detail_screen.dart';
 
@@ -60,6 +61,16 @@ class _CaregiverDashboardScreenState
         leading: const AppBackButton(),
         title: const Text('Caregiver Support'),
         actions: [
+          IconButton(
+            tooltip: 'Read screen aloud',
+            icon: const Icon(Icons.volume_up_rounded),
+            onPressed: () {
+              const text = 'Caregiver Support. Managing executive function is easier together. '
+                  'Link a caregiver to share the load. Support, not surveillance. '
+                  'You choose exactly what each person can see and do.';
+              ref.read(voiceControllerProvider).speakStep(text);
+            },
+          ),
           IconButton(
             tooltip: 'Avatar engine',
             icon: const Icon(Icons.face_retouching_natural_rounded),

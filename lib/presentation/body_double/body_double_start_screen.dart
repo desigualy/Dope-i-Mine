@@ -6,6 +6,8 @@ import '../../core/widgets/app_back_button.dart';
 import '../../domain/body_double/body_double_session.dart';
 import '../../providers.dart';
 import '../tasks/task_controller.dart';
+import '../voice/voice_input_button.dart';
+import '../voice/voice_controller.dart';
 import 'body_double_controller.dart';
 
 class BodyDoubleStartScreen extends ConsumerStatefulWidget {
@@ -83,6 +85,18 @@ class _BodyDoubleStartScreenState extends ConsumerState<BodyDoubleStartScreen> {
       appBar: AppBar(
         leading: const AppBackButton(),
         title: const Text('Start body double'),
+        actions: [
+          IconButton(
+            tooltip: 'Read screen aloud',
+            icon: const Icon(Icons.volume_up_rounded),
+            onPressed: () {
+              final text = 'Start body double. Work alongside Dope-i quietly. '
+                  'No pressure. No performance. Just presence for $taskTitle. '
+                  'You can work with Dope-i, invite a trusted person, or find an anonymous partner.';
+              ref.read(voiceControllerProvider).speakStep(text);
+            },
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -180,10 +194,13 @@ class _BodyDoubleStartScreenState extends ConsumerState<BodyDoubleStartScreen> {
           TextField(
             key: const ValueKey<String>('friend-body-double-user-id-field'),
             controller: _friendIdController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Trusted people (IDs or emails, comma-separated)',
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
               hintText: 'user1@example.com, friend_id_123',
+              suffixIcon: VoiceInputButton(
+                onTextChanged: (text) => _friendIdController.text = text,
+              ),
             ),
             onSubmitted: (_) => _addTrustedPeopleFromInput(),
           ),
@@ -395,12 +412,12 @@ class _BodyDoubleStartScreenState extends ConsumerState<BodyDoubleStartScreen> {
               labelText: 'Preferred language',
               border: OutlineInputBorder(),
             ),
-            items: const <DropdownMenuItem<String>>[
-              DropdownMenuItem(value: 'en', child: Text('English')),
-              DropdownMenuItem(value: 'es', child: Text('Spanish')),
-              DropdownMenuItem(value: 'fr', child: Text('French')),
-              DropdownMenuItem(value: 'de', child: Text('German')),
-            ],
+            items: _availableLanguages.map((lang) {
+              return DropdownMenuItem<String>(
+                value: lang['code'],
+                child: Text(lang['name'] ?? ''),
+              );
+            }).toList(),
             onChanged: (value) => setState(() => _language = value ?? 'en'),
           ),
           const SizedBox(height: 12),
@@ -426,6 +443,44 @@ class _BodyDoubleStartScreenState extends ConsumerState<BodyDoubleStartScreen> {
     );
   }
 }
+
+const List<Map<String, String>> _availableLanguages = <Map<String, String>>[
+  {'code': 'ar', 'name': 'Arabic / العربية'},
+  {'code': 'bn', 'name': 'Bengali / বাংলা'},
+  {'code': 'zh', 'name': 'Chinese / 中文'},
+  {'code': 'da', 'name': 'Danish / Dansk'},
+  {'code': 'nl', 'name': 'Dutch / Nederlands'},
+  {'code': 'en', 'name': 'English'},
+  {'code': 'fi', 'name': 'Finnish / Suomi'},
+  {'code': 'fr', 'name': 'French / Français'},
+  {'code': 'de', 'name': 'German / Deutsch'},
+  {'code': 'el', 'name': 'Greek / Ελληνικά'},
+  {'code': 'he', 'name': 'Hebrew / עברית'},
+  {'code': 'hi', 'name': 'Hindi / हिन्दी'},
+  {'code': 'id', 'name': 'Indonesian / Bahasa Indonesia'},
+  {'code': 'it', 'name': 'Italian / Italiano'},
+  {'code': 'ja', 'name': 'Japanese / 日本語'},
+  {'code': 'ko', 'name': 'Korean / 한국어'},
+  {'code': 'ms', 'name': 'Malay / Bahasa Melayu'},
+  {'code': 'mr', 'name': 'Marathi / मराठी'},
+  {'code': 'no', 'name': 'Norwegian / Norsk'},
+  {'code': 'fa', 'name': 'Persian / فارسی'},
+  {'code': 'pl', 'name': 'Polish / Polski'},
+  {'code': 'pt', 'name': 'Portuguese / Português'},
+  {'code': 'pa', 'name': 'Punjabi / ਪੰਜਾਬੀ'},
+  {'code': 'ro', 'name': 'Romanian / Română'},
+  {'code': 'ru', 'name': 'Russian / Русский'},
+  {'code': 'es', 'name': 'Spanish / Español'},
+  {'code': 'sw', 'name': 'Swahili / Kiswahili'},
+  {'code': 'sv', 'name': 'Swedish / Svenska'},
+  {'code': 'ta', 'name': 'Tamil / தமிழ்'},
+  {'code': 'te', 'name': 'Telugu / తెలుగు'},
+  {'code': 'th', 'name': 'Thai / ไทย'},
+  {'code': 'tr', 'name': 'Turkish / Türkçe'},
+  {'code': 'uk', 'name': 'Ukrainian / Українська'},
+  {'code': 'ur', 'name': 'Urdu / اردو'},
+  {'code': 'vi', 'name': 'Vietnamese / Tiếng Việt'},
+];
 
 class _TrustedBodyDoublePerson {
   const _TrustedBodyDoublePerson({

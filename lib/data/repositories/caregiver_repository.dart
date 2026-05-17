@@ -13,9 +13,9 @@ abstract class CaregiverRepository {
   Future<CaregiverEmailInvite?> createEmailInvite({
     required String targetUserEmail,
     required CaregiverRole role,
+    required String caregiverPassword,
   });
   Future<CaregiverRelationship?> acceptEmailInvite(String inviteId);
-  Future<bool> sendPasswordSetupEmailForAcceptedInvite(String inviteId);
   Future<void> respondToRelationshipRequest({
     required String relationshipId,
     required bool accept,

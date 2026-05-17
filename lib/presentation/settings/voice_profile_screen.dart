@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/widgets/primary_scaffold.dart';
+import '../../domain/voice/voice_profile_model.dart';
 import '../../domain/voice/voice_settings_model.dart';
 import '../../providers.dart';
 
@@ -18,7 +19,7 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
   bool autoReadSteps = false;
   bool autoReadSidequests = false;
   bool loading = true;
-  List<Map<String, dynamic>> profiles = const <Map<String, dynamic>>[];
+  List<VoiceProfileModel> profiles = const <VoiceProfileModel>[];
 
   @override
   void initState() {
@@ -32,7 +33,8 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
       if (!mounted) return;
       setState(() {
         profiles = availableProfiles;
-        selectedVoiceId = settings?.activeVoiceProfileId;
+        selectedVoiceId = settings?.activeVoiceProfileId ??
+            (availableProfiles.isNotEmpty ? availableProfiles.first.id : null);
         speechRate = settings?.speechRate ?? 1.0;
         autoReadSteps = settings?.autoReadSteps ?? false;
         autoReadSidequests = settings?.autoReadSidequests ?? false;
@@ -53,13 +55,26 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
                   value: selectedVoiceId,
                   items: profiles
                       .map((p) => DropdownMenuItem<String>(
-                            value: p['id'] as String,
-                            child: Text(p['label'] as String),
+                            value: p.id,
+                            child: Text(p.label),
                           ))
                       .toList(),
-                  onChanged: (value) => setState(() => selectedVoiceId = value),
+                  onChanged: (value) {
+                    final selected = _profileFor(value);
+                    setState(() {
+                      selectedVoiceId = value;
+                      if (selected != null) speechRate = selected.defaultRate;
+                    });
+                  },
                   decoration: const InputDecoration(labelText: 'Voice profile'),
                 ),
+                if (_profileFor(selectedVoiceId) case final selected?) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    '${selected.accent} · ${selected.gender} · ${selected.localeId} · ${selected.pace}',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
                 const SizedBox(height: 16),
                 Text('Speech rate: ${speechRate.toStringAsFixed(2)}'),
                 Slider(
@@ -76,18 +91,21 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
                 ),
                 SwitchListTile(
                   value: autoReadSidequests,
-                  onChanged: (value) => setState(() => autoReadSidequests = value),
+                  onChanged: (value) =>
+                      setState(() => autoReadSidequests = value),
                   title: const Text('Auto-read side quests'),
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () async {
-                    final authUser = ref.read(authRepositoryProvider).getCurrentUser();
+                    final authUser =
+                        ref.read(authRepositoryProvider).getCurrentUser();
                     if (authUser == null) return;
                     await ref.read(voiceSettingsRepositoryProvider).save(
                           userId: authUser.id,
                           settings: VoiceSettingsModel(
                             activeVoiceProfileId: selectedVoiceId,
+                            localeId: _profileFor(selectedVoiceId)?.localeId,
                             speechRate: speechRate,
                             autoReadSteps: autoReadSteps,
                             autoReadSidequests: autoReadSidequests,
@@ -100,5 +118,13 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
               ],
             ),
     );
+  }
+
+  VoiceProfileModel? _profileFor(String? id) {
+    if (id == null) return null;
+    for (final profile in profiles) {
+      if (profile.id == id) return profile;
+    }
+    return null;
   }
 }

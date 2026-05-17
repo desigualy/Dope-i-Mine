@@ -11,6 +11,11 @@ class AvatarRiveAssetResolver {
 
   Future<bool> exists(String assetPath) async {
     try {
+      final manifest = await services.AssetManifest.loadFromAssetBundle(bundle);
+      if (!manifest.listAssets().contains(assetPath)) {
+        return false;
+      }
+
       final data = await bundle.load(assetPath);
       return data.lengthInBytes > 0;
     } catch (_) {

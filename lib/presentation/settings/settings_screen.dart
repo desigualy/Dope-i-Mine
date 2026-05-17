@@ -22,6 +22,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool reducedAnimation = false;
   bool largeText = false;
   bool soundEnabled = true;
+  String accountType = 'user';
 
   @override
   void initState() {
@@ -41,11 +42,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     userId = authUser.id;
 
     try {
+      final resolvedAccountType =
+          await ref.read(profileRepositoryProvider).getAccountType(userId!);
       final sensory =
           await ref.read(profileRepositoryProvider).getSensorySettings(userId!);
 
       if (!mounted) return;
       setState(() {
+        accountType = resolvedAccountType;
         reducedAnimation = sensory?.reducedAnimation ?? false;
         largeText = sensory?.largeText ?? false;
         soundEnabled = sensory?.soundEnabled ?? true;
@@ -109,6 +113,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => _restartOnboarding(context),
                 ),
+                if (accountType == 'caregiver')
+                  ListTile(
+                    title: const Text('Caregiver dashboard'),
+                    subtitle: const Text(
+                      'Return to caregiver support tools and linked people.',
+                    ),
+                    leading: const Icon(Icons.volunteer_activism_rounded),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: () => context.go('/caregiver'),
+                  ),
                 const Divider(),
                 const _SectionHeader(title: 'Sensory preferences'),
                 SwitchListTile(

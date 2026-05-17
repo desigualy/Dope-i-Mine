@@ -21,8 +21,43 @@ class RewardRepositoryImpl {
     final xpInCurrentLevel = totalXp % 1000;
     final progress = xpInCurrentLevel / 1000;
 
-    // TODO: Implement streak logic based on progress_logs
-    const currentStreak = 0;
+    // Calculate current streak based on progress logs
+    int currentStreak = 0;
+    try {
+      final logsResponse = await _client
+          .from('progress_logs')
+          .select('created_at')
+          .eq('user_id', userId)
+          .order('created_at', ascending: false);
+
+      final dates = (logsResponse as List<dynamic>)
+          .map((row) => DateTime.parse(row['created_at'] as String).toLocal())
+          .map((dt) => DateTime(dt.year, dt.month, dt.day))
+          .toSet()
+          .toList()
+        ..sort((a, b) => b.compareTo(a)); // Sort descending
+
+      if (dates.isNotEmpty) {
+        final today = DateTime.now().toLocal();
+        final todayDate = DateTime(today.year, today.month, today.day);
+        final yesterdayDate = todayDate.subtract(const Duration(days: 1));
+
+        if (dates.first == todayDate || dates.first == yesterdayDate) {
+          currentStreak = 1;
+          DateTime expectedDate = dates.first.subtract(const Duration(days: 1));
+          for (int i = 1; i < dates.length; i++) {
+            if (dates[i] == expectedDate) {
+              currentStreak++;
+              expectedDate = expectedDate.subtract(const Duration(days: 1));
+            } else {
+              break;
+            }
+          }
+        }
+      }
+    } catch (_) {
+      currentStreak = 0;
+    }
 
     return UserStats(
       totalXp: totalXp,

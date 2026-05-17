@@ -1,9 +1,15 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:dope_i_mine/data/repositories/auth_repository_impl.dart';
 import 'package:dope_i_mine/data/repositories/caregiver_repository.dart';
+import 'package:dope_i_mine/domain/auth/auth_user.dart';
 import 'package:dope_i_mine/domain/body_double/body_double_session.dart';
 import 'package:dope_i_mine/domain/caregiver/caregiver_models.dart';
+import 'package:dope_i_mine/presentation/caregiver/caregiver_dashboard_screen.dart';
 import 'package:dope_i_mine/presentation/caregiver/caregiver_controller.dart';
+import 'package:dope_i_mine/providers.dart' hide caregiverRepositoryProvider;
 
 void main() {
   test('controller can cancel pending caregiver invites', () async {
@@ -34,27 +40,121 @@ void main() {
 
     await controller.revokeRelationship(_acceptedRelationship.id);
 
-    expect(repository.revokedRelationshipIds, contains(_acceptedRelationship.id));
+    expect(
+      repository.revokedRelationshipIds,
+      contains(_acceptedRelationship.id),
+    );
     expect(controller.state.relationships, isEmpty);
   });
 
-  test('controller returns invite send result so add screen only closes on success', () async {
-    final repository = _FakeCaregiverRepository(sendInviteSucceeds: true);
-    final controller = CaregiverController(repository);
-    addTearDown(controller.dispose);
+  test(
+    'controller returns invite send result so add screen only closes on success',
+    () async {
+      final repository = _FakeCaregiverRepository(sendInviteSucceeds: true);
+      final controller = CaregiverController(repository);
+      addTearDown(controller.dispose);
 
-    await _settleControllerRefresh();
-    final sent = await controller.sendRequest('helper@example.com', CaregiverRole.caregiver);
+      await _settleControllerRefresh();
+      final sent = await controller.sendRequest(
+        'helper@example.com',
+        CaregiverRole.caregiver,
+        caregiverPassword: 'password123',
+      );
 
-    expect(sent, isTrue);
-    expect(repository.createdInviteEmails, contains('helper@example.com'));
-    expect(controller.state.error, isNull);
-  });
+      expect(sent, isTrue);
+      expect(repository.createdInviteEmails, contains('helper@example.com'));
+      expect(repository.createdInvitePasswords, contains('password123'));
+      expect(controller.state.error, isNull);
+    },
+  );
+
+  test(
+    'controller accepts caregiver invite after setup email was already sent',
+    () async {
+      final repository = _FakeCaregiverRepository(
+        acceptedInviteRelationship: _acceptedRelationship,
+      );
+      final controller = CaregiverController(repository);
+      addTearDown(controller.dispose);
+
+      await _settleControllerRefresh();
+      final accepted = await controller.acceptEmailInvite(_pendingInvite.id);
+
+      expect(accepted, isTrue);
+      expect(repository.acceptedInviteIds, <String>[_pendingInvite.id]);
+      expect(controller.state.relationships, contains(_acceptedRelationship));
+      expect(controller.state.error, isNull);
+    },
+  );
+
+  testWidgets(
+    'caregiver dashboard opens linked user detail when caregiver relationship is loaded',
+    (WidgetTester tester) async {
+      const caregiverUser = AuthUser(
+        id: 'caregiver-a',
+        email: 'helper@example.com',
+      );
+      final authRepository = _FakeAuthRepository()..user = caregiverUser;
+      final caregiverRepository = _FakeCaregiverRepository(
+        relationships: <CaregiverRelationship>[_acceptedRelationship],
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: <Override>[
+            authRepositoryProvider.overrideWithValue(authRepository),
+            caregiverRepositoryProvider.overrideWithValue(caregiverRepository),
+          ],
+          child: const MaterialApp(
+            home: CaregiverDashboardScreen(),
+          ),
+        ),
+      );
+
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.text('User'), findsWidgets);
+      expect(find.text('Assign Task'), findsOneWidget);
+      expect(find.byTooltip('Account settings'), findsOneWidget);
+      expect(find.text('Caregiver Support'), findsNothing);
+      expect(find.text('No active support links'), findsNothing);
+    },
+  );
 }
 
 Future<void> _settleControllerRefresh() async {
   await Future<void>.delayed(Duration.zero);
   await Future<void>.delayed(Duration.zero);
+}
+
+class _FakeAuthRepository implements AuthRepositoryImpl {
+  AuthUser? user;
+
+  @override
+  Future<AuthUser?> signIn(
+          {required String email, required String password}) async =>
+      user;
+
+  @override
+  Future<void> signOut() async {}
+
+  @override
+  Future<AuthUser?> signUp({
+    required String email,
+    required String password,
+    String accountType = 'user',
+  }) async =>
+      user;
+
+  @override
+  AuthUser? getCurrentUser() => user;
+
+  @override
+  Future<void> sendPasswordResetEmail(String email) async {}
+
+  @override
+  Future<void> updatePassword(String password) async {}
 }
 
 final DateTime _now = DateTime.utc(2026, 5, 15, 12);
@@ -87,15 +187,19 @@ class _FakeCaregiverRepository implements CaregiverRepository {
     List<CaregiverRelationship> relationships = const <CaregiverRelationship>[],
     List<CaregiverEmailInvite> emailInvites = const <CaregiverEmailInvite>[],
     this.sendInviteSucceeds = true,
+    this.acceptedInviteRelationship,
   })  : relationships = List<CaregiverRelationship>.of(relationships),
         emailInvites = List<CaregiverEmailInvite>.of(emailInvites);
 
   final List<CaregiverRelationship> relationships;
   final List<CaregiverEmailInvite> emailInvites;
   final bool sendInviteSucceeds;
+  final CaregiverRelationship? acceptedInviteRelationship;
   final List<String> cancelledInviteIds = <String>[];
   final List<String> revokedRelationshipIds = <String>[];
   final List<String> createdInviteEmails = <String>[];
+  final List<String> createdInvitePasswords = <String>[];
+  final List<String> acceptedInviteIds = <String>[];
 
   @override
   Future<List<CaregiverRelationship>> loadRelationships() async =>
@@ -115,8 +219,10 @@ class _FakeCaregiverRepository implements CaregiverRepository {
   Future<CaregiverEmailInvite?> createEmailInvite({
     required String targetUserEmail,
     required CaregiverRole role,
+    required String caregiverPassword,
   }) async {
     createdInviteEmails.add(targetUserEmail);
+    createdInvitePasswords.add(caregiverPassword);
     if (!sendInviteSucceeds) return null;
     final invite = CaregiverEmailInvite(
       id: 'invite-${createdInviteEmails.length}',
@@ -133,11 +239,20 @@ class _FakeCaregiverRepository implements CaregiverRepository {
   @override
   Future<void> revokeRelationship(String relationshipId) async {
     revokedRelationshipIds.add(relationshipId);
-    relationships.removeWhere((relationship) => relationship.id == relationshipId);
+    relationships.removeWhere(
+      (relationship) => relationship.id == relationshipId,
+    );
   }
 
   @override
-  Future<CaregiverRelationship?> acceptEmailInvite(String inviteId) async => null;
+  Future<CaregiverRelationship?> acceptEmailInvite(String inviteId) async {
+    acceptedInviteIds.add(inviteId);
+    final relationship = acceptedInviteRelationship;
+    if (relationship != null && !relationships.contains(relationship)) {
+      relationships.add(relationship);
+    }
+    return relationship;
+  }
 
   @override
   Future<CaregiverRelationship?> createRelationshipRequest({
@@ -177,19 +292,26 @@ class _FakeCaregiverRepository implements CaregiverRepository {
       <CaregiverAlert>[];
 
   @override
-  Future<List<CaregiverAssignedRoutine>> loadAssignedRoutines({String? targetUserId}) async =>
+  Future<List<CaregiverAssignedRoutine>> loadAssignedRoutines({
+    String? targetUserId,
+  }) async =>
       <CaregiverAssignedRoutine>[];
 
   @override
-  Future<List<CaregiverAssignedTask>> loadAssignedTasks({String? targetUserId}) async =>
+  Future<List<CaregiverAssignedTask>> loadAssignedTasks({
+    String? targetUserId,
+  }) async =>
       <CaregiverAssignedTask>[];
 
   @override
-  Future<List<BodyDoubleSession>> loadBodyDoubleSummaries(String userId) async =>
+  Future<List<BodyDoubleSession>> loadBodyDoubleSummaries(
+    String userId,
+  ) async =>
       <BodyDoubleSession>[];
 
   @override
-  Future<CaregiverPermissions?> loadPermissions(String relationshipId) async => null;
+  Future<CaregiverPermissions?> loadPermissions(String relationshipId) async =>
+      null;
 
   @override
   Future<void> respondToAssignedTask({
@@ -202,9 +324,6 @@ class _FakeCaregiverRepository implements CaregiverRepository {
     required String relationshipId,
     required bool accept,
   }) async {}
-
-  @override
-  Future<bool> sendPasswordSetupEmailForAcceptedInvite(String inviteId) async => false;
 
   @override
   Future<void> sendNudge({

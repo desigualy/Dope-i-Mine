@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/errors/user_facing_error_mapper.dart';
+import '../../core/validators/auth_validators.dart';
 import '../../domain/caregiver/caregiver_models.dart';
 import 'caregiver_controller.dart';
 
@@ -9,17 +11,48 @@ class LinkCaregiverScreen extends ConsumerStatefulWidget {
   const LinkCaregiverScreen({super.key});
 
   @override
-  ConsumerState<LinkCaregiverScreen> createState() => _LinkCaregiverScreenState();
+  ConsumerState<LinkCaregiverScreen> createState() =>
+      _LinkCaregiverScreenState();
 }
 
 class _LinkCaregiverScreenState extends ConsumerState<LinkCaregiverScreen> {
   final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   CaregiverRole _selectedRole = CaregiverRole.caregiver;
+  bool _obscurePassword = true;
+  String? _localError;
 
   @override
   void dispose() {
     _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _sendInvite() async {
+    setState(() => _localError = null);
+
+    try {
+      final email = _emailController.text.trim();
+      final password = _passwordController.text;
+      validateEmail(email);
+      validatePassword(password);
+      if (password != _confirmPasswordController.text) {
+        throw StateError('Passwords do not match.');
+      }
+
+      final sent =
+          await ref.read(caregiverControllerProvider.notifier).sendRequest(
+                email,
+                _selectedRole,
+                caregiverPassword: password,
+              );
+      if (mounted && sent) context.pop();
+    } catch (error) {
+      if (mounted) setState(() => _localError = mapToUserFacingError(error));
+    }
   }
 
   @override
@@ -40,7 +73,7 @@ class _LinkCaregiverScreenState extends ConsumerState<LinkCaregiverScreen> {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Enter the email address of the person you want to link to your account.',
+            'Enter their email and choose the password they will use to sign in.',
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.grey),
           ),
@@ -53,6 +86,40 @@ class _LinkCaregiverScreenState extends ConsumerState<LinkCaregiverScreen> {
               prefixIcon: Icon(Icons.email_outlined),
             ),
             keyboardType: TextInputType.emailAddress,
+            textInputAction: TextInputAction.next,
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _passwordController,
+            obscureText: _obscurePassword,
+            decoration: InputDecoration(
+              labelText: 'Create Password',
+              helperText:
+                  'At least 8 characters. Share this with the caregiver securely.',
+              border: const OutlineInputBorder(),
+              prefixIcon: const Icon(Icons.lock_outline),
+              suffixIcon: IconButton(
+                icon: Icon(
+                    _obscurePassword ? Icons.visibility_off : Icons.visibility),
+                onPressed: () =>
+                    setState(() => _obscurePassword = !_obscurePassword),
+              ),
+            ),
+            textInputAction: TextInputAction.next,
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _confirmPasswordController,
+            obscureText: _obscurePassword,
+            decoration: const InputDecoration(
+              labelText: 'Confirm Password',
+              border: OutlineInputBorder(),
+              prefixIcon: Icon(Icons.lock_reset_outlined),
+            ),
+            textInputAction: TextInputAction.done,
+            onSubmitted: (_) {
+              if (!state.isLoading) _sendInvite();
+            },
           ),
           const SizedBox(height: 24),
           const Text(
@@ -72,42 +139,35 @@ class _LinkCaregiverScreenState extends ConsumerState<LinkCaregiverScreen> {
             title: 'Caregiver',
             description: 'General support. Can help manage routines and tasks.',
             selected: _selectedRole == CaregiverRole.caregiver,
-            onTap: () => setState(() => _selectedRole = CaregiverRole.caregiver),
+            onTap: () =>
+                setState(() => _selectedRole = CaregiverRole.caregiver),
           ),
           _RoleSelectionCard(
             role: CaregiverRole.overseer,
             title: 'Overseer',
-            description: 'High support. Can assign routines and view safety alerts.',
+            description:
+                'High support. Can assign routines and view safety alerts.',
             selected: _selectedRole == CaregiverRole.overseer,
             onTap: () => setState(() => _selectedRole = CaregiverRole.overseer),
           ),
           const SizedBox(height: 32),
-          if (state.error != null)
+          if (_localError != null || state.error != null)
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: Text(
-                state.error!,
+                _localError ?? state.error!,
                 style: const TextStyle(color: Colors.red),
                 textAlign: TextAlign.center,
               ),
             ),
           FilledButton(
-            onPressed: state.isLoading
-                ? null
-                : () async {
-                    if (_emailController.text.trim().isEmpty) return;
-                    final sent = await ref
-                        .read(caregiverControllerProvider.notifier)
-                        .sendRequest(_emailController.text.trim(), _selectedRole);
-                    if (mounted && sent) {
-                      context.pop();
-                    }
-                  },
+            onPressed: state.isLoading ? null : _sendInvite,
             child: state.isLoading
                 ? const SizedBox(
                     height: 20,
                     width: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: Colors.white),
                   )
                 : const Text('Send Invite'),
           ),
@@ -160,9 +220,12 @@ class _RoleSelectionCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    Text(title,
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 4),
-                    Text(description, style: TextStyle(fontSize: 12, color: Colors.grey.shade400)),
+                    Text(description,
+                        style: TextStyle(
+                            fontSize: 12, color: Colors.grey.shade400)),
                   ],
                 ),
               ),

@@ -20,6 +20,7 @@ import 'package:dope_i_mine/domain/profile/sensory_settings_model.dart';
 import 'package:dope_i_mine/domain/profile/user_profile_model.dart';
 import 'package:dope_i_mine/domain/tasks/task_state_snapshot.dart';
 import 'package:dope_i_mine/domain/voice/voice_settings_model.dart';
+import 'package:dope_i_mine/domain/voice/voice_profile_model.dart';
 import 'package:dope_i_mine/presentation/auth/login_screen.dart';
 import 'package:dope_i_mine/core/widgets/async_action_button.dart';
 import 'package:dope_i_mine/presentation/branding/dope_i_intro_screen.dart';
@@ -127,25 +128,39 @@ class _FakeProfileRepository implements ProfileRepositoryImpl {
     this.onboardingComplete = false,
     this.throwOnCompletionCheck = false,
     this.accountType = 'user',
+    this.hasCaregiverProfile = false,
+    this.hasAcceptedSupportedUserRelationship = false,
   });
 
   bool onboardingComplete;
   final bool throwOnCompletionCheck;
   String accountType;
+  final bool hasCaregiverProfile;
+  final bool hasAcceptedSupportedUserRelationship;
 
   @override
   Future<void> ensureProfileExists(
       {required String userId,
       String? email,
       String accountType = 'user'}) async {
-    if (accountType == 'caregiver' || this.accountType == 'caregiver') {
+    if (accountType == 'caregiver' ||
+        this.accountType == 'caregiver' ||
+        hasCaregiverProfile) {
       this.accountType = 'caregiver';
+    } else {
+      this.accountType = 'user';
     }
   }
 
   @override
-  Future<String> getAccountType(String userId) async =>
-      accountType == 'caregiver' ? 'caregiver' : 'user';
+  Future<String> getAccountType(String userId) async {
+    if (accountType != 'caregiver') return 'user';
+    if (hasCaregiverProfile) {
+      return 'caregiver';
+    }
+    if (hasAcceptedSupportedUserRelationship) return 'user';
+    return 'caregiver';
+  }
 
   @override
   Future<void> setOnboardingCompleted({
@@ -273,10 +288,38 @@ Future<void> _pumpUntilAbsent(
 
 class _FakeVoiceSettingsRepository implements VoiceSettingsRepositoryImpl {
   @override
-  Future<List<Map<String, dynamic>>> getVoiceProfiles() async {
-    return const <Map<String, dynamic>>[
-      <String, dynamic>{'id': 'voice1', 'label': 'Test voice'},
+  Future<List<VoiceProfileModel>> getVoiceProfiles() async {
+    return const <VoiceProfileModel>[
+      VoiceProfileModel(
+        id: 'uk_female_calm_guide',
+        provider: 'system',
+        label: 'UK Female — Calm Guide',
+        localeId: 'en-GB',
+        accent: 'UK',
+        gender: 'female',
+        pace: 'slow',
+        warmth: 'high',
+        firmness: 'low',
+        tonePreset: 'uk_female_calm_guide',
+      ),
     ];
+  }
+
+  @override
+  Future<VoiceProfileModel?> getVoiceProfile(String? profileId) async {
+    if (profileId == null) return null;
+    return const VoiceProfileModel(
+      id: 'uk_female_calm_guide',
+      provider: 'system',
+      label: 'UK Female — Calm Guide',
+      localeId: 'en-GB',
+      accent: 'UK',
+      gender: 'female',
+      pace: 'slow',
+      warmth: 'high',
+      firmness: 'low',
+      tonePreset: 'uk_female_calm_guide',
+    );
   }
 
   @override
@@ -571,6 +614,51 @@ void main() {
     expect(onboardingStateSource, contains('enum PronounSet'));
   });
 
+  testWidgets('onboarding summary finish marks completion and routes home',
+      (WidgetTester tester) async {
+    final fakeAuthRepository = _FakeAuthRepository()
+      ..user = const AuthUser(id: 'tester', email: 'tester@example.com');
+    final fakeProfileRepository =
+        _FakeProfileRepository(onboardingComplete: false);
+    final fakeCompanionRepository = _FakeCompanionRepository();
+
+    final router = GoRouter(
+      initialLocation: '/onboarding/summary',
+      routes: <RouteBase>[
+        GoRoute(
+          path: '/onboarding/summary',
+          builder: (_, __) => const OnboardingSummaryScreen(),
+        ),
+        GoRoute(
+          path: '/home',
+          builder: (_, __) => const Scaffold(
+            body: Center(child: Text('Home reached')),
+          ),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: <Override>[
+          authRepositoryProvider.overrideWithValue(fakeAuthRepository),
+          profileRepositoryProvider.overrideWithValue(fakeProfileRepository),
+          companionRepositoryProvider
+              .overrideWithValue(fakeCompanionRepository),
+        ],
+        child: MaterialApp.router(routerConfig: router),
+      ),
+    );
+
+    await _pumpUntilVisible(
+        tester, find.widgetWithText(FilledButton, 'Finish'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Finish'));
+    await tester.pumpAndSettle();
+
+    expect(fakeProfileRepository.onboardingComplete, isTrue);
+    expect(find.text('Home reached'), findsOneWidget);
+  });
+
   testWidgets('login starts onboarding instead of being redirected away',
       (WidgetTester tester) async {
     final fakeAuthRepository = _FakeAuthRepository();
@@ -760,6 +848,7 @@ void main() {
     final fakeProfileRepository = _FakeProfileRepository(
       onboardingComplete: false,
       accountType: 'caregiver',
+      hasCaregiverProfile: true,
     );
     final fakeCompanionRepository = _FakeCompanionRepository();
     final fakeVoiceSettingsRepository = _FakeVoiceSettingsRepository();
@@ -784,6 +873,34 @@ void main() {
 
     expect(find.text('Confirm caregiver mode'), findsOneWidget);
     expect(find.text('Caregiver Support'), findsNothing);
+    expect(find.text('Meet Dope-i'), findsNothing);
+    expect(find.text('Hi there!'), findsNothing);
+  });
+
+  testWidgets(
+      'profile bootstrap preserves existing caregiver account type until confirmation',
+      (WidgetTester tester) async {
+    final fakeAuthRepository = _FakeAuthRepository()
+      ..user = const AuthUser(id: 'tester', email: 'tester@example.com');
+    final fakeProfileRepository = _FakeProfileRepository(
+      onboardingComplete: false,
+      accountType: 'caregiver',
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: <Override>[
+          authRepositoryProvider.overrideWithValue(fakeAuthRepository),
+          profileRepositoryProvider.overrideWithValue(fakeProfileRepository),
+        ],
+        child: MaterialApp.router(routerConfig: _buildHomeGateRouter()),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(fakeProfileRepository.accountType, 'caregiver');
+    expect(find.text('Confirm caregiver mode'), findsOneWidget);
     expect(find.text('Meet Dope-i'), findsNothing);
     expect(find.text('Hi there!'), findsNothing);
   });
@@ -903,13 +1020,15 @@ void main() {
     expect(find.text('Hi there!'), findsOneWidget);
   });
 
-  testWidgets('home gate sends unconfirmed caregiver accounts to caregiver confirmation',
+  testWidgets(
+      'home gate sends unconfirmed caregiver accounts to caregiver confirmation',
       (WidgetTester tester) async {
     final fakeAuthRepository = _FakeAuthRepository()
       ..user = const AuthUser(id: 'tester', email: 'tester@example.com');
     final fakeProfileRepository = _FakeProfileRepository(
       onboardingComplete: false,
       accountType: 'caregiver',
+      hasCaregiverProfile: true,
     );
 
     await tester.pumpWidget(
@@ -930,13 +1049,43 @@ void main() {
     expect(find.text('Hi there!'), findsNothing);
   });
 
-  testWidgets('home gate sends confirmed caregiver accounts to caregiver dashboard',
+  testWidgets(
+      'home gate sends confirmed caregiver accounts to caregiver dashboard',
       (WidgetTester tester) async {
     final fakeAuthRepository = _FakeAuthRepository()
       ..user = const AuthUser(id: 'tester', email: 'tester@example.com');
     final fakeProfileRepository = _FakeProfileRepository(
       onboardingComplete: true,
       accountType: 'caregiver',
+      hasCaregiverProfile: true,
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: <Override>[
+          authRepositoryProvider.overrideWithValue(fakeAuthRepository),
+          profileRepositoryProvider.overrideWithValue(fakeProfileRepository),
+        ],
+        child: MaterialApp.router(routerConfig: _buildHomeGateRouter()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Caregiver Support'), findsOneWidget);
+    expect(find.text('Confirm caregiver mode'), findsNothing);
+    expect(find.text('Meet Dope-i'), findsNothing);
+    expect(find.text('Hi there!'), findsNothing);
+  });
+
+  testWidgets(
+      'home gate sends supported users with stale caregiver account type to home',
+      (WidgetTester tester) async {
+    final fakeAuthRepository = _FakeAuthRepository()
+      ..user = const AuthUser(id: 'tester', email: 'tester@example.com');
+    final fakeProfileRepository = _FakeProfileRepository(
+      onboardingComplete: true,
+      accountType: 'caregiver',
+      hasAcceptedSupportedUserRelationship: true,
     );
 
     await tester.pumpWidget(
@@ -949,12 +1098,10 @@ void main() {
       ),
     );
 
-    await tester.pumpAndSettle();
+    await _pumpUntilVisible(tester, find.text('Hi there!'));
 
-    expect(find.text('Caregiver Support'), findsOneWidget);
-    expect(find.text('Confirm caregiver mode'), findsNothing);
-    expect(find.text('Meet Dope-i'), findsNothing);
-    expect(find.text('Hi there!'), findsNothing);
+    expect(find.text('Hi there!'), findsOneWidget);
+    expect(find.text('Caregiver Support'), findsNothing);
   });
 
   testWidgets(

@@ -16,11 +16,18 @@ class ProfileRepositoryImpl {
     String? email,
     String accountType = 'user',
   }) async {
-    final existingAccountType = await getAccountType(userId);
+    final hasAcceptedCaregiverProfile = await _hasCaregiverProfile(userId);
+    final hasAcceptedCaregiverRelationship =
+        await _hasAcceptedCaregiverRelationship(userId);
+    final existingAccountType = await _getStoredAccountType(userId);
     final requestedAccountType =
         accountType == 'caregiver' ? 'caregiver' : 'user';
-    final normalizedAccountType =
-        existingAccountType == 'caregiver' ? 'caregiver' : requestedAccountType;
+    final normalizedAccountType = requestedAccountType == 'caregiver' ||
+            existingAccountType == 'caregiver' ||
+            hasAcceptedCaregiverProfile ||
+            hasAcceptedCaregiverRelationship
+        ? 'caregiver'
+        : 'user';
     try {
       await _client.from('users_profile').upsert(<String, dynamic>{
         'id': userId,
@@ -46,26 +53,105 @@ class ProfileRepositoryImpl {
         // Older environments may not have caregiver_profiles until the latest
         // migration is applied. Do not block login/profile bootstrap.
       }
+
+      await _repairCaregiverCompletionIfLinked(
+        userId: userId,
+        email: email,
+        hasAcceptedCaregiverRelationship: hasAcceptedCaregiverRelationship,
+      );
     }
 
     await _acceptPendingCaregiverInvitesForEmail(email);
   }
 
+  Future<String?> _getStoredAccountType(String userId) async {
+    try {
+      final profileRow = await _client
+          .from('users_profile')
+          .select('account_type')
+          .eq('id', userId)
+          .maybeSingle();
+      final accountType = profileRow?['account_type'];
+      return accountType is String ? accountType : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<bool> _hasAcceptedCaregiverRelationship(String userId) async {
+    try {
+      final relationships = await _client
+          .from('caregiver_relationships')
+          .select('id')
+          .eq('caregiver_user_id', userId)
+          .eq('status', 'accepted')
+          .limit(1);
+      return (relationships as List).isNotEmpty;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<bool> _hasCaregiverProfile(String userId) async {
+    try {
+      final profile = await _client
+          .from('caregiver_profiles')
+          .select('user_id')
+          .eq('user_id', userId)
+          .maybeSingle();
+      return profile != null;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<bool> _hasAcceptedSupportedUserRelationship(String userId) async {
+    try {
+      final relationships = await _client
+          .from('caregiver_relationships')
+          .select('id')
+          .eq('supported_user_id', userId)
+          .eq('status', 'accepted')
+          .limit(1);
+      return (relationships as List).isNotEmpty;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> _repairCaregiverCompletionIfLinked({
+    required String userId,
+    String? email,
+    bool hasAcceptedCaregiverRelationship = false,
+  }) async {
+    try {
+      if (!hasAcceptedCaregiverRelationship &&
+          !await _hasAcceptedCaregiverRelationship(userId)) {
+        return;
+      }
+
+      await _client.from('users_profile').upsert(<String, dynamic>{
+        'id': userId,
+        if (email != null) 'email': email,
+        'account_type': 'caregiver',
+        'onboarding_completed': true,
+        'onboarding_completed_at': DateTime.now().toIso8601String(),
+        'updated_at': DateTime.now().toIso8601String(),
+      });
+    } catch (_) {
+      // Older environments may not have caregiver relationship tables/RPCs yet.
+      // Do not block login/profile bootstrap.
+    }
+  }
+
   Future<void> _acceptPendingCaregiverInvitesForEmail(String? email) async {
     if (email == null || !email.contains('@')) return;
     try {
-      final invites = await _client
-          .from('caregiver_email_invites')
-          .select('id')
-          .ilike('invitee_email', email)
-          .eq('status', 'pending')
-          .limit(1);
-
-      if ((invites as List).isNotEmpty) {
-        await _client.rpc('accept_pending_caregiver_email_invites');
-      }
+      await _client.rpc('accept_pending_caregiver_email_invites');
     } catch (_) {
-      // Older environments may not have the RPC yet. Do not block login.
+      // The RPC is security-definer because invitees cannot read pending
+      // caregiver_email_invites rows under RLS. Do not block login/profile
+      // bootstrap if older environments do not have the RPC yet.
     }
   }
 
@@ -109,39 +195,64 @@ class ProfileRepositoryImpl {
       email: _client.auth.currentUser?.email,
     );
 
-    await _client.from('assistant_identity_settings').upsert(<String, dynamic>{
-      'user_id': userId,
-      'assistant_display_name': assistantDisplayName,
-      'pronunciation_key': _pronunciationKey(pronunciation),
-      'updated_at': DateTime.now().toIso8601String(),
-    });
+    final now = DateTime.now().toIso8601String();
 
-    await _client.from('sensory_settings').upsert(<String, dynamic>{
-      'user_id': userId,
-      'reduced_animation': reducedAnimation,
-      'large_text': largeText,
-      'sound_enabled': soundEnabled,
-      'soft_colors': softColors,
-      'praise_level': praiseLevel,
-      'icon_mode': iconMode,
-      'reduce_surprises': reduceSurprises,
-      'updated_at': DateTime.now().toIso8601String(),
-    });
+    try {
+      await _client.from('users_profile').upsert(<String, dynamic>{
+        'id': userId,
+        'email': _client.auth.currentUser?.email,
+        'age_band': ageBand.name,
+        'default_mode': _modeToDb(mode),
+        'voice_enabled': voiceEnabled,
+        'sex_at_birth': sexAtBirth,
+        'gender_identity': genderIdentity,
+        'pronouns': pronouns,
+        'custom_pronouns': customPronouns,
+        'onboarding_completed': true,
+        'onboarding_completed_at': now,
+        'updated_at': now,
+      });
+    } catch (_) {
+      // Some live/staged databases may lag behind optional profile-field
+      // migrations. Finishing onboarding must still persist the explicit
+      // completion flag so users are not trapped on the summary screen.
+      await _client.from('users_profile').upsert(<String, dynamic>{
+        'id': userId,
+        'email': _client.auth.currentUser?.email,
+        'onboarding_completed': true,
+        'onboarding_completed_at': now,
+        'updated_at': now,
+      });
+    }
 
-    await _client.from('users_profile').upsert(<String, dynamic>{
-      'id': userId,
-      'email': _client.auth.currentUser?.email,
-      'age_band': ageBand.name,
-      'default_mode': _modeToDb(mode),
-      'voice_enabled': voiceEnabled,
-      'sex_at_birth': sexAtBirth,
-      'gender_identity': genderIdentity,
-      'pronouns': pronouns,
-      'custom_pronouns': customPronouns,
-      'onboarding_completed': true,
-      'onboarding_completed_at': DateTime.now().toIso8601String(),
-      'updated_at': DateTime.now().toIso8601String(),
-    });
+    try {
+      await _client
+          .from('assistant_identity_settings')
+          .upsert(<String, dynamic>{
+        'user_id': userId,
+        'assistant_display_name': assistantDisplayName,
+        'pronunciation_key': _pronunciationKey(pronunciation),
+        'updated_at': now,
+      });
+    } catch (_) {
+      // Optional settings should not block onboarding completion.
+    }
+
+    try {
+      await _client.from('sensory_settings').upsert(<String, dynamic>{
+        'user_id': userId,
+        'reduced_animation': reducedAnimation,
+        'large_text': largeText,
+        'sound_enabled': soundEnabled,
+        'soft_colors': softColors,
+        'praise_level': praiseLevel,
+        'icon_mode': iconMode,
+        'reduce_surprises': reduceSurprises,
+        'updated_at': now,
+      });
+    } catch (_) {
+      // Optional settings should not block onboarding completion.
+    }
   }
 
   String _pronunciationKey(PronunciationOption option) {
@@ -180,7 +291,20 @@ class ProfileRepositoryImpl {
           .select('account_type')
           .eq('id', userId)
           .maybeSingle();
-      return profileRow?['account_type'] == 'caregiver' ? 'caregiver' : 'user';
+      if (profileRow?['account_type'] != 'caregiver') return 'user';
+
+      final hasCaregiverProfile = await _hasCaregiverProfile(userId);
+      final hasCaregiverRelationship =
+          await _hasAcceptedCaregiverRelationship(userId);
+      if (hasCaregiverProfile || hasCaregiverRelationship) {
+        return 'caregiver';
+      }
+
+      if (await _hasAcceptedSupportedUserRelationship(userId)) {
+        return 'user';
+      }
+
+      return 'caregiver';
     } catch (_) {
       return 'user';
     }

@@ -14,25 +14,39 @@ class LinkedUserDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(caregiverControllerProvider);
-    final relationship = state.relationships.firstWhere((r) => r.id == relationshipId);
-    
-    final tasks = state.assignedTasks.where((t) => t.targetUserId == relationship.supportedUserId).toList();
-    final routines = state.assignedRoutines.where((r) => r.targetUserId == relationship.supportedUserId).toList();
-    
+    final relationship =
+        state.relationships.firstWhere((r) => r.id == relationshipId);
+
+    final tasks = state.assignedTasks
+        .where((t) => t.targetUserId == relationship.supportedUserId)
+        .toList();
+    final routines = state.assignedRoutines
+        .where((r) => r.targetUserId == relationship.supportedUserId)
+        .toList();
+
     // We'll assume alerts are part of the state or we fetch them here
     // For now, I'll add a placeholder or a separate provider
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(relationship.supportedName ?? 'User Detail'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.insights_rounded),
-            onPressed: () => context.push('/caregiver/insights/$relationshipId'),
+            tooltip: 'Account settings',
+            icon: const Icon(Icons.manage_accounts_rounded),
+            onPressed: () => context.push('/settings'),
           ),
           IconButton(
+            tooltip: 'Care insights',
+            icon: const Icon(Icons.insights_rounded),
+            onPressed: () =>
+                context.push('/caregiver/insights/$relationshipId'),
+          ),
+          IconButton(
+            tooltip: 'Care permissions',
             icon: const Icon(Icons.settings_rounded),
-            onPressed: () => context.push('/caregiver/permissions/$relationshipId'),
+            onPressed: () =>
+                context.push('/caregiver/permissions/$relationshipId'),
           ),
         ],
       ),
@@ -43,20 +57,33 @@ class LinkedUserDetailScreen extends ConsumerWidget {
           const SizedBox(height: 24),
           _ActionGrid(relationship: relationship),
           const SizedBox(height: 32),
-          Text('Recent Alerts', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.orange)),
+          Text('Recent Alerts',
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(color: Colors.orange)),
           const SizedBox(height: 12),
           _AlertList(relationshipId: relationshipId),
           const SizedBox(height: 32),
-          Text('Body Double History', style: Theme.of(context).textTheme.titleMedium),
+          Text('Body Double History',
+              style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 12),
           _BodyDoubleHistoryList(userId: relationship.supportedUserId),
           const SizedBox(height: 32),
-          Text('Active Assignments', style: Theme.of(context).textTheme.titleMedium),
+          Text('Active Assignments',
+              style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 12),
           if (tasks.isEmpty && routines.isEmpty)
-            const Text('No active assignments for this user.', style: TextStyle(color: Colors.grey)),
-          ...tasks.map((t) => _AssignmentTile(title: t.taskTitle ?? 'Task', status: t.status.name, icon: Icons.task_alt_rounded)),
-          ...routines.map((r) => _AssignmentTile(title: r.routineTitle ?? 'Routine', status: r.status, icon: Icons.repeat_rounded)),
+            const Text('No active assignments for this user.',
+                style: TextStyle(color: Colors.grey)),
+          ...tasks.map((t) => _AssignmentTile(
+              title: t.taskTitle ?? 'Task',
+              status: t.status.name,
+              icon: Icons.task_alt_rounded)),
+          ...routines.map((r) => _AssignmentTile(
+              title: r.routineTitle ?? 'Routine',
+              status: r.status,
+              icon: Icons.repeat_rounded)),
         ],
       ),
     );
@@ -77,7 +104,8 @@ class _UserSummaryHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const CircleAvatar(radius: 30, child: Icon(Icons.person_rounded, size: 32)),
+          const CircleAvatar(
+              radius: 30, child: Icon(Icons.person_rounded, size: 32)),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -118,37 +146,43 @@ class _ActionGrid extends ConsumerWidget {
           label: 'Assign Task',
           icon: Icons.add_task_rounded,
           color: Colors.blue,
-          onTap: () => context.push('/caregiver/assign-task?uid=${relationship.supportedUserId}'),
+          onTap: () => context.push(
+              '/caregiver/assign-task?uid=${relationship.supportedUserId}'),
         ),
         _ActionButton(
           label: 'Assign Routine',
           icon: Icons.playlist_add_rounded,
           color: Colors.teal,
-          onTap: () => context.push('/caregiver/assign-routine?uid=${relationship.supportedUserId}'),
+          onTap: () => context.push(
+              '/caregiver/assign-routine?uid=${relationship.supportedUserId}'),
         ),
         _ActionButton(
           label: 'Suggest Side Quest',
           icon: Icons.auto_awesome_rounded,
           color: Colors.pink,
-          onTap: () => _showSideQuestDialog(context, ref, relationship.supportedUserId),
+          onTap: () =>
+              _showSideQuestDialog(context, ref, relationship.supportedUserId),
         ),
         _ActionButton(
           label: 'Body Double',
           icon: Icons.people_rounded,
           color: Colors.purple,
-          onTap: () => _showBodyDoubleInviteDialog(context, ref, relationship.supportedUserId),
+          onTap: () => _showBodyDoubleInviteDialog(
+              context, ref, relationship.supportedUserId),
         ),
         _ActionButton(
           label: 'Send Nudge',
           icon: Icons.waving_hand_rounded,
           color: Colors.orange,
-          onTap: () => _showNudgeDialog(context, ref, relationship.id, relationship.supportedUserId),
+          onTap: () => _showNudgeDialog(
+              context, ref, relationship.id, relationship.supportedUserId),
         ),
       ],
     );
   }
 
-  void _showBodyDoubleInviteDialog(BuildContext context, WidgetRef ref, String uid) {
+  void _showBodyDoubleInviteDialog(
+      BuildContext context, WidgetRef ref, String uid) {
     final categories = ['Chores', 'Admin', 'Work', 'Study', 'Personal'];
     String selectedCategory = categories.first;
 
@@ -164,19 +198,27 @@ class _ActionGrid extends ConsumerWidget {
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 value: selectedCategory,
-                items: categories.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
-                onChanged: (val) => setDialogState(() => selectedCategory = val!),
+                items: categories
+                    .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                    .toList(),
+                onChanged: (val) =>
+                    setDialogState(() => selectedCategory = val!),
                 decoration: const InputDecoration(labelText: 'Task Category'),
               ),
             ],
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+            TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel')),
             TextButton(
               onPressed: () {
-                ref.read(caregiverControllerProvider.notifier).inviteToBodyDouble(uid, selectedCategory);
+                ref
+                    .read(caregiverControllerProvider.notifier)
+                    .inviteToBodyDouble(uid, selectedCategory);
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Body double invitation sent!')));
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text('Body double invitation sent!')));
               },
               child: const Text('Invite'),
             ),
@@ -194,13 +236,18 @@ class _ActionGrid extends ConsumerWidget {
         title: const Text('Suggest Side Quest'),
         content: TextField(
           controller: controller,
-          decoration: const InputDecoration(hintText: 'e.g. Try a 5-min stretch'),
+          decoration:
+              const InputDecoration(hintText: 'e.g. Try a 5-min stretch'),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel')),
           TextButton(
             onPressed: () {
-              ref.read(caregiverControllerProvider.notifier).suggestSideQuest(uid, controller.text.trim());
+              ref
+                  .read(caregiverControllerProvider.notifier)
+                  .suggestSideQuest(uid, controller.text.trim());
               Navigator.pop(context);
             },
             child: const Text('Suggest'),
@@ -210,7 +257,8 @@ class _ActionGrid extends ConsumerWidget {
     );
   }
 
-  void _showNudgeDialog(BuildContext context, WidgetRef ref, String relId, String uid) {
+  void _showNudgeDialog(
+      BuildContext context, WidgetRef ref, String relId, String uid) {
     final controller = TextEditingController();
     showDialog(
       context: context,
@@ -221,10 +269,14 @@ class _ActionGrid extends ConsumerWidget {
           decoration: const InputDecoration(hintText: 'e.g. You got this!'),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel')),
           TextButton(
             onPressed: () {
-              ref.read(caregiverControllerProvider.notifier).sendNudge(relId, uid, controller.text.trim());
+              ref
+                  .read(caregiverControllerProvider.notifier)
+                  .sendNudge(relId, uid, controller.text.trim());
               Navigator.pop(context);
             },
             child: const Text('Send'),
@@ -265,7 +317,8 @@ class _ActionButton extends StatelessWidget {
           children: [
             Icon(icon, color: color),
             const SizedBox(height: 8),
-            Text(label, style: TextStyle(color: color, fontWeight: FontWeight.bold)),
+            Text(label,
+                style: TextStyle(color: color, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
@@ -278,14 +331,16 @@ class _AssignmentTile extends StatelessWidget {
   final String status;
   final IconData icon;
 
-  const _AssignmentTile({required this.title, required this.status, required this.icon});
+  const _AssignmentTile(
+      {required this.title, required this.status, required this.icon});
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       leading: Icon(icon, size: 20),
       title: Text(title),
-      subtitle: Text(status.toUpperCase(), style: const TextStyle(fontSize: 10)),
+      subtitle:
+          Text(status.toUpperCase(), style: const TextStyle(fontSize: 10)),
       trailing: const Icon(Icons.chevron_right_rounded, size: 16),
     );
   }
@@ -315,7 +370,8 @@ class _AlertList extends ConsumerWidget {
               padding: EdgeInsets.all(16),
               child: Row(
                 children: [
-                  Icon(Icons.notification_important_rounded, color: Colors.orange),
+                  Icon(Icons.notification_important_rounded,
+                      color: Colors.orange),
                   SizedBox(width: 16),
                   Expanded(
                     child: Text(
@@ -350,11 +406,16 @@ class _AlertTile extends StatelessWidget {
       color: color.withOpacity(0.1),
       child: ListTile(
         leading: Icon(
-          alertType == 'safety_report' ? Icons.shield_rounded : Icons.warning_rounded,
+          alertType == 'safety_report'
+              ? Icons.shield_rounded
+              : Icons.warning_rounded,
           color: color,
         ),
-        title: Text(alert.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-        subtitle: alert.body != null ? Text(alert.body!, style: const TextStyle(fontSize: 12)) : null,
+        title: Text(alert.title,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+        subtitle: alert.body != null
+            ? Text(alert.body!, style: const TextStyle(fontSize: 12))
+            : null,
         trailing: Text(
           '${DateTime.now().difference(alert.createdAt).inMinutes}m ago',
           style: const TextStyle(fontSize: 10, color: Colors.grey),
@@ -371,14 +432,16 @@ class _BodyDoubleHistoryList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return FutureBuilder<List<BodyDoubleSession>>(
-      future: ref.read(caregiverRepositoryProvider).loadBodyDoubleSummaries(userId),
+      future:
+          ref.read(caregiverRepositoryProvider).loadBodyDoubleSummaries(userId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const LinearProgressIndicator();
         }
         final sessions = snapshot.data ?? [];
         if (sessions.isEmpty) {
-          return const Text('No recent session history.', style: TextStyle(fontSize: 12, color: Colors.grey));
+          return const Text('No recent session history.',
+              style: TextStyle(fontSize: 12, color: Colors.grey));
         }
         return Column(
           children: sessions.map((s) => _HistoryTile(session: s)).toList(),
@@ -397,7 +460,8 @@ class _HistoryTile extends StatelessWidget {
     return ListTile(
       leading: const Icon(Icons.history_rounded, size: 20),
       title: Text(session.taskTitle ?? session.sessionType.label),
-      subtitle: Text('Completed on ${session.startedAt.day}/${session.startedAt.month}'),
+      subtitle: Text(
+          'Completed on ${session.startedAt.day}/${session.startedAt.month}'),
       trailing: const Icon(Icons.chevron_right_rounded, size: 16),
     );
   }

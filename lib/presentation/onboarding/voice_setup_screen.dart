@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../domain/voice/voice_profile_model.dart';
 import '../../providers.dart';
 import 'onboarding_controller.dart';
 import 'widgets/onboarding_step_scaffold.dart';
@@ -68,17 +69,17 @@ class _VoiceSetupScreenState extends ConsumerState<VoiceSetupScreen> {
                 'Voice profiles will be available after login.',
               ),
             ] else ...<Widget>[
-              FutureBuilder<List<Map<String, dynamic>>>(
+              FutureBuilder<List<VoiceProfileModel>>(
                 future: ref
                     .read(voiceSettingsRepositoryProvider)
                     .getVoiceProfiles(),
                 builder: (context, snapshot) {
-                  final rows = snapshot.data ?? const <Map<String, dynamic>>[];
-                  final items = rows
+                  final profiles = snapshot.data ?? const <VoiceProfileModel>[];
+                  final items = profiles
                       .map(
-                        (row) => DropdownMenuItem<String>(
-                          value: row['id'] as String,
-                          child: Text((row['label'] as String?) ?? 'Voice'),
+                        (profile) => DropdownMenuItem<String>(
+                          value: profile.id,
+                          child: Text(profile.label),
                         ),
                       )
                       .toList();

@@ -5,8 +5,14 @@ class SpeechToTextService {
 
   Future<bool> initialize() => _speech.initialize();
 
-  Future<void> listen(void Function(String text) onResult) async {
-    await _speech.listen(onResult: (result) => onResult(result.recognizedWords));
+  Future<void> listen(
+    void Function(String text) onResult, {
+    String? localeId,
+  }) async {
+    await _speech.listen(
+      localeId: localeId,
+      onResult: (result) => onResult(result.recognizedWords),
+    );
   }
 
   Future<void> stop() => _speech.stop();

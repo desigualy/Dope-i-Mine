@@ -163,6 +163,7 @@ alter table public.body_double_queue add constraint body_double_queue_communicat
   check (communication_mode in ('quiet', 'presetSignals', 'textOnly', 'voice'));
 
 -- 6. Eligibility Function Update
+drop function if exists public.get_random_body_double_eligibility(uuid);
 create or replace function public.get_random_body_double_eligibility(p_user_id uuid default auth.uid())
 returns table (
   user_id uuid,

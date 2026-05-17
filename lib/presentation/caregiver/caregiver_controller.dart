@@ -77,11 +77,16 @@ class CaregiverController extends StateNotifier<CaregiverState> {
     );
   }
 
-  Future<bool> sendRequest(String email, CaregiverRole role) async {
+  Future<bool> sendRequest(
+    String email,
+    CaregiverRole role, {
+    required String caregiverPassword,
+  }) async {
     state = state.copyWith(isLoading: true, clearError: true);
     final result = await _repository.createEmailInvite(
       targetUserEmail: email,
       role: role,
+      caregiverPassword: caregiverPassword,
     );
     if (result == null) {
       state = state.copyWith(
@@ -114,11 +119,6 @@ class CaregiverController extends StateNotifier<CaregiverState> {
     }
     await refresh();
     return true;
-  }
-
-
-  Future<bool> sendPasswordSetupEmailForAcceptedInvite(String inviteId) {
-    return _repository.sendPasswordSetupEmailForAcceptedInvite(inviteId);
   }
 
   Future<void> respondToRequest(String relationshipId, bool accept) async {

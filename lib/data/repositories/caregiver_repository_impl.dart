@@ -21,7 +21,7 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
             *,
             caregiver:users_profile!caregiver_relationships_caregiver_user_id_fkey(display_name, email),
             supported:users_profile!caregiver_relationships_supported_user_id_fkey(display_name, email)
-          ''');
+          ''').or('caregiver_user_id.eq.$userId,supported_user_id.eq.$userId');
 
       return (res as List<dynamic>).map((json) {
         final Map<String, dynamic> data = Map<String, dynamic>.from(json);
@@ -35,6 +35,28 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
             relationship.status == CaregiverRelationshipStatus.pending;
       }).toList();
     } catch (e) {
+      debugPrint('Caregiver relationships embedded load failed: $e');
+      return _loadRelationshipsWithoutEmbeddedProfiles();
+    }
+  }
+
+  Future<List<CaregiverRelationship>>
+      _loadRelationshipsWithoutEmbeddedProfiles() async {
+    if (userId == null) return [];
+    try {
+      final res = await client
+          .from('caregiver_relationships')
+          .select()
+          .or('caregiver_user_id.eq.$userId,supported_user_id.eq.$userId');
+
+      return (res as List<dynamic>)
+          .map((json) => CaregiverRelationship.fromJson(json))
+          .where((relationship) {
+        return relationship.status == CaregiverRelationshipStatus.accepted ||
+            relationship.status == CaregiverRelationshipStatus.pending;
+      }).toList();
+    } catch (e) {
+      debugPrint('Caregiver relationships fallback load failed: $e');
       return [];
     }
   }
@@ -50,7 +72,8 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
           .order('created_at', ascending: false);
       return (res as List<dynamic>)
           .map((json) => CaregiverEmailInvite.fromJson(json))
-          .where((invite) => invite.status == CaregiverEmailInviteStatus.pending)
+          .where(
+              (invite) => invite.status == CaregiverEmailInviteStatus.pending)
           .toList();
     } catch (e) {
       debugPrint('Caregiver email invites load failed: $e');
@@ -83,10 +106,12 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
   Future<CaregiverEmailInvite?> createEmailInvite({
     required String targetUserEmail,
     required CaregiverRole role,
+    required String caregiverPassword,
   }) async {
     if (userId == null) return null;
     final email = targetUserEmail.trim().toLowerCase();
-    if (!email.contains('@')) return null;
+    final password = caregiverPassword.trim();
+    if (!email.contains('@') || password.length < 8) return null;
     try {
       final res = await client
           .from('caregiver_email_invites')
@@ -109,11 +134,14 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
           .select()
           .single();
 
-      await _sendCaregiverInviteEmail(
+      final inviteSent = await _sendCaregiverInviteEmail(
         inviteId: res['id'] as String,
         targetUserEmail: email,
         role: role,
+        caregiverPassword: password,
       );
+
+      if (!inviteSent) return null;
 
       return CaregiverEmailInvite.fromJson(res);
     } catch (e) {
@@ -158,25 +186,28 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
     }
   }
 
-  Future<void> _sendCaregiverInviteEmail({
+  Future<bool> _sendCaregiverInviteEmail({
     required String inviteId,
     required String targetUserEmail,
     required CaregiverRole role,
+    required String caregiverPassword,
   }) async {
     try {
-      await client.functions.invoke(
+      final response = await client.functions.invoke(
         'send-caregiver-invite',
         body: <String, dynamic>{
           'inviteId': inviteId,
           'targetUserEmail': targetUserEmail,
           'role': role.name,
+          'caregiverPassword': caregiverPassword,
         },
       );
+
+      final data = response.data;
+      return data is Map && data['ok'] == true;
     } catch (error) {
-      // Do not roll back the pending invite if email dispatch fails. The invite
-      // remains visible in-app and this debug line gives QA a concrete signal
-      // that function deployment / email provider config needs attention.
       debugPrint('Caregiver invite email dispatch failed: $error');
+      return false;
     }
   }
 
@@ -187,44 +218,25 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
     if (trimmedInviteId.isEmpty) return null;
 
     try {
-      final res = await client.rpc(
-        'accept_caregiver_email_invite',
-        params: <String, dynamic>{'p_invite_id': trimmedInviteId},
-      );
-      if (res == null) return null;
-      final row = res is List<dynamic> ? (res.isEmpty ? null : res.first) : res;
-      if (row == null) return null;
-      return CaregiverRelationship.fromJson(
-        Map<String, dynamic>.from(row as Map<dynamic, dynamic>),
-      );
-    } catch (e) {
-      debugPrint('Caregiver email invite accept failed: $e');
-      return null;
-    }
-  }
-
-  @override
-  Future<bool> sendPasswordSetupEmailForAcceptedInvite(String inviteId) async {
-    final trimmedInviteId = inviteId.trim();
-    if (trimmedInviteId.isEmpty) return false;
-
-    try {
       final response = await client.functions.invoke(
-        'send-caregiver-password-setup',
+        'accept-caregiver-invite',
         body: <String, dynamic>{'inviteId': trimmedInviteId},
       );
 
       final data = response.data;
-      if (data is Map) {
-        return data['ok'] == true &&
-            (data['sent'] == true ||
-                data['alreadySent'] == true ||
-                data['notRequired'] == true);
+      if (data is! Map || data['ok'] != true) return null;
+
+      final relationship = data['relationship'];
+      if (relationship is Map) {
+        return CaregiverRelationship.fromJson(
+          Map<String, dynamic>.from(relationship),
+        );
       }
-      return false;
-    } catch (error) {
-      debugPrint('Caregiver password setup email failed: $error');
-      return false;
+
+      return null;
+    } catch (e) {
+      debugPrint('Caregiver email invite accept failed: $e');
+      return null;
     }
   }
 

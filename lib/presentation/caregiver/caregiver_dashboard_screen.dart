@@ -4,8 +4,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/widgets/app_back_button.dart';
 import '../../domain/caregiver/caregiver_models.dart';
+import '../../providers.dart';
 import '../core/widgets/empty_state_card.dart';
 import 'caregiver_controller.dart';
+import 'linked_user_detail_screen.dart';
 
 class CaregiverDashboardScreen extends ConsumerStatefulWidget {
   const CaregiverDashboardScreen({super.key, this.inviteId});
@@ -34,17 +36,12 @@ class _CaregiverDashboardScreenState
     _inviteHandled = true;
     final controller = ref.read(caregiverControllerProvider.notifier);
     final accepted = await controller.acceptEmailInvite(inviteId);
-    final passwordSetupHandled = accepted
-        ? await controller.sendPasswordSetupEmailForAcceptedInvite(inviteId)
-        : false;
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
           accepted
-              ? passwordSetupHandled
-                  ? 'Caregiver invite accepted. Check your inbox to create your password.'
-                  : 'Caregiver invite accepted.'
+              ? 'Caregiver invite accepted. If you need to create a password, check your inbox.'
               : 'Could not accept caregiver invite.',
         ),
       ),
@@ -55,6 +52,8 @@ class _CaregiverDashboardScreenState
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(caregiverControllerProvider);
+    final linkedDashboard = _linkedDashboardForCaregiver(state);
+    if (linkedDashboard != null) return linkedDashboard;
 
     return Scaffold(
       appBar: AppBar(
@@ -156,6 +155,25 @@ class _CaregiverDashboardScreenState
                 ],
               ),
             ),
+    );
+  }
+
+  Widget? _linkedDashboardForCaregiver(CaregiverState state) {
+    if (widget.inviteId != null) return null;
+    if (state.isLoading || state.relationships.isEmpty) return null;
+
+    final authUser = ref.read(authRepositoryProvider).getCurrentUser();
+    if (authUser == null) return null;
+
+    final activeCaregiverRelationships = state.relationships.where((rel) {
+      return rel.status == CaregiverRelationshipStatus.accepted &&
+          rel.caregiverUserId == authUser.id;
+    }).toList();
+
+    if (activeCaregiverRelationships.isEmpty) return null;
+
+    return LinkedUserDetailScreen(
+      relationshipId: activeCaregiverRelationships.first.id,
     );
   }
 }
@@ -339,7 +357,8 @@ class _RelationshipCard extends ConsumerWidget {
                         'decline-caregiver-relationship-${relationship.id}',
                       ),
                       tooltip: 'Decline caregiver request',
-                      icon: const Icon(Icons.cancel_outlined, color: Colors.red),
+                      icon:
+                          const Icon(Icons.cancel_outlined, color: Colors.red),
                       onPressed: () => ref
                           .read(caregiverControllerProvider.notifier)
                           .respondToRequest(relationship.id, false),
@@ -356,8 +375,8 @@ class _RelationshipCard extends ConsumerWidget {
                       ),
                       tooltip: 'Remove support link',
                       icon: const Icon(Icons.link_off_rounded),
-                      onPressed: () =>
-                          _confirmRemoveRelationship(context, ref, relationship),
+                      onPressed: () => _confirmRemoveRelationship(
+                          context, ref, relationship),
                     ),
                     const Icon(Icons.chevron_right_rounded, color: Colors.grey),
                   ],

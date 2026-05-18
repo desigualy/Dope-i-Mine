@@ -106,11 +106,11 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
   Future<CaregiverEmailInvite?> createEmailInvite({
     required String targetUserEmail,
     required CaregiverRole role,
-    required String caregiverPassword,
+    required String temporaryPassword,
   }) async {
     if (userId == null) return null;
     final email = targetUserEmail.trim().toLowerCase();
-    final password = caregiverPassword.trim();
+    final password = temporaryPassword.trim();
     if (!email.contains('@') || password.length < 8) return null;
     try {
       final res = await client
@@ -138,7 +138,7 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
         inviteId: res['id'] as String,
         targetUserEmail: email,
         role: role,
-        caregiverPassword: password,
+        temporaryPassword: password,
       );
 
       if (!inviteSent) return null;
@@ -190,7 +190,7 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
     required String inviteId,
     required String targetUserEmail,
     required CaregiverRole role,
-    required String caregiverPassword,
+    required String temporaryPassword,
   }) async {
     try {
       final response = await client.functions.invoke(
@@ -199,7 +199,7 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
           'inviteId': inviteId,
           'targetUserEmail': targetUserEmail,
           'role': role.name,
-          'caregiverPassword': caregiverPassword,
+          'temporaryPassword': temporaryPassword,
         },
       );
 

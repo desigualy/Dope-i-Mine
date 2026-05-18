@@ -33,15 +33,18 @@ class OnboardingGateScreen extends ConsumerWidget {
         }
 
         final decision = snapshot.data ?? const _GateDecision();
-        final target = decision.accountType == 'caregiver'
-            ? decision.onboardingComplete
-                ? '/caregiver'
-                : '/caregiver/confirm'
-            : decision.onboardingComplete
-                ? completedTarget
-                : '/branding/intro';
+        final target = decision.mustChangePassword
+            ? '/force-password-change'
+            : decision.accountType == 'caregiver'
+                ? decision.onboardingComplete
+                    ? '/caregiver'
+                    : '/caregiver/confirm'
+                : decision.onboardingComplete
+                    ? completedTarget
+                    : '/branding/intro';
 
-        if (target != null) {
+        if (target != null &&
+            GoRouterState.of(context).matchedLocation != target) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (context.mounted) context.go(target);
           });
@@ -71,9 +74,11 @@ class OnboardingGateScreen extends ConsumerWidget {
           userId: authUser.id, email: authUser.email);
       final accountType = await repo.getAccountType(authUser.id);
       final onboardingComplete = await repo.isOnboardingComplete(authUser.id);
+      final mustChange = await repo.mustChangePassword(authUser.id);
       return _GateDecision(
         accountType: accountType,
         onboardingComplete: onboardingComplete,
+        mustChangePassword: mustChange,
       );
     } catch (_) {
       return const _GateDecision();
@@ -85,10 +90,12 @@ class _GateDecision {
   const _GateDecision({
     this.accountType = 'user',
     this.onboardingComplete = false,
+    this.mustChangePassword = false,
   });
 
   final String accountType;
   final bool onboardingComplete;
+  final bool mustChangePassword;
 }
 
 class _GateLoadingScreen extends StatelessWidget {

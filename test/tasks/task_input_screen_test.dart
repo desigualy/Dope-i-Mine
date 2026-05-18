@@ -98,6 +98,9 @@ class _ThrowingAuthRepository implements AuthRepositoryImpl {
 
   @override
   Future<void> updatePassword(String password) async {}
+
+  @override
+  Future<void> completeForcedPasswordChange(String password) async {}
 }
 
 class _FakeTaskRepository {

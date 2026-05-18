@@ -21,6 +21,11 @@ Future<String> resolvePostAuthRoute(
   final onboardingComplete =
       await profileRepository.isOnboardingComplete(authUser.id);
 
+  final mustChange = await profileRepository.mustChangePassword(authUser.id);
+  if (mustChange) {
+    return '/force-password-change';
+  }
+
   if (resolvedAccountType == 'caregiver') {
     return onboardingComplete ? '/caregiver' : '/caregiver/confirm';
   }

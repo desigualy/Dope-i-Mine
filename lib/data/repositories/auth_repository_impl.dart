@@ -85,4 +85,21 @@ class AuthRepositoryImpl {
   Future<void> updatePassword(String password) async {
     await _client.auth.updateUser(UserAttributes(password: password));
   }
+
+  Future<void> completeForcedPasswordChange(String password) async {
+    final currentUser = getCurrentUser();
+    if (currentUser == null) {
+      throw StateError('No user is currently authenticated.');
+    }
+    
+    // 1. call Supabase auth updateUser
+    await _client.auth.updateUser(UserAttributes(password: password));
+    
+    // 2. update users_profile for current user
+    await _client.from('users_profile').update(<String, dynamic>{
+      'must_change_password': false,
+      'temporary_password_created_at': null,
+      'updated_at': DateTime.now().toIso8601String(),
+    }).eq('id', currentUser.id);
+  }
 }

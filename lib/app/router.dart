@@ -5,6 +5,7 @@ import '../presentation/auth/forgot_password_screen.dart';
 import '../presentation/auth/login_screen.dart';
 import '../presentation/auth/reset_password_screen.dart';
 import '../presentation/auth/signup_screen.dart';
+import '../presentation/auth/force_password_change_screen.dart';
 import '../avatar_engine_v4/presentation/avatar_customizer_screen.dart';
 import '../presentation/branding/dope_i_intro_screen.dart';
 import '../presentation/branding/pronunciation_setup_screen.dart';
@@ -201,12 +202,21 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: '/routines/run', builder: (_, __) => const RoutineRunScreen()),
     GoRoute(
+        path: '/force-password-change',
+        builder: (_, __) => const OnboardingGateScreen(
+              child: ForcePasswordChangeScreen(),
+            )),
+    GoRoute(
         path: '/caregiver/confirm',
-        builder: (_, __) => const CaregiverConfirmScreen()),
+        builder: (_, __) => const OnboardingGateScreen(
+              child: CaregiverConfirmScreen(),
+            )),
     GoRoute(
         path: '/caregiver',
-        builder: (_, state) => CaregiverDashboardScreen(
-              inviteId: state.uri.queryParameters['invite_id'],
+        builder: (_, state) => OnboardingGateScreen(
+              child: CaregiverDashboardScreen(
+                inviteId: state.uri.queryParameters['invite_id'],
+              ),
             )),
     GoRoute(
         path: '/caregiver/link',

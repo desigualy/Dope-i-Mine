@@ -12,6 +12,7 @@ type InviteBody = {
     targetUserEmail?: string
     role?: string
     caregiverPassword?: string
+    temporaryPassword?: string
 }
 
 serve(async (req) => {
@@ -24,7 +25,6 @@ serve(async (req) => {
         const supabaseUrl = Deno.env.get('SUPABASE_URL')
         const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
         const anonKey = Deno.env.get('SUPABASE_ANON_KEY')
-        const appBaseUrl = Deno.env.get('APP_BASE_URL') ?? 'https://dope-i-mine.app'
 
         if (!supabaseUrl || !serviceRoleKey || !anonKey) {
             return json({ error: 'Missing Supabase function environment variables' }, 500)
@@ -37,13 +37,13 @@ serve(async (req) => {
         const inviteId = String(body.inviteId ?? '').trim()
         const targetUserEmail = String(body.targetUserEmail ?? '').trim().toLowerCase()
         const role = String(body.role ?? 'caregiver').trim()
-        const caregiverPassword = String(body.caregiverPassword ?? '')
+        const temporaryPassword = String(body.temporaryPassword ?? body.caregiverPassword ?? '')
 
         if (!inviteId || !targetUserEmail || !targetUserEmail.includes('@')) {
             return json({ error: 'inviteId and targetUserEmail are required' }, 400)
         }
-        if (caregiverPassword.length < 8) {
-            return json({ error: 'caregiverPassword must be at least 8 characters' }, 400)
+        if (temporaryPassword.length < 8) {
+            return json({ error: 'temporaryPassword must be at least 8 characters' }, 400)
         }
 
         const admin = createClient(supabaseUrl, serviceRoleKey, {
@@ -59,7 +59,7 @@ serve(async (req) => {
 
         const { data: invite, error: inviteError } = await admin
             .from('caregiver_email_invites')
-            .select('id, inviter_user_id, invitee_email, role, status, requires_password_setup, password_setup_sent_at')
+            .select('id, inviter_user_id, invitee_email, role, status')
             .eq('id', inviteId)
             .single()
 
@@ -75,7 +75,7 @@ serve(async (req) => {
 
         if (caregiverUser) {
             const { error: updateUserError } = await admin.auth.admin.updateUserById(caregiverUser.id, {
-                password: caregiverPassword,
+                password: temporaryPassword,
                 email_confirm: true,
                 user_metadata: {
                     ...caregiverUser.user_metadata,
@@ -91,7 +91,7 @@ serve(async (req) => {
         } else {
             const { data: createdUser, error: createUserError } = await admin.auth.admin.createUser({
                 email: targetUserEmail,
-                password: caregiverPassword,
+                password: temporaryPassword,
                 email_confirm: true,
                 user_metadata: { caregiver_email_invite_id: inviteId, caregiver_role: role },
                 app_metadata: { caregiver_invited: true },
@@ -114,8 +114,8 @@ serve(async (req) => {
                 id: caregiverUserId,
                 email: targetUserEmail,
                 account_type: 'caregiver',
-                onboarding_completed: true,
-                onboarding_completed_at: acceptedAt,
+                must_change_password: true,
+                temporary_password_created_at: acceptedAt,
                 updated_at: acceptedAt,
             }, { onConflict: 'id' })
 
@@ -127,7 +127,7 @@ serve(async (req) => {
                 user_id: caregiverUserId,
                 contact_email: targetUserEmail,
                 verification_status: 'unverified',
-                updated_at: new Date().toISOString(),
+                updated_at: acceptedAt,
             }, { onConflict: 'user_id' })
 
         if (caregiverProfileError) return json({ error: caregiverProfileError.message }, 502)
@@ -155,6 +155,7 @@ serve(async (req) => {
                 status: 'accepted',
                 accepted_user_id: caregiverUserId,
                 accepted_at: acceptedAt,
+                temporary_password_set_at: acceptedAt,
                 requires_password_setup: false,
                 password_setup_sent_at: null,
             })
@@ -164,12 +165,11 @@ serve(async (req) => {
 
         return json({
             ok: true,
-            mode: 'auth_invite',
             inviteId,
-            role,
+            caregiverUserId,
             relationship,
-            requiresPasswordSetup: false,
-            passwordSetup: { required: false, passwordCreated: true },
+            mustChangePassword: true,
+            temporaryPasswordRequired: true
         })
     } catch (error) {
         console.error('send-caregiver-invite failed:', error)

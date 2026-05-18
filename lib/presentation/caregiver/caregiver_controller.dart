@@ -80,13 +80,13 @@ class CaregiverController extends StateNotifier<CaregiverState> {
   Future<bool> sendRequest(
     String email,
     CaregiverRole role, {
-    required String caregiverPassword,
+    required String temporaryPassword,
   }) async {
     state = state.copyWith(isLoading: true, clearError: true);
     final result = await _repository.createEmailInvite(
       targetUserEmail: email,
       role: role,
-      caregiverPassword: caregiverPassword,
+      temporaryPassword: temporaryPassword,
     );
     if (result == null) {
       state = state.copyWith(

@@ -82,6 +82,9 @@ class _FakeAuthRepository implements AuthRepositoryImpl {
   Future<void> updatePassword(String password) async {
     updatedPassword = password;
   }
+
+  @override
+  Future<void> completeForcedPasswordChange(String password) async {}
 }
 
 class _FakeCompanionRepository implements CompanionRepositoryImpl {
@@ -222,6 +225,12 @@ class _FakeProfileRepository implements ProfileRepositoryImpl {
     bool? iconMode,
     bool? reduceSurprises,
   }) async {}
+
+  @override
+  Future<bool> mustChangePassword(String userId) async => false;
+
+  @override
+  Future<void> clearMustChangePassword({required String userId}) async {}
 }
 
 GoRouter _buildHomeGateRouter() {

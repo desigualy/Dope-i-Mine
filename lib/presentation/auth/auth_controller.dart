@@ -42,4 +42,10 @@ class AuthController {
   Future<void> updatePassword(String password) {
     return _ref.read(authRepositoryProvider).updatePassword(password);
   }
+
+  Future<void> completeForcedPasswordChange(String password) {
+    return _ref
+        .read(authRepositoryProvider)
+        .completeForcedPasswordChange(password);
+  }
 }

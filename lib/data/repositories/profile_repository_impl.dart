@@ -366,4 +366,28 @@ class ProfileRepositoryImpl {
       SupportMode.burnout => 'burnout',
     };
   }
+
+  Future<bool> mustChangePassword(String userId) async {
+    try {
+      final profileRow = await _client
+          .from('users_profile')
+          .select('must_change_password')
+          .eq('id', userId)
+          .maybeSingle();
+      if (profileRow == null) return false;
+      return profileRow['must_change_password'] == true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> clearMustChangePassword({
+    required String userId,
+  }) async {
+    await _client.from('users_profile').update(<String, dynamic>{
+      'must_change_password': false,
+      'temporary_password_created_at': null,
+      'updated_at': DateTime.now().toIso8601String(),
+    }).eq('id', userId);
+  }
 }

@@ -13,7 +13,7 @@ abstract class CaregiverRepository {
   Future<CaregiverEmailInvite?> createEmailInvite({
     required String targetUserEmail,
     required CaregiverRole role,
-    required String caregiverPassword,
+    required String temporaryPassword,
   });
   Future<CaregiverRelationship?> acceptEmailInvite(String inviteId);
   Future<void> respondToRelationshipRequest({

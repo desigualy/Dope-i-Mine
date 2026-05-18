@@ -49,7 +49,7 @@ class _LinkCaregiverScreenState extends ConsumerState<LinkCaregiverScreen> {
           await ref.read(caregiverControllerProvider.notifier).sendRequest(
                 email,
                 _selectedRole,
-                caregiverPassword: password,
+                temporaryPassword: password,
               );
       if (mounted && sent) context.pop();
     } catch (error) {
@@ -75,7 +75,7 @@ class _LinkCaregiverScreenState extends ConsumerState<LinkCaregiverScreen> {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Enter their email and choose the password they will use to sign in.',
+            'Create a temporary password. The caregiver will use it once, then create their own password on first sign-in.',
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.grey),
           ),
@@ -98,14 +98,15 @@ class _LinkCaregiverScreenState extends ConsumerState<LinkCaregiverScreen> {
             controller: _passwordController,
             obscureText: _obscurePassword,
             decoration: InputDecoration(
-              labelText: 'Create Password',
+              labelText: 'Create Temporary Password',
               helperText:
-                  'At least 8 characters. Share this with the caregiver securely.',
+                  'At least 8 characters. Share this temporary password with the caregiver securely.',
               border: const OutlineInputBorder(),
               prefixIcon: const Icon(Icons.lock_outline),
               suffixIcon: IconButton(
                 icon: Icon(
-                    _obscurePassword ? Icons.visibility_off : Icons.visibility),
+                  _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                ),
                 onPressed: () =>
                     setState(() => _obscurePassword = !_obscurePassword),
               ),
@@ -117,7 +118,7 @@ class _LinkCaregiverScreenState extends ConsumerState<LinkCaregiverScreen> {
             controller: _confirmPasswordController,
             obscureText: _obscurePassword,
             decoration: const InputDecoration(
-              labelText: 'Confirm Password',
+              labelText: 'Confirm Temporary Password',
               border: OutlineInputBorder(),
               prefixIcon: Icon(Icons.lock_reset_outlined),
             ),
@@ -139,7 +140,8 @@ class _LinkCaregiverScreenState extends ConsumerState<LinkCaregiverScreen> {
                 tooltip: 'Read roles aloud',
                 icon: const Icon(Icons.volume_up_rounded, size: 20),
                 onPressed: () {
-                  const text = 'Choose a role: Monitor, for light support, can see summaries and send nudges. '
+                  const text =
+                      'Choose a role: Monitor, for light support, can see summaries and send nudges. '
                       'Caregiver, for general support, can help manage routines and tasks. '
                       'Overseer, for high support, can assign routines and view safety alerts.';
                   ref.read(voiceControllerProvider).speakStep(text);
@@ -182,6 +184,7 @@ class _LinkCaregiverScreenState extends ConsumerState<LinkCaregiverScreen> {
               ),
             ),
           FilledButton(
+            key: const Key('linkCaregiver_sendInvite'),
             onPressed: state.isLoading ? null : _sendInvite,
             child: state.isLoading
                 ? const SizedBox(

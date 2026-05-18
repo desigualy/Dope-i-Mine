@@ -58,7 +58,7 @@ void main() {
       final sent = await controller.sendRequest(
         'helper@example.com',
         CaregiverRole.caregiver,
-        caregiverPassword: 'password123',
+        temporaryPassword: 'password123',
       );
 
       expect(sent, isTrue);
@@ -155,6 +155,9 @@ class _FakeAuthRepository implements AuthRepositoryImpl {
 
   @override
   Future<void> updatePassword(String password) async {}
+
+  @override
+  Future<void> completeForcedPasswordChange(String password) async {}
 }
 
 final DateTime _now = DateTime.utc(2026, 5, 15, 12);
@@ -219,10 +222,10 @@ class _FakeCaregiverRepository implements CaregiverRepository {
   Future<CaregiverEmailInvite?> createEmailInvite({
     required String targetUserEmail,
     required CaregiverRole role,
-    required String caregiverPassword,
+    required String temporaryPassword,
   }) async {
     createdInviteEmails.add(targetUserEmail);
-    createdInvitePasswords.add(caregiverPassword);
+    createdInvitePasswords.add(temporaryPassword);
     if (!sendInviteSucceeds) return null;
     final invite = CaregiverEmailInvite(
       id: 'invite-${createdInviteEmails.length}',

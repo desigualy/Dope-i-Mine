@@ -1,5 +1,6 @@
 import 'package:dope_i_mine/data/local/local_body_double_store.dart';
 import 'package:dope_i_mine/data/local/local_json_store.dart';
+import 'package:dope_i_mine/data/local/local_reward_store.dart';
 import 'package:dope_i_mine/data/repositories/body_double_repository_impl.dart';
 import 'package:dope_i_mine/domain/body_double/body_double_session.dart';
 import 'package:dope_i_mine/presentation/body_double/body_double_controller.dart';
@@ -52,6 +53,56 @@ void main() {
       expect(controller.state.lastSummary!.overwhelmEvents, 1);
       expect(controller.state.lastSummary!.status, BodyDoubleStatus.completed);
       expect(controller.state.lastSummary!.summary, contains('1 step'));
+    });
+
+    test('completed Dope-i sessions award local XP idempotently', () async {
+      SharedPreferences.setMockInitialValues(<String, Object>{});
+      final prefs = await SharedPreferences.getInstance();
+      final rewardStore = LocalRewardStore(
+        store: LocalJsonStore('test.body_double.rewards', preferences: prefs),
+      );
+      final controller = await _controller(ref: _RewardRef(rewardStore));
+
+      await controller.startDopeiSession(
+        sessionType: BodyDoubleSessionType.quickStart,
+      );
+      await controller.markStepCompleted();
+      await controller.endSession();
+
+      expect(
+        await rewardStore.currentXp(),
+        BodyDoubleController.dopeiCompletionXp + 5,
+      );
+
+      // Re-ending/restoring the saved summary must not duplicate XP.
+      await controller.restore();
+      expect(
+        await rewardStore.currentXp(),
+        BodyDoubleController.dopeiCompletionXp + 5,
+      );
+    });
+
+    test('active Dope-i session survives controller recreation', () async {
+      SharedPreferences.setMockInitialValues(<String, Object>{});
+      final firstController = await _controller();
+
+      await firstController.startDopeiSession(
+        sessionType: BodyDoubleSessionType.focusSprint,
+        taskId: 'task-restore',
+        taskTitle: 'Write notes',
+        currentStepText: 'Open the document',
+      );
+
+      final restoredController = await _controller();
+      await restoredController.restore();
+
+      final restored = restoredController.state.activeSession;
+      expect(restored, isNotNull);
+      expect(restored!.mode, BodyDoubleMode.dopei);
+      expect(restored.status, BodyDoubleStatus.active);
+      expect(restored.taskId, 'task-restore');
+      expect(restored.taskTitle, 'Write notes');
+      expect(restoredController.state.remainingSeconds, isNotNull);
     });
 
     test('emergency exit is always allowed and marked cancelled', () async {
@@ -448,7 +499,7 @@ void main() {
   });
 }
 
-Future<BodyDoubleController> _controller() async {
+Future<BodyDoubleController> _controller({Ref? ref}) async {
   final prefs = await SharedPreferences.getInstance();
   return BodyDoubleController(
     BodyDoubleRepositoryImpl(
@@ -456,11 +507,27 @@ Future<BodyDoubleController> _controller() async {
         store: LocalJsonStore('test.body_double', preferences: prefs),
       ),
     ),
-    _MockRef(),
+    ref ?? _MockRef(),
   );
 }
 
 class _MockRef implements Ref {
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _RewardRef extends _MockRef {
+  _RewardRef(this._rewardStore);
+
+  final LocalRewardStore _rewardStore;
+
+  @override
+  T read<T>(ProviderListenable<T> provider) {
+    if (identical(provider, localRewardStoreProvider)) {
+      return _rewardStore as T;
+    }
+    return super.noSuchMethod(
+      Invocation.method(#read, <Object?>[provider]),
+    ) as T;
+  }
 }

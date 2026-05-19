@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../data/local/local_body_double_store.dart';
+import '../../data/local/local_reward_store.dart';
 import '../../data/repositories/body_double_repository_impl.dart';
 import '../../domain/body_double/body_double_session.dart';
 import '../../domain/tasks/task_step_model.dart';
@@ -112,6 +113,8 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
   BodyDoubleController(this._repository, this._ref)
       : super(const BodyDoubleState());
 
+  static const int dopeiCompletionXp = 15;
+
   final BodyDoubleRepositoryImpl _repository;
   final Ref _ref;
   RealtimeChannel? _syncChannel;
@@ -130,67 +133,67 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
     _fetchParticipants(sessionId);
 
     _syncChannel?.unsubscribe();
-    _syncChannel = client
-        .channel('public:body_double_sync:session_id=eq.$sessionId')
-      ..onPostgresChanges(
-        event: PostgresChangeEvent.insert,
-        schema: 'public',
-        table: 'body_double_messages',
-        filter: PostgresChangeFilter(
-          type: PostgresChangeFilterType.eq,
-          column: 'session_id',
-          value: sessionId,
-        ),
-        callback: (payload) {
-          final json = payload.newRecord;
-          final msg = BodyDoubleMessage.fromJson(json);
-          state = state.copyWith(
-            messages: <BodyDoubleMessage>[...state.messages, msg],
-          );
+    _syncChannel =
+        client.channel('public:body_double_sync:session_id=eq.$sessionId')
+          ..onPostgresChanges(
+            event: PostgresChangeEvent.insert,
+            schema: 'public',
+            table: 'body_double_messages',
+            filter: PostgresChangeFilter(
+              type: PostgresChangeFilterType.eq,
+              column: 'session_id',
+              value: sessionId,
+            ),
+            callback: (payload) {
+              final json = payload.newRecord;
+              final msg = BodyDoubleMessage.fromJson(json);
+              state = state.copyWith(
+                messages: <BodyDoubleMessage>[...state.messages, msg],
+              );
 
-          // Track remote steps via preset signals
-          if (msg.messageType == 'preset' &&
-              msg.body == 'Step done' &&
-              msg.senderId != _repository.userId) {
-            final current = state.participantSteps[msg.senderId] ?? 0;
-            state = state.copyWith(
-              participantSteps: <String, int>{
-                ...state.participantSteps,
-                msg.senderId: current + 1,
-              },
-            );
-          }
-        },
-      )
-      ..onPostgresChanges(
-        event: PostgresChangeEvent.all,
-        schema: 'public',
-        table: 'body_double_presence',
-        filter: PostgresChangeFilter(
-          type: PostgresChangeFilterType.eq,
-          column: 'session_id',
-          value: sessionId,
-        ),
-        callback: (payload) {
-          final json = payload.newRecord;
-          final userId = json['user_id'] as String;
-          final status = json['status'] as String?;
-          final steps = json['steps_completed'] as int? ?? 0;
-          if (userId != _repository.userId) {
-            state = state.copyWith(
-              participantPresences: <String, String>{
-                ...state.participantPresences,
-                userId: status ?? 'offline',
-              },
-              participantSteps: <String, int>{
-                ...state.participantSteps,
-                userId: steps,
-              },
-            );
-          }
-        },
-      )
-      ..subscribe();
+              // Track remote steps via preset signals
+              if (msg.messageType == 'preset' &&
+                  msg.body == 'Step done' &&
+                  msg.senderId != _repository.userId) {
+                final current = state.participantSteps[msg.senderId] ?? 0;
+                state = state.copyWith(
+                  participantSteps: <String, int>{
+                    ...state.participantSteps,
+                    msg.senderId: current + 1,
+                  },
+                );
+              }
+            },
+          )
+          ..onPostgresChanges(
+            event: PostgresChangeEvent.all,
+            schema: 'public',
+            table: 'body_double_presence',
+            filter: PostgresChangeFilter(
+              type: PostgresChangeFilterType.eq,
+              column: 'session_id',
+              value: sessionId,
+            ),
+            callback: (payload) {
+              final json = payload.newRecord;
+              final userId = json['user_id'] as String;
+              final status = json['status'] as String?;
+              final steps = json['steps_completed'] as int? ?? 0;
+              if (userId != _repository.userId) {
+                state = state.copyWith(
+                  participantPresences: <String, String>{
+                    ...state.participantPresences,
+                    userId: status ?? 'offline',
+                  },
+                  participantSteps: <String, int>{
+                    ...state.participantSteps,
+                    userId: steps,
+                  },
+                );
+              }
+            },
+          )
+          ..subscribe();
   }
 
   void _subscribeToQueue(String queueId) {
@@ -381,11 +384,11 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
     int expiresInMinutes = 60,
   }) async {
     final now = DateTime.now();
-    
+
     // Reuse existing waiting friend session if it matches the task
     BodyDoubleSession? session = state.activeSession;
-    if (session != null && 
-        session.mode == BodyDoubleMode.friend && 
+    if (session != null &&
+        session.mode == BodyDoubleMode.friend &&
         session.status == BodyDoubleStatus.waiting &&
         session.taskId == taskId) {
       // Use existing session
@@ -417,7 +420,7 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
       createdAt: now,
       isSpurAOn: isSpurAOn,
     );
-    
+
     await _repository.saveFriendInvite(invite);
 
     state = state.copyWith(
@@ -575,7 +578,7 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
   Future<void> markStepCompleted() async {
     final session = state.activeSession;
     if (session == null) return;
-    
+
     final updated = session.copyWith(
       stepsCompleted: session.stepsCompleted + 1,
     );
@@ -587,7 +590,7 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
     try {
       final taskController = _ref.read(taskControllerProvider.notifier);
       await taskController.completeNextStep();
-      
+
       // Update the local currentStepText from the task controller
       final taskState = _ref.read(taskControllerProvider);
       final nextStep = taskState.steps.firstWhere(
@@ -638,6 +641,7 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
       summary: _summaryFor(session, status),
     );
     await _repository.saveSummary(ended);
+    await _awardCompletionXp(ended);
     state = state.copyWith(
       lastSummary: ended,
       clearActiveSession: true,
@@ -675,6 +679,26 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
 
   Future<void> emergencyExit() =>
       endSession(status: BodyDoubleStatus.cancelled);
+
+  Future<void> _awardCompletionXp(BodyDoubleSession session) async {
+    if (session.mode != BodyDoubleMode.dopei ||
+        session.status != BodyDoubleStatus.completed) {
+      return;
+    }
+
+    try {
+      final rewardStore = _ref.read(localRewardStoreProvider);
+      await rewardStore.awardXp(
+        userId: _repository.userId ?? 'local_user',
+        amount: dopeiCompletionXp + session.stepsCompleted * 5,
+        key: 'body_double_dopei_completed',
+        sourceType: 'body_double_session',
+        sourceId: session.id,
+      );
+    } catch (_) {
+      // Rewards are motivating but must never block ending a support session.
+    }
+  }
 
   static DateTime _nextCheckInFor(BodyDoubleSession session) {
     return DateTime.now()
@@ -944,7 +968,8 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
 
     final userId = _repository.userId;
     if (userId != null) {
-      await _repository.updateReliabilityScore(userId: userId, completed: completed);
+      await _repository.updateReliabilityScore(
+          userId: userId, completed: completed);
     }
 
     final note = await _repository.getDopeiSummaryNote(

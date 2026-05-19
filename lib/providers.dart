@@ -10,10 +10,12 @@ import 'core/services/speech_to_text_service.dart';
 import 'core/services/text_to_speech_service.dart';
 import 'core/sync/sync_engine.dart';
 import 'core/sync/sync_queue_service.dart';
+import 'data/local/local_body_double_store.dart';
 import 'data/local/local_reward_store.dart';
 import 'data/local/local_settings_cache.dart';
 import 'data/local/local_task_store.dart';
 import 'data/repositories/analytics_repository_impl.dart';
+import 'data/repositories/body_double_repository_impl.dart';
 import 'data/repositories/auth_repository_impl.dart';
 import 'data/repositories/branding_repository_impl.dart';
 import 'data/repositories/caregiver_assignments_repository_impl.dart';
@@ -64,6 +66,15 @@ final localSettingsCacheProvider =
     FutureProvider<LocalSettingsCache>((ref) async {
   final prefs = await SharedPreferences.getInstance();
   return LocalSettingsCache(prefs);
+});
+
+final bodyDoubleRepositoryProvider = Provider<BodyDoubleRepositoryImpl>((ref) {
+  final client = ref.watch(supabaseProvider);
+  return BodyDoubleRepositoryImpl(
+    localStore: ref.watch(localBodyDoubleStoreProvider),
+    client: client,
+    userId: client?.auth.currentUser?.id,
+  );
 });
 
 final taskRepositoryProvider = Provider<dynamic>((ref) {

@@ -21,13 +21,21 @@ class VoiceController {
   final SpeechToTextService _stt;
   final TextToSpeechService _tts;
 
-  Future<void> speakStep(String text) async {
+  Future<void> speakStep(
+    String text, {
+    VoiceProfileModel? previewProfile,
+    double? previewSpeechRate,
+  }) async {
     final resolved = await _resolveVoice();
     await _tts.initialize(
-      profile: resolved.profile,
-      speechRate: resolved.settings?.speechRate,
+      profile: previewProfile ?? resolved.profile,
+      speechRate: previewSpeechRate ?? resolved.settings?.speechRate,
     );
     await _tts.speak(text);
+  }
+
+  Future<void> stopSpeaking() async {
+    await _tts.stop();
   }
 
   Future<void> listenForTask(void Function(String text) onResult) async {

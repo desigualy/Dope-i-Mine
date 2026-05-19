@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../domain/tasks/task_step_model.dart';
 
+import '../../../presentation/voice/speak_button.dart';
+
 class StepCard extends StatelessWidget {
   const StepCard({
     super.key,
@@ -95,6 +97,7 @@ class StepCard extends StatelessWidget {
                         icon: const Icon(Icons.account_tree_outlined),
                         label: const Text('Break down more'),
                       ),
+                    SpeakButton(text: step.text),
                   ],
                 ),
               ],

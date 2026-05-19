@@ -6,6 +6,8 @@ import '../../domain/voice/voice_profile_model.dart';
 import '../../domain/voice/voice_settings_model.dart';
 import '../../providers.dart';
 
+import '../../presentation/voice/voice_test_panel.dart';
+
 class VoiceProfileScreen extends ConsumerStatefulWidget {
   const VoiceProfileScreen({super.key});
 
@@ -114,6 +116,11 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
                     if (mounted) Navigator.pop(context);
                   },
                   child: const Text('Save voice settings'),
+                ),
+                const SizedBox(height: 24),
+                VoiceTestPanel(
+                  previewProfile: _profileFor(selectedVoiceId),
+                  previewSpeechRate: speechRate,
                 ),
               ],
             ),

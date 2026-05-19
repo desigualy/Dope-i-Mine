@@ -116,7 +116,7 @@ class _FakeCaregiverRepository extends Fake implements CaregiverRepository {
 
 void main() {
   group('LinkCaregiverScreen Widget Tests', () {
-    Future<void> _scrollToSendInvite(WidgetTester tester) async {
+    Future<void> scrollToSendInvite(WidgetTester tester) async {
       // LinkCaregiverScreen uses a ListView which lazily builds children.
       // In widget tests the viewport is small, so the submit button may not be
       // built yet. Manually drag the list until the button is present.
@@ -174,7 +174,7 @@ void main() {
       await tester.enterText(find.byType(TextField).at(2), 'mismatch123');
 
       final sendButton = find.byKey(const Key('linkCaregiver_sendInvite'));
-      await _scrollToSendInvite(tester);
+      await scrollToSendInvite(tester);
       await tester.tap(sendButton);
       await tester.pumpAndSettle();
 
@@ -203,7 +203,7 @@ void main() {
       await tester.enterText(find.byType(TextField).at(2), 'temporary123');
 
       final sendButton = find.byKey(const Key('linkCaregiver_sendInvite'));
-      await _scrollToSendInvite(tester);
+      await scrollToSendInvite(tester);
       await tester.tap(sendButton);
       await tester.pumpAndSettle();
 
@@ -233,7 +233,7 @@ void main() {
       await tester.enterText(find.byType(TextField).at(2), 'temporary123');
 
       final sendButton = find.byKey(const Key('linkCaregiver_sendInvite'));
-      await _scrollToSendInvite(tester);
+      await scrollToSendInvite(tester);
       await tester.tap(sendButton);
       await tester.pumpAndSettle();
 

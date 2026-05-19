@@ -240,13 +240,12 @@ class TaskBreakdownScreen extends ConsumerWidget {
                     child: const Text('View Summary & Continue'),
                   ),
                 ),
-              if (state.task?.id != null) ...<Widget>[
+              if (state.task?.id != null && state.showSideQuests) ...<Widget>[
                 const SizedBox(height: 24),
-                if (state.showSideQuests)
-                  Text(
-                    'Side Quest Available:',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
+                Text(
+                  'Side Quest Available:',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
                 const SizedBox(height: 8),
                 SideQuestPanel(taskId: state.task!.id),
               ],
@@ -295,14 +294,17 @@ TaskStepModel? _firstWhereOrNull(
 }
 
 Future<List<TaskStepModel>> _breakDownStep(WidgetRef ref, TaskStepModel step) {
+  final state = ref.read(taskControllerProvider);
+  final snapshot = state.snapshot ??
+      const TaskStateSnapshot(
+        mode: SupportMode.audhd,
+        energyLevel: EnergyLevel.medium,
+        stressLevel: StressLevel.friction,
+        timeAvailable: TimeAvailable.fifteenMinutes,
+      );
   return ref.read(taskRepositoryProvider).breakDownStep(
         stepId: step.id,
-        snapshot: const TaskStateSnapshot(
-          mode: SupportMode.audhd,
-          energyLevel: EnergyLevel.medium,
-          stressLevel: StressLevel.friction,
-          timeAvailable: TimeAvailable.fifteenMinutes,
-        ),
+        snapshot: snapshot,
         stepText: step.text,
       );
 }

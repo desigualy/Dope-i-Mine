@@ -19,6 +19,7 @@ class TaskViewState {
     this.showSideQuests = true,
     this.focusedSectionId,
     this.missionRewarded = false,
+    this.snapshot,
   });
 
   final bool loading;
@@ -30,6 +31,7 @@ class TaskViewState {
   final bool showSideQuests;
   final String? focusedSectionId;
   final bool missionRewarded;
+  final TaskStateSnapshot? snapshot;
 
   TaskViewState copyWith({
     bool? loading,
@@ -41,6 +43,7 @@ class TaskViewState {
     bool? showSideQuests,
     String? focusedSectionId,
     bool? missionRewarded,
+    TaskStateSnapshot? snapshot,
     bool clearFocusedSection = false,
   }) {
     return TaskViewState(
@@ -55,6 +58,7 @@ class TaskViewState {
           ? null
           : (focusedSectionId ?? this.focusedSectionId),
       missionRewarded: missionRewarded ?? this.missionRewarded,
+      snapshot: snapshot ?? this.snapshot,
     );
   }
 }
@@ -74,7 +78,7 @@ class TaskController extends StateNotifier<TaskViewState> {
     required String sourceText,
     required TaskStateSnapshot snapshot,
   }) async {
-    state = const TaskViewState(loading: true);
+    state = TaskViewState(loading: true, snapshot: snapshot);
     try {
       final result = await _repository.createTask(
         userId: userId,
@@ -89,6 +93,7 @@ class TaskController extends StateNotifier<TaskViewState> {
         sideQuests: _lockedSideQuests(result.sideQuests),
         showMinimumVersion: false,
         missionRewarded: false,
+        snapshot: snapshot,
       );
     } catch (_) {
       state = state.copyWith(loading: false);

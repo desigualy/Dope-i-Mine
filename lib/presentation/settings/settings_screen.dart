@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/widgets/primary_scaffold.dart';
+import '../../domain/profile/sensory_settings_model.dart';
 import '../../providers.dart';
 import '../auth/auth_controller.dart';
 import '../onboarding/onboarding_controller.dart';
@@ -23,6 +24,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool reducedAnimation = false;
   bool largeText = false;
   bool soundEnabled = true;
+  SensorySettingsModel? _lastSensorySettings;
   String accountType = 'user';
 
   @override
@@ -42,6 +44,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     userId = authUser.id;
 
+    final cachedSensory =
+        await ref.read(localSettingsCacheProvider.future).then(
+              (cache) => cache.loadSensorySettings(authUser.id),
+            );
+
+    if (mounted && cachedSensory != null) {
+      setState(() {
+        reducedAnimation = cachedSensory.reducedAnimation;
+        largeText = cachedSensory.largeText;
+        soundEnabled = cachedSensory.soundEnabled;
+        _lastSensorySettings = cachedSensory;
+        loading = false;
+      });
+    }
+
     try {
       final resolvedAccountType =
           await ref.read(profileRepositoryProvider).getAccountType(userId!);
@@ -54,8 +71,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         reducedAnimation = sensory?.reducedAnimation ?? false;
         largeText = sensory?.largeText ?? false;
         soundEnabled = sensory?.soundEnabled ?? true;
+        _lastSensorySettings = sensory;
         loading = false;
       });
+      if (sensory != null) {
+        await ref
+            .read(localSettingsCacheProvider.future)
+            .then((cache) => cache.saveSensorySettings(userId!, sensory));
+      }
     } catch (_) {
       if (!mounted) return;
       setState(() => loading = false);
@@ -70,12 +93,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final id = userId;
     if (id == null) return;
 
-    await ref.read(profileRepositoryProvider).updateSensorySettings(
-          id,
-          reducedAnimation: reducedAnimation,
-          largeText: largeText,
-          soundEnabled: soundEnabled,
-        );
+    final currentSettings = _lastSensorySettings;
+    final nextSettings = SensorySettingsModel(
+      reducedAnimation: reducedAnimation ?? this.reducedAnimation,
+      largeText: largeText ?? this.largeText,
+      softColors: currentSettings?.softColors ?? true,
+      soundEnabled: soundEnabled ?? this.soundEnabled,
+      praiseLevel: currentSettings?.praiseLevel ?? 'medium',
+      iconMode: currentSettings?.iconMode ?? false,
+      reduceSurprises: currentSettings?.reduceSurprises ?? true,
+    );
+    _lastSensorySettings = nextSettings;
+
+    await ref
+        .read(localSettingsCacheProvider.future)
+        .then((cache) => cache.saveSensorySettings(id, nextSettings));
+
+    try {
+      await ref.read(profileRepositoryProvider).updateSensorySettings(
+            id,
+            reducedAnimation: reducedAnimation,
+            largeText: largeText,
+            soundEnabled: soundEnabled,
+          );
+    } catch (error) {
+      debugPrint('Saved sensory setting locally; remote sync failed: $error');
+    }
   }
 
   Future<void> _restartOnboarding(BuildContext context) async {

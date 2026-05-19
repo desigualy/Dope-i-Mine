@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:dope_i_mine/avatar_engine_v4/avatar_engine_v4.dart';
 import 'package:dope_i_mine/data/repositories/auth_repository_impl.dart';
@@ -1161,6 +1162,8 @@ void main() {
   testWidgets(
       'restart onboarding clears completion on the active runtime backend',
       (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues(<String, Object>{});
+
     final fakeAuthRepository = _FakeAuthRepository()
       ..user = const AuthUser(id: 'tester', email: 'tester@example.com');
     final fakeProfileRepository =
@@ -1180,7 +1183,7 @@ void main() {
 
     expect(find.text('Hi there!'), findsOneWidget);
     await tester.tap(find.byIcon(Icons.settings));
-    await _pumpUntilVisible(tester, find.text('Settings'));
+    await _pumpUntilVisible(tester, find.text('Restart onboarding'));
     await tester.tap(find.text('Restart onboarding'));
     await _pumpUntilVisible(tester, find.text('Meet Dope-i'));
 

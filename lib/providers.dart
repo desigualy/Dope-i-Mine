@@ -1,5 +1,6 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/network/connectivity_controller.dart';
@@ -10,6 +11,7 @@ import 'core/services/text_to_speech_service.dart';
 import 'core/sync/sync_engine.dart';
 import 'core/sync/sync_queue_service.dart';
 import 'data/local/local_reward_store.dart';
+import 'data/local/local_settings_cache.dart';
 import 'data/local/local_task_store.dart';
 import 'data/repositories/analytics_repository_impl.dart';
 import 'data/repositories/auth_repository_impl.dart';
@@ -56,6 +58,12 @@ final authRepositoryProvider = Provider<AuthRepositoryImpl>((ref) {
 final profileRepositoryProvider = Provider<ProfileRepositoryImpl>((ref) {
   return _requireClientRepo(
       ref.watch(supabaseProvider), ProfileRepositoryImpl.new);
+});
+
+final localSettingsCacheProvider =
+    FutureProvider<LocalSettingsCache>((ref) async {
+  final prefs = await SharedPreferences.getInstance();
+  return LocalSettingsCache(prefs);
 });
 
 final taskRepositoryProvider = Provider<dynamic>((ref) {

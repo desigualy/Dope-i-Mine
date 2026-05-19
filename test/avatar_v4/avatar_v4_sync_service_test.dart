@@ -46,6 +46,60 @@ void main() {
     expect(repository.savedConfig, isNull);
   });
 
+  test('saveConfigLocalFirst persists offline edits for restart recovery',
+      () async {
+    SharedPreferences.setMockInitialValues(<String, Object>{});
+    final prefs = await SharedPreferences.getInstance();
+    final localCache = AvatarV4LocalCache(prefs);
+    final repository = _FakeAvatarV4Repository();
+    final service = AvatarV4SyncService(
+      localCache: localCache,
+      repository: repository,
+    );
+
+    await service.saveConfigLocalFirst(
+      userId: 'user-1',
+      config: const AvatarV4Config(hairStyleId: 'offline_saved_style'),
+      isOnline: false,
+    );
+
+    expect(repository.savedConfig, isNull);
+    expect((await localCache.loadConfig())?.hairStyleId, 'offline_saved_style');
+
+    final afterRestart = AvatarV4SyncService(
+      localCache: AvatarV4LocalCache(await SharedPreferences.getInstance()),
+      repository: _FakeAvatarV4Repository(),
+    );
+
+    final restored = await afterRestart.loadEffectiveConfig(
+      userId: 'user-1',
+      isOnline: false,
+    );
+
+    expect(restored.hairStyleId, 'offline_saved_style');
+  });
+
+  test('saveConfigLocalFirst syncs online edits after local persistence',
+      () async {
+    SharedPreferences.setMockInitialValues(<String, Object>{});
+    final prefs = await SharedPreferences.getInstance();
+    final localCache = AvatarV4LocalCache(prefs);
+    final repository = _FakeAvatarV4Repository();
+    final service = AvatarV4SyncService(
+      localCache: localCache,
+      repository: repository,
+    );
+
+    await service.saveConfigLocalFirst(
+      userId: 'user-1',
+      config: const AvatarV4Config(hairColor: 'phase3_blue'),
+      isOnline: true,
+    );
+
+    expect(repository.savedConfig?.hairColor, 'phase3_blue');
+    expect((await localCache.loadConfig())?.hairColor, 'phase3_blue');
+  });
+
   test('syncOwnedInventoryOnlineRequired saves remote and local inventory',
       () async {
     SharedPreferences.setMockInitialValues(<String, Object>{});
@@ -69,7 +123,8 @@ void main() {
     );
 
     expect(repository.savedInventory?.ownedItemIds, inventory.ownedItemIds);
-    expect((await localCache.loadInventory()).ownedItemIds, inventory.ownedItemIds);
+    expect((await localCache.loadInventory()).ownedItemIds,
+        inventory.ownedItemIds);
   });
 
   test('registerUploadedReferenceImageOnlineRequired requires online state',

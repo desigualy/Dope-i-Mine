@@ -586,7 +586,10 @@ void main() {
     await tester.ensureVisible(find.text('My avatar'));
     await tester.pump();
     await tester.tap(find.text('My avatar'));
-    await tester.pumpAndSettle();
+    await _pumpUntilVisible(
+      tester,
+      find.text('Avatar Engine V4 is ready for Rive art packs.'),
+    );
     // Avatar V4 onboarding route is locked by avatar_v4_onboarding_purge_test.dart.
 
     expect(find.byType(AvatarRiveView), findsWidgets);

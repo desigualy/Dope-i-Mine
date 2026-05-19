@@ -32,6 +32,7 @@ class AvatarCustomizerScreen extends ConsumerStatefulWidget {
 class _AvatarCustomizerScreenState
     extends ConsumerState<AvatarCustomizerScreen> {
   AvatarV4Config? _draftConfig;
+  bool _loadedEffectiveConfig = false;
   String? _saveMessage;
   String? _errorMessage;
 
@@ -45,6 +46,7 @@ class _AvatarCustomizerScreenState
           orElse: () => false,
         );
     final config = _draftConfig ?? widget.config;
+    final effectiveConfig = ref.watch(avatarV4EffectiveConfigProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Avatar')),
@@ -55,10 +57,32 @@ class _AvatarCustomizerScreenState
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Center(
-                child: AvatarRiveView(
-                  key: const ValueKey<String>('avatar-v4-customizer-rive-preview'),
-                  config: config,
-                  size: 220,
+                child: effectiveConfig.when(
+                  loading: () => const SizedBox.square(
+                    key: ValueKey<String>('avatar-v4-config-loading'),
+                    dimension: 220,
+                    child: Center(
+                      child: Text('Loading saved avatar…'),
+                    ),
+                  ),
+                  error: (error, stackTrace) {
+                    _primeDraftConfig(config);
+                    return AvatarRiveView(
+                      key: const ValueKey<String>(
+                          'avatar-v4-customizer-rive-preview'),
+                      config: config,
+                      size: 220,
+                    );
+                  },
+                  data: (loadedConfig) {
+                    _primeDraftConfig(loadedConfig);
+                    return AvatarRiveView(
+                      key: const ValueKey<String>(
+                          'avatar-v4-customizer-rive-preview'),
+                      config: _draftConfig ?? loadedConfig,
+                      size: 220,
+                    );
+                  },
                 ),
               ),
               const SizedBox(height: 24),
@@ -74,7 +98,8 @@ class _AvatarCustomizerScreenState
               ),
               const SizedBox(height: 16),
               const DopeiGuide(
-                text: "You can change your look anytime. There's no wrong way to be you!",
+                text:
+                    "You can change your look anytime. There's no wrong way to be you!",
                 mood: DopeiMood.happy,
               ),
               const SizedBox(height: 16),
@@ -95,7 +120,8 @@ class _AvatarCustomizerScreenState
                 const SizedBox(height: 12),
                 Text(
                   _errorMessage!,
-                  key: const ValueKey<String>('avatar-v4-customizer-error-message'),
+                  key: const ValueKey<String>(
+                      'avatar-v4-customizer-error-message'),
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
@@ -104,7 +130,8 @@ class _AvatarCustomizerScreenState
                 const SizedBox(height: 12),
                 Text(
                   _saveMessage!,
-                  key: const ValueKey<String>('avatar-v4-customizer-save-message'),
+                  key: const ValueKey<String>(
+                      'avatar-v4-customizer-save-message'),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -126,7 +153,8 @@ class _AvatarCustomizerScreenState
                   ),
                   onPressed: _finishAvatarFlow,
                   icon: const Icon(Icons.check_rounded),
-                  label: Text(_returnToOnboarding ? 'Continue to summary' : 'Done'),
+                  label: Text(
+                      _returnToOnboarding ? 'Continue to summary' : 'Done'),
                 ),
               ),
             ],
@@ -147,24 +175,46 @@ class _AvatarCustomizerScreenState
     });
   }
 
+  void _primeDraftConfig(AvatarV4Config config) {
+    if (_loadedEffectiveConfig) return;
+    _loadedEffectiveConfig = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _draftConfig != null) return;
+      setState(() => _draftConfig = config);
+    });
+  }
+
   Future<void> _saveDraftConfig(String? userId) async {
-    final cleanUserId = userId?.trim();
-    if (cleanUserId == null || cleanUserId.isEmpty) {
-      setState(() => _errorMessage = 'Sign in before saving your avatar.');
-      return;
-    }
+    final isOnline = ref.read(avatarV4OnlineProvider).maybeWhen(
+          data: (value) => value,
+          orElse: () => false,
+        );
     final config = (_draftConfig ?? widget.config).copyWith(
       updatedAtIso: DateTime.now().toUtc().toIso8601String(),
     );
-    await ref.read(avatarV4RepositoryProvider).saveRemoteConfig(
-          cleanUserId,
-          config,
-        );
+    try {
+      final syncService = await ref.read(avatarV4SyncServiceProvider.future);
+      await syncService.saveConfigLocalFirst(
+        userId: userId,
+        config: config,
+        isOnline: isOnline,
+      );
+      ref.invalidate(avatarV4EffectiveConfigProvider);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _errorMessage =
+            'Avatar saved on this device, but cloud sync could not finish. Try again when your connection is stable.';
+      });
+      return;
+    }
     if (!mounted) return;
     setState(() {
       _draftConfig = config;
       _errorMessage = null;
-      _saveMessage = 'Avatar profile saved for the plugin renderer.';
+      _saveMessage = isOnline && userId != null && userId.trim().isNotEmpty
+          ? 'Avatar profile saved and synced.'
+          : 'Avatar profile saved on this device.';
     });
   }
 
@@ -232,7 +282,8 @@ class _AvatarTraitLibrarySection extends ConsumerWidget {
                   tooltip: 'Read active traits aloud',
                   icon: const Icon(Icons.volume_up_rounded),
                   onPressed: () {
-                    final text = "Your active traits: Skin tone is ${config.skinTone.replaceAll('_', ' ')}, "
+                    final text =
+                        "Your active traits: Skin tone is ${config.skinTone.replaceAll('_', ' ')}, "
                         "Face shape is ${config.faceShape.replaceAll('_', ' ')}, "
                         "Eye shape is ${config.eyeShape.replaceAll('_', ' ')}, "
                         "Eye colour is ${config.eyeColor.replaceAll('_', ' ')}, "
@@ -466,9 +517,10 @@ class _AvatarVoiceCommandCard extends ConsumerWidget {
                     children: [
                       Text(
                         'Voice Customizer',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w900,
-                            ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w900,
+                                ),
                       ),
                       Text(
                         'Speak traits (e.g. tan, afro, glasses, headphones)',
@@ -486,11 +538,13 @@ class _AvatarVoiceCommandCard extends ConsumerWidget {
               children: [
                 Expanded(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
                       color: scheme.surface,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: scheme.outline.withOpacity(0.2)),
+                      border:
+                          Border.all(color: scheme.outline.withOpacity(0.2)),
                     ),
                     child: Text(
                       'Tap the mic and say: "Locs" or "Add sensory headphones" or "fair skin".',
@@ -504,7 +558,8 @@ class _AvatarVoiceCommandCard extends ConsumerWidget {
                 ),
                 const SizedBox(width: 8),
                 VoiceInputButton(
-                  onTextChanged: (text) => _handleVoiceCommand(context, ref, text),
+                  onTextChanged: (text) =>
+                      _handleVoiceCommand(context, ref, text),
                 ),
               ],
             ),
@@ -575,7 +630,9 @@ class _AvatarVoiceCommandCard extends ConsumerWidget {
       updated = true;
     }
 
-    if (lower.contains('headphone') || lower.contains('headset') || lower.contains('sensory')) {
+    if (lower.contains('headphone') ||
+        lower.contains('headset') ||
+        lower.contains('sensory')) {
       final list = {...next.accessoryIds};
       if (list.contains('sensory_headphones')) {
         list.remove('sensory_headphones');
@@ -595,11 +652,13 @@ class _AvatarVoiceCommandCard extends ConsumerWidget {
         SnackBar(content: Text('Voice applied: $feedback')),
       );
     } else {
-      ref.read(voiceControllerProvider).speakStep("I heard: $text. I didn't recognize any trait keyword. Try saying: tan skin, afro hair, long hair, glasses, or sensory headphones.");
+      ref.read(voiceControllerProvider).speakStep(
+          "I heard: $text. I didn't recognize any trait keyword. Try saying: tan skin, afro hair, long hair, glasses, or sensory headphones.");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Heard: "$text". Say: tan, fair, afro, locs, glasses, headphones.')),
+        SnackBar(
+            content: Text(
+                'Heard: "$text". Say: tan, fair, afro, locs, glasses, headphones.')),
       );
     }
   }
 }
-

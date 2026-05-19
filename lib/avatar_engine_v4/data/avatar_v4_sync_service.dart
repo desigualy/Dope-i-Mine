@@ -51,6 +51,24 @@ class AvatarV4SyncService {
     await _localCache.saveConfig(stamped);
   }
 
+  Future<void> saveConfigLocalFirst({
+    required String? userId,
+    required AvatarV4Config config,
+    required bool isOnline,
+  }) async {
+    final stamped = config.copyWith(
+      updatedAtIso: DateTime.now().toUtc().toIso8601String(),
+    );
+
+    await _localCache.saveConfig(stamped);
+
+    if (!isOnline || userId == null || userId.trim().isEmpty) {
+      return;
+    }
+
+    await _repository.saveRemoteConfig(userId, stamped);
+  }
+
   Future<AvatarV4Inventory> loadEffectiveInventory({
     required String? userId,
     required bool isOnline,

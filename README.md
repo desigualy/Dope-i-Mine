@@ -6,9 +6,13 @@ This is not a diagnostic or medical app. It is a practical support tool for dail
 
 ## Current repository state
 
-Last reviewed from `main`: 2026-05-14.
+Last reviewed from `main`: 2026-05-19.
 
 The repository is an active integration build, not a confirmed release build. The app has a broad production-shaped structure, but several runtime surfaces still require debugging, real-device QA, and validation before release.
+
+Phase 2 repo-lock status: complete on `main` as of commit `8b84d100fb69b2f6a1f298bd2ea7ae5a0a3b725e`.
+
+Phase 2 deployment-safe status: local validation and targeted Supabase deployment passed. Manual end-to-end QA is still required before release.
 
 Current stack:
 
@@ -42,6 +46,42 @@ The repo currently includes:
 - Dope-i mascot mood asset paths
 - Avatar Engine V4 Rive contract, validator, runtime wrapper, and missing-rig diagnostic
 - Supabase Edge Functions for task creation, step breakdown, overwhelm rescue, caregiver invite, and avatar candidate generation
+
+## Phase 2 repo lock
+
+Phase 2 repository lock is enforced by:
+
+- `.github/workflows/flutter.yml` — GitHub Actions workflow that runs `flutter pub get`, `flutter analyze`, and `flutter test` on push and pull request.
+- `supabase/migrations/202605150004_caregiver_temporary_password_gate.sql` — idempotent migration for the caregiver temporary-password gate.
+
+The caregiver temporary-password gate migration adds:
+
+- `public.users_profile.must_change_password`
+- `public.users_profile.temporary_password_created_at`
+- `public.caregiver_email_invites.temporary_password_set_at`
+- `public.caregiver_email_invites.requires_password_setup`
+- `public.caregiver_email_invites.password_setup_sent_at`
+- `users_profile_must_change_password_idx`
+
+The migration ends with `pg_notify('pgrst', 'reload schema')` so PostgREST refreshes its schema cache after deployment.
+
+Latest Phase 2 lock validation:
+
+```bash
+flutter pub get
+flutter analyze
+flutter test
+npx supabase db push
+npx supabase functions deploy send-caregiver-invite
+```
+
+Result from the final lock pass:
+
+- `flutter pub get`: pass
+- `flutter analyze`: pass
+- `flutter test`: pass (`151` tests passed)
+- `npx supabase db push`: pass; remote database reported up to date
+- `npx supabase functions deploy send-caregiver-invite`: pass
 
 ## Known debugging priorities
 

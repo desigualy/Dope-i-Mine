@@ -30,6 +30,12 @@ class _SideQuestPanelState extends ConsumerState<SideQuestPanel> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
+      // If side quests are disabled, do not fetch or trigger popups.
+      final taskState = ref.read(taskControllerProvider);
+      if (!taskState.showSideQuests) return;
+
       final authUser = ref.read(authRepositoryProvider).getCurrentUser();
       if (authUser != null) {
         ref.read(sideQuestControllerProvider.notifier).loadForTask(
@@ -106,9 +112,7 @@ class _SideQuestPanelState extends ConsumerState<SideQuestPanel> {
               taskState: taskState,
               isOverwhelmed: overwhelmState.isActive,
             ),
-            onComplete: isCompleted
-                ? null
-                : () => _completeQuest(quest),
+            onComplete: isCompleted ? null : () => _completeQuest(quest),
           ),
         );
       }).toList(),
@@ -248,7 +252,8 @@ class _SideQuestPanelState extends ConsumerState<SideQuestPanel> {
     required TaskViewState taskState,
     required bool isOverwhelmed,
   }) {
-    final key = '${widget.taskId}:${quest.id}:${_intensityFor(taskState).name}:$isOverwhelmed';
+    final key =
+        '${widget.taskId}:${quest.id}:${_intensityFor(taskState).name}:$isOverwhelmed';
     return _countdownDeadlines.putIfAbsent(
       key,
       () => DateTime.now().add(_countdownDurationFor(taskState, isOverwhelmed)),
@@ -299,7 +304,8 @@ class _SideQuestPanelState extends ConsumerState<SideQuestPanel> {
   _TaskIntensity _intensityFor(TaskViewState taskState) {
     final effortBand = taskState.task?.effortBand.toLowerCase();
     final estimatedMinutes = taskState.task?.estimatedMinutes ?? 0;
-    final stepCount = taskState.steps.where((step) => step.depthLevel > 0).length;
+    final stepCount =
+        taskState.steps.where((step) => step.depthLevel > 0).length;
 
     if (effortBand == 'high' || estimatedMinutes >= 45 || stepCount > 24) {
       return _TaskIntensity.high;

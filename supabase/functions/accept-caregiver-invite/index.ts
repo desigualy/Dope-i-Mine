@@ -19,6 +19,7 @@ type InviteRow = {
     status: string
     accepted_user_id: string | null
     accepted_at: string | null
+    temporary_password_set_at: string | null
     requires_password_setup: boolean | null
     password_setup_sent_at: string | null
 }
@@ -114,7 +115,7 @@ serve(async (req) => {
 async function loadInvite(admin: ReturnType<typeof createClient>, inviteId: string): Promise<InviteRow | null> {
     const { data, error } = await admin
         .from('caregiver_email_invites')
-        .select('id, inviter_user_id, invitee_email, role, status, accepted_user_id, accepted_at, requires_password_setup, password_setup_sent_at')
+        .select('id, inviter_user_id, invitee_email, role, status, accepted_user_id, accepted_at, temporary_password_set_at, requires_password_setup, password_setup_sent_at')
         .eq('id', inviteId)
         .maybeSingle()
 

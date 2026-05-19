@@ -12,6 +12,9 @@ create table if not exists users_profile (
   voice_enabled boolean not null default true,
   onboarding_completed boolean not null default false,
   onboarding_completed_at timestamptz,
+  -- Caregiver temp-password gate fields (also present in incremental migrations)
+  must_change_password boolean not null default false,
+  temporary_password_created_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -209,6 +212,12 @@ alter table side_quests enable row level security;
 create policy "Users can view their own side quests" on side_quests for select using (auth.uid() = user_id);
 create policy "Users can insert their own side quests" on side_quests for insert with check (auth.uid() = user_id);
 create policy "Users can update their own side quests" on side_quests for update using (auth.uid() = user_id);
+
+-- 13a. Caregiver email invites (temp password set tracking)
+-- If you are running FULL_MIGRATION.sql on a new project, this keeps the schema
+-- aligned with later incremental migrations.
+alter table public.caregiver_email_invites
+  add column if not exists temporary_password_set_at timestamptz null;
 
 -- 13. Rewards
 create table if not exists rewards (

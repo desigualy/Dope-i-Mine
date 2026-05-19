@@ -131,19 +131,23 @@ alter table public.caregiver_alerts enable row level security;
 -- 7. RLS Policies
 
 -- Relationships: visible to both parties
+drop policy if exists "caregiver_relationships_visibility" on public.caregiver_relationships;
 create policy "caregiver_relationships_visibility"
   on public.caregiver_relationships for select
   using (auth.uid() = caregiver_user_id or auth.uid() = supported_user_id);
 
+drop policy if exists "caregiver_relationships_insert" on public.caregiver_relationships;
 create policy "caregiver_relationships_insert"
   on public.caregiver_relationships for insert
   with check (auth.uid() = caregiver_user_id or auth.uid() = supported_user_id);
 
+drop policy if exists "caregiver_relationships_update" on public.caregiver_relationships;
 create policy "caregiver_relationships_update"
   on public.caregiver_relationships for update
   using (auth.uid() = caregiver_user_id or auth.uid() = supported_user_id);
 
 -- Permissions: visible to both, but only supported user or overseer can update
+drop policy if exists "caregiver_permissions_visibility" on public.caregiver_permissions;
 create policy "caregiver_permissions_visibility"
   on public.caregiver_permissions for select
   using (exists (
@@ -152,6 +156,7 @@ create policy "caregiver_permissions_visibility"
       and (auth.uid() = r.caregiver_user_id or auth.uid() = r.supported_user_id)
   ));
 
+drop policy if exists "caregiver_permissions_update" on public.caregiver_permissions;
 create policy "caregiver_permissions_update"
   on public.caregiver_permissions for update
   using (exists (
@@ -164,10 +169,12 @@ create policy "caregiver_permissions_update"
   ));
 
 -- Assigned Tasks Policies
+drop policy if exists "caregiver_tasks_visibility" on public.caregiver_assigned_tasks;
 create policy "caregiver_tasks_visibility"
   on public.caregiver_assigned_tasks for select
   using (auth.uid() = caregiver_user_id or auth.uid() = target_user_id);
 
+drop policy if exists "caregiver_tasks_insert" on public.caregiver_assigned_tasks;
 create policy "caregiver_tasks_insert"
   on public.caregiver_assigned_tasks for insert
   with check (auth.uid() = caregiver_user_id);

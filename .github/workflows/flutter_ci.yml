@@ -37,3 +37,13 @@ jobs:
 
       - name: Run Unit & Widget Tests
         run: flutter test
+
+      - name: Upload test results (if any)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-test-results
+          path: |
+            test/**/reports/**
+            build/**/test-results/**
+          if-no-files-found: ignore

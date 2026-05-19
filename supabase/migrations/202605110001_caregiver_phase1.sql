@@ -2,8 +2,15 @@
 -- Key Principle: Support, not surveillance.
 
 -- 1. Relationships (Phase C1)
-create type public.caregiver_role as enum ('caregiver', 'overseer', 'monitor');
-create type public.caregiver_relationship_status as enum ('pending', 'accepted', 'declined', 'blocked', 'revoked');
+do $$
+begin
+  if not exists (select 1 from pg_type where typname = 'caregiver_role') then
+    create type public.caregiver_role as enum ('caregiver', 'overseer', 'monitor');
+  end if;
+  if not exists (select 1 from pg_type where typname = 'caregiver_relationship_status') then
+    create type public.caregiver_relationship_status as enum ('pending', 'accepted', 'declined', 'blocked', 'revoked');
+  end if;
+end $$;
 
 create table if not exists public.caregiver_relationships (
   id uuid primary key default gen_random_uuid(),
@@ -54,7 +61,12 @@ create table if not exists public.caregiver_permissions (
 alter table public.caregiver_permissions enable row level security;
 
 -- 3. Assigned Tasks (Phase C2)
-create type public.caregiver_task_status as enum ('suggested', 'accepted', 'active', 'completed', 'declined', 'archived');
+do $$
+begin
+  if not exists (select 1 from pg_type where typname = 'caregiver_task_status') then
+    create type public.caregiver_task_status as enum ('suggested', 'accepted', 'active', 'completed', 'declined', 'archived');
+  end if;
+end $$;
 
 create table if not exists public.caregiver_assigned_tasks (
   id uuid primary key default gen_random_uuid(),

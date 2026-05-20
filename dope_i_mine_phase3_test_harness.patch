@@ -1,0 +1,472 @@
+diff --git a/supabase/sql/README.md b/supabase/sql/README.md
+new file mode 100644
+index 0000000..0000000
+--- /dev/null
++++ b/supabase/sql/README.md
++# Phase 3 SQL Contract Tests
++
++Run these only against a disposable local database or a staging Supabase project after migrations are applied.
++
++```bash
++psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -f supabase/sql/phase3_caregiver_rls_contract_tests.sql
++psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -f supabase/sql/phase3_body_double_rls_contract_tests.sql
++```
++
++The scripts check schema/RLS contracts. They do not seed production data and they wrap checks in a transaction that rolls back.
+diff --git a/supabase/sql/phase3_body_double_rls_contract_tests.sql b/supabase/sql/phase3_body_double_rls_contract_tests.sql
+new file mode 100644
+index 0000000..0000000
+--- /dev/null
++++ b/supabase/sql/phase3_body_double_rls_contract_tests.sql
++-- Phase 3 body-double schema/RLS contract checks.
++-- Run against a disposable or staging database after migrations are applied.
++
++begin;
++
++create or replace function public.__phase3_assert(condition boolean, message text)
++returns void
++language plpgsql
++as $$
++begin
++  if not condition then
++    raise exception '%', message;
++  end if;
++end;
++$$;
++
++select public.__phase3_assert(
++  exists (
++    select 1
++    from information_schema.tables
++    where table_schema = 'public'
++      and table_name like 'body_double%'
++  ),
++  'Expected at least one public body_double* table for Phase 3 body-double runtime'
++);
++
++select public.__phase3_assert(
++  exists (
++    select 1
++    from pg_class c
++    join pg_namespace n on n.oid = c.relnamespace
++    where n.nspname = 'public'
++      and c.relname like 'body_double%'
++      and c.relrowsecurity = true
++  ),
++  'At least one body_double* table must have RLS enabled'
++);
++
++rollback;
+diff --git a/supabase/sql/phase3_caregiver_rls_contract_tests.sql b/supabase/sql/phase3_caregiver_rls_contract_tests.sql
+new file mode 100644
+index 0000000..0000000
+--- /dev/null
++++ b/supabase/sql/phase3_caregiver_rls_contract_tests.sql
++-- Phase 3 caregiver/schema contract checks.
++-- Run against a disposable or staging database after migrations are applied.
++-- This script intentionally checks schema/RLS contracts only; it does not seed user data.
++
++begin;
++
++create or replace function public.__phase3_assert(condition boolean, message text)
++returns void
++language plpgsql
++as $$
++begin
++  if not condition then
++    raise exception '%', message;
++  end if;
++end;
++$$;
++
++select public.__phase3_assert(
++  to_regclass('public.users_profile') is not null,
++  'users_profile table is missing'
++);
++
++select public.__phase3_assert(
++  to_regclass('public.caregiver_email_invites') is not null,
++  'caregiver_email_invites table is missing'
++);
++
++select public.__phase3_assert(
++  to_regclass('public.caregiver_relationships') is not null,
++  'caregiver_relationships table is missing'
++);
++
++select public.__phase3_assert(
++  exists (
++    select 1
++    from information_schema.columns
++    where table_schema = 'public'
++      and table_name = 'users_profile'
++      and column_name = 'must_change_password'
++  ),
++  'users_profile.must_change_password is missing'
++);
++
++select public.__phase3_assert(
++  exists (
++    select 1
++    from information_schema.columns
++    where table_schema = 'public'
++      and table_name = 'users_profile'
++      and column_name = 'temporary_password_created_at'
++  ),
++  'users_profile.temporary_password_created_at is missing'
++);
++
++select public.__phase3_assert(
++  exists (
++    select 1
++    from information_schema.columns
++    where table_schema = 'public'
++      and table_name = 'caregiver_email_invites'
++      and column_name = 'temporary_password_set_at'
++  ),
++  'caregiver_email_invites.temporary_password_set_at is missing'
++);
++
++select public.__phase3_assert(
++  exists (
++    select 1
++    from pg_indexes
++    where schemaname = 'public'
++      and indexname = 'users_profile_must_change_password_idx'
++  ),
++  'users_profile_must_change_password_idx is missing'
++);
++
++select public.__phase3_assert(
++  exists (
++    select 1
++    from pg_class c
++    join pg_namespace n on n.oid = c.relnamespace
++    where n.nspname = 'public'
++      and c.relname = 'caregiver_relationships'
++      and c.relrowsecurity = true
++  ),
++  'caregiver_relationships must have RLS enabled'
++);
++
++select public.__phase3_assert(
++  exists (
++    select 1
++    from pg_class c
++    join pg_namespace n on n.oid = c.relnamespace
++    where n.nspname = 'public'
++      and c.relname = 'caregiver_email_invites'
++      and c.relrowsecurity = true
++  ),
++  'caregiver_email_invites must have RLS enabled'
++);
++
++select public.__phase3_assert(
++  exists (
++    select 1
++    from pg_policies
++    where schemaname = 'public'
++      and tablename = 'caregiver_relationships'
++  ),
++  'caregiver_relationships should have at least one RLS policy'
++);
++
++select public.__phase3_assert(
++  exists (
++    select 1
++    from pg_policies
++    where schemaname = 'public'
++      and tablename = 'caregiver_email_invites'
++  ),
++  'caregiver_email_invites should have at least one RLS policy'
++);
++
++rollback;
+diff --git a/test/phase3/README.md b/test/phase3/README.md
+new file mode 100644
+index 0000000..0000000
+--- /dev/null
++++ b/test/phase3/README.md
++# Phase 3 Regression Harness
++
++These tests are guardrail tests for Phase 3. They do not replace deeper unit, widget, integration, or SQL/RLS tests. They prevent accidental removal or unwiring of the Phase 3 runtime surfaces while the deeper implementation is built.
++
++Run them with:
++
++```bash
++flutter test test/phase3
++```
++
++They cover:
++
++- Dope-i/body-double route and screen contracts
++- Caregiver temporary-password gate contracts
++- Caregiver operations and progress visibility surfaces
++- Voice STT/TTS runtime wiring
++- Side quest toggle visibility
++- Follow-up task breakdown context preservation
+diff --git a/test/phase3/phase3_body_double_runtime_contract_test.dart b/test/phase3/phase3_body_double_runtime_contract_test.dart
+new file mode 100644
+index 0000000..0000000
+--- /dev/null
++++ b/test/phase3/phase3_body_double_runtime_contract_test.dart
++import 'dart:io';
++
++import 'package:flutter_test/flutter_test.dart';
++
++void main() {
++  group('Phase 3 body double runtime contract', () {
++    test('body double screens and routes remain wired', () {
++      _expectFileExists('lib/presentation/body_double/body_double_start_screen.dart');
++      _expectFileExists(
++        'lib/presentation/body_double/body_double_session_router_screen.dart',
++      );
++      _expectFileExists('lib/presentation/body_double/body_double_summary_screen.dart');
++      _expectFileExists(
++        'lib/presentation/body_double/random_body_double_settings_screen.dart',
++      );
++      _expectFileExists(
++        'lib/presentation/body_double/body_double_moderation_screen.dart',
++      );
++
++      final router = _read('lib/app/router.dart');
++      expect(router, contains("path: '/body-double/start'"));
++      expect(router, contains("path: '/body-double/session'"));
++      expect(router, contains("path: '/body-double/summary'"));
++      expect(router, contains("path: '/body-double/random-settings'"));
++      expect(router, contains("path: '/body-double/moderation'"));
++    });
++
++    test('body double domain and repository surfaces exist', () {
++      _expectFileExists('lib/domain/body_double/body_double_session.dart');
++      _expectFileExists('lib/presentation/body_double/body_double_controller.dart');
++
++      final providerText = _read('lib/providers.dart');
++      expect(providerText, contains('bodyDouble'));
++    });
++  });
++}
++
++String _read(String path) => File(path).readAsStringSync();
++
++void _expectFileExists(String path) {
++  expect(File(path).existsSync(), isTrue, reason: '$path should exist');
++}
+diff --git a/test/phase3/phase3_caregiver_operations_contract_test.dart b/test/phase3/phase3_caregiver_operations_contract_test.dart
+new file mode 100644
+index 0000000..0000000
+--- /dev/null
++++ b/test/phase3/phase3_caregiver_operations_contract_test.dart
++import 'dart:io';
++
++import 'package:flutter_test/flutter_test.dart';
++
++void main() {
++  group('Phase 3 caregiver operations contract', () {
++    test('temporary password schema migration is committed', () {
++      final migration = _read(
++        'supabase/migrations/202605150004_caregiver_temporary_password_gate.sql',
++      );
++
++      expect(migration, contains('must_change_password'));
++      expect(migration, contains('temporary_password_created_at'));
++      expect(migration, contains('temporary_password_set_at'));
++      expect(migration, contains('requires_password_setup'));
++      expect(migration, contains('password_setup_sent_at'));
++      expect(migration, contains('pg_notify'));
++    });
++
++    test('caregiver invite function owns temporary password bootstrap', () {
++      final function = _read('supabase/functions/send-caregiver-invite/index.ts');
++
++      expect(function, contains('temporaryPassword'));
++      expect(function, contains('must_change_password'));
++      expect(function, contains('temporary_password_created_at'));
++      expect(function, contains('temporary_password_set_at'));
++      expect(function, contains("status: 'accepted'"));
++      expect(function, isNot(contains('console.log(temporaryPassword')));
++    });
++
++    test('forced password change is route-gated before caregiver dashboard', () {
++      final postAuthRoute = _read('lib/app/post_auth_route.dart');
++      final router = _read('lib/app/router.dart');
++
++      expect(postAuthRoute, contains('mustChangePassword'));
++      expect(postAuthRoute, contains("return '/force-password-change'"));
++      expect(router, contains("path: '/force-password-change'"));
++      expect(router, contains('ForcePasswordChangeScreen'));
++    });
++
++    test('caregiver operations surface remains available', () {
++      final repository = _read('lib/data/repositories/caregiver_repository.dart');
++
++      for (final symbol in <String>[
++        'createEmailInvite',
++        'cancelEmailInvite',
++        'revokeRelationship',
++        'assignTask',
++        'assignRoutine',
++        'loadAssignedTasks',
++        'loadAssignedRoutines',
++        'loadPermissions',
++        'updatePermissions',
++        'sendNudge',
++        'exportProgressReport',
++      ]) {
++        expect(repository, contains(symbol), reason: '$symbol should remain exposed');
++      }
++    });
++  });
++}
++
++String _read(String path) => File(path).readAsStringSync();
+diff --git a/test/phase3/phase3_progress_permissions_contract_test.dart b/test/phase3/phase3_progress_permissions_contract_test.dart
+new file mode 100644
+index 0000000..0000000
+--- /dev/null
++++ b/test/phase3/phase3_progress_permissions_contract_test.dart
++import 'dart:io';
++
++import 'package:flutter_test/flutter_test.dart';
++
++void main() {
++  group('Phase 3 progress visibility and permissions contract', () {
++    test('caregiver operational screens remain routed', () {
++      final router = _read('lib/app/router.dart');
++
++      for (final route in <String>[
++        '/caregiver/assign-task',
++        '/caregiver/assign-routine',
++        '/caregiver/permissions/:rid',
++        '/caregiver/insights/:rid',
++        '/caregiver/assigned-routines',
++      ]) {
++        expect(router, contains("path: '$route'"), reason: '$route should be routed');
++      }
++    });
++
++    test('caregiver screens for operations and oversight exist', () {
++      for (final path in <String>[
++        'lib/presentation/caregiver/caregiver_assign_task_screen.dart',
++        'lib/presentation/caregiver/caregiver_assign_routine_screen.dart',
++        'lib/presentation/caregiver/caregiver_permissions_screen.dart',
++        'lib/presentation/caregiver/caregiver_progress_insights_screen.dart',
++        'lib/presentation/caregiver/caregiver_assigned_routines_screen.dart',
++      ]) {
++        expect(File(path).existsSync(), isTrue, reason: '$path should exist');
++      }
++    });
++
++    test('caregiver repository exposes progress and permission boundaries', () {
++      final repository = _read('lib/data/repositories/caregiver_repository.dart');
++
++      for (final symbol in <String>[
++        'CaregiverPermissions',
++        'loadPermissions',
++        'updatePermissions',
++        'loadAlerts',
++        'loadBodyDoubleSummaries',
++        'exportProgressReport',
++        'visibilityLevel',
++      ]) {
++        expect(repository, contains(symbol), reason: '$symbol should remain exposed');
++      }
++    });
++  });
++}
++
++String _read(String path) => File(path).readAsStringSync();
+diff --git a/test/phase3/phase3_task_sidequest_context_contract_test.dart b/test/phase3/phase3_task_sidequest_context_contract_test.dart
+new file mode 100644
+index 0000000..0000000
+--- /dev/null
++++ b/test/phase3/phase3_task_sidequest_context_contract_test.dart
++import 'dart:io';
++
++import 'package:flutter_test/flutter_test.dart';
++
++void main() {
++  group('Phase 3 task side quest and breakdown context contract', () {
++    test('side quest panel is fully hidden when side quests are toggled off', () {
++      final breakdown = _read('lib/presentation/tasks/task_breakdown_screen.dart');
++
++      expect(
++        breakdown,
++        contains('if (state.task?.id != null && state.showSideQuests)'),
++      );
++      expect(breakdown, contains('SideQuestPanel(taskId: state.task!.id)'));
++    });
++
++    test('follow-up breakdown uses stored TaskStateSnapshot before fallback', () {
++      final breakdown = _read('lib/presentation/tasks/task_breakdown_screen.dart');
++
++      expect(breakdown, contains('final state = ref.read(taskControllerProvider);'));
++      expect(breakdown, contains('final snapshot = state.snapshot ??'));
++      expect(breakdown, contains('snapshot: snapshot'));
++      expect(breakdown, contains('stepText: step.text'));
++    });
++
++    test('task controller stores original snapshot when task is created', () {
++      final controller = _read('lib/presentation/tasks/task_controller.dart');
++
++      expect(controller, contains('TaskViewState(loading: true, snapshot: snapshot)'));
++      expect(controller, contains('snapshot: snapshot'));
++    });
++  });
++}
++
++String _read(String path) => File(path).readAsStringSync();
+diff --git a/test/phase3/phase3_voice_runtime_contract_test.dart b/test/phase3/phase3_voice_runtime_contract_test.dart
+new file mode 100644
+index 0000000..0000000
+--- /dev/null
++++ b/test/phase3/phase3_voice_runtime_contract_test.dart
++import 'dart:io';
++
++import 'package:flutter_test/flutter_test.dart';
++
++void main() {
++  group('Phase 3 voice runtime contract', () {
++    test('voice runtime files remain present', () {
++      for (final path in <String>[
++        'lib/core/services/speech_to_text_service.dart',
++        'lib/core/services/text_to_speech_service.dart',
++        'lib/presentation/voice/voice_io_controller.dart',
++        'lib/presentation/voice/voice_input_button.dart',
++        'lib/presentation/voice/speak_button.dart',
++        'lib/presentation/voice/voice_test_panel.dart',
++      ]) {
++        expect(File(path).existsSync(), isTrue, reason: '$path should exist');
++      }
++    });
++
++    test('voice settings expose STT and TTS diagnostics with stop controls', () {
++      final panel = _read('lib/presentation/voice/voice_test_panel.dart');
++      final settings = _read('lib/presentation/settings/voice_profile_screen.dart');
++
++      expect(settings, contains('VoiceTestPanel'));
++      expect(panel, contains('Text-to-Speech'));
++      expect(panel, contains('Speech-to-Text'));
++      expect(panel, contains('Stop Speaking'));
++      expect(panel, contains('Stop Listening'));
++      expect(panel, contains('cancelListening'));
++      expect(panel, contains('recognizedText'));
++      expect(panel, contains('errorMessage'));
++    });
++
++    test('task input and task steps keep voice controls wired', () {
++      final taskInput = _read('lib/presentation/tasks/task_input_screen.dart');
++      final stepCard = _read('lib/presentation/tasks/widgets/step_card.dart');
++
++      expect(taskInput, contains('VoiceInputButton'));
++      expect(stepCard, contains('SpeakButton'));
++    });
++
++    test('Android microphone permission remains present', () {
++      final manifest = _read('android/app/src/main/AndroidManifest.xml');
++      expect(manifest, contains('android.permission.RECORD_AUDIO'));
++    });
++  });
++}
++
++String _read(String path) => File(path).readAsStringSync();

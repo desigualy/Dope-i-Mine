@@ -29,6 +29,7 @@ abstract class CaregiverRepository {
   Future<void> assignTask({
     required String targetUserId,
     required String taskTitle,
+    String? taskDescription,
     List<String>? steps,
     DateTime? dueAt,
     String visibilityLevel = 'standard',
@@ -41,7 +42,13 @@ abstract class CaregiverRepository {
       {String? targetUserId});
   Future<void> assignRoutine({
     required String targetUserId,
-    required String routineId,
+    String? routineId,
+    required String routineTitle,
+    String schedule,
+  });
+  Future<void> respondToAssignedRoutine({
+    required String assignedRoutineId,
+    required CaregiverRoutineStatus status,
   });
 
   Future<void> suggestSideQuest({
@@ -53,6 +60,7 @@ abstract class CaregiverRepository {
     required String relationshipId,
     required String targetUserId,
     required String message,
+    CaregiverNudgeTone tone,
   });
 
   Future<void> setMinorRandomApproval({

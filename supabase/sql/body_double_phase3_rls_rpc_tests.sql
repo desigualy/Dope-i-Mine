@@ -73,7 +73,8 @@ begin
     guardian_random_approved,
     preset_signals_allowed,
     quiet_mode_allowed,
-    text_allowed
+    text_allowed,
+    voice_allowed
   )
   values
     (adult_a, true, false, true, true, true, true),
@@ -147,13 +148,25 @@ begin
   insert into public.body_double_messages(session_id, sender_id, message_type, body)
   values (matched_session_id, adult_a, 'preset', 'Still here');
 
-  -- Phase 3C: random text is adult-only, opt-in, RPC-only, filtered, audited,
-  -- and rate limited. Minors remain preset/quiet only even with guardian approval.
+  -- Phase 3D/3E: random text is adult-only, opt-in, RPC-only, filtered,
+  -- audited, and rate limited. Random voice is not exposed until a real
+  -- monitored adult-only safety runtime exists. Minors remain preset/quiet
+  -- only even with guardian approval.
   begin
     perform public.enter_random_body_double_queue('focusSprint', 'study', 25, 'voice', 'private');
     raise exception 'Minor entered random voice queue unexpectedly';
   exception when others then
-    if position('adult-only' in lower(sqlerrm)) = 0 then
+    if position('supports quiet, presetsignals, or adult-only textonly' in lower(sqlerrm)) = 0 then
+      raise;
+    end if;
+  end;
+
+  perform set_config('request.jwt.claim.sub', adult_a::text, true);
+  begin
+    perform public.enter_random_body_double_queue('focusSprint', 'admin', 25, 'voice', 'private');
+    raise exception 'Adult entered random voice queue without monitored voice runtime unexpectedly';
+  exception when others then
+    if position('supports quiet, presetsignals, or adult-only textonly' in lower(sqlerrm)) = 0 then
       raise;
     end if;
   end;

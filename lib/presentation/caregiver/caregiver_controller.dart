@@ -138,12 +138,14 @@ class CaregiverController extends StateNotifier<CaregiverState> {
   Future<void> assignTask(
     String targetUserId,
     String title, {
+    String? description,
     List<String>? steps,
     DateTime? due,
   }) async {
     await _repository.assignTask(
       targetUserId: targetUserId,
       taskTitle: title,
+      taskDescription: description,
       steps: steps,
       dueAt: due,
     );
@@ -158,10 +160,28 @@ class CaregiverController extends StateNotifier<CaregiverState> {
     await refresh();
   }
 
-  Future<void> assignRoutine(String targetUserId, String routineId) async {
+  Future<void> assignRoutine(
+    String targetUserId, {
+    String? routineId,
+    required String routineTitle,
+    String schedule = 'Flexible',
+  }) async {
     await _repository.assignRoutine(
       targetUserId: targetUserId,
       routineId: routineId,
+      routineTitle: routineTitle,
+      schedule: schedule,
+    );
+    await refresh();
+  }
+
+  Future<void> respondToRoutine(
+    String routineAssignmentId,
+    CaregiverRoutineStatus status,
+  ) async {
+    await _repository.respondToAssignedRoutine(
+      assignedRoutineId: routineAssignmentId,
+      status: status,
     );
     await refresh();
   }
@@ -174,11 +194,17 @@ class CaregiverController extends StateNotifier<CaregiverState> {
     await refresh();
   }
 
-  Future<void> sendNudge(String relId, String targetUserId, String msg) async {
+  Future<void> sendNudge(
+    String relId,
+    String targetUserId,
+    String msg, {
+    CaregiverNudgeTone tone = CaregiverNudgeTone.gentle,
+  }) async {
     await _repository.sendNudge(
       relationshipId: relId,
       targetUserId: targetUserId,
       message: msg,
+      tone: tone,
     );
     await refresh();
   }

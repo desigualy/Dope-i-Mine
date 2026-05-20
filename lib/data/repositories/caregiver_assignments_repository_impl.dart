@@ -8,15 +8,21 @@ class CaregiverAssignmentsRepositoryImpl {
   final SupabaseClient _client;
 
   Future<void> assignRoutine({
+    required String relationshipId,
     required String caregiverUserId,
     required String targetUserId,
-    required String routineId,
+    String? routineId,
+    required String routineTitle,
+    String schedule = 'Flexible',
   }) async {
     await _client.from('caregiver_assigned_routines').upsert(<String, dynamic>{
+      'relationship_id': relationshipId,
       'caregiver_user_id': caregiverUserId,
       'target_user_id': targetUserId,
       'routine_id': routineId,
-      'status': 'active',
+      'routine_title': routineTitle,
+      'schedule': schedule,
+      'status': 'assigned',
     });
   }
 
@@ -33,9 +39,12 @@ class CaregiverAssignmentsRepositoryImpl {
       final map = Map<String, dynamic>.from(row as Map);
       return CaregiverAssignedRoutineModel(
         id: map['id'] as String,
+        relationshipId: map['relationship_id'] as String? ?? '',
         caregiverUserId: map['caregiver_user_id'] as String,
         targetUserId: map['target_user_id'] as String,
-        routineId: map['routine_id'] as String,
+        routineId: map['routine_id'] as String?,
+        routineTitle: map['routine_title'] as String? ?? 'Shared routine',
+        schedule: map['schedule'] as String? ?? 'Flexible',
         status: map['status'] as String,
       );
     }).toList();

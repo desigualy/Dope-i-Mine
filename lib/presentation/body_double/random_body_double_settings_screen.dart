@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/widgets/primary_scaffold.dart';
 import '../../data/local/local_body_double_store.dart';
 import '../../data/repositories/body_double_repository_impl.dart';
+import '../../domain/body_double/body_double_session.dart';
 import '../../domain/tasks/task_state_snapshot.dart' as task_snapshot;
 import '../../providers.dart';
+import 'body_double_controller.dart';
 
 class RandomBodyDoubleSettingsScreen extends ConsumerStatefulWidget {
   const RandomBodyDoubleSettingsScreen({super.key});
@@ -27,7 +30,14 @@ class _RandomBodyDoubleSettingsScreenState
   bool _presetSignalsAllowed = true;
   bool _quietModeAllowed = true;
   bool _textAllowed = false;
+  // Phase 3D/3E deliberately does not expose voice until a real monitored
+  // random-voice runtime exists. This prevents fake/open voice behaviour.
   bool _voiceAllowed = false;
+  BodyDoubleSessionType _sessionType = BodyDoubleSessionType.focusSprint;
+  BodyDoubleCommunicationMode _communicationMode =
+      BodyDoubleCommunicationMode.presetSignals;
+  int _sessionLengthMinutes = 25;
+  bool _enteringQueue = false;
 
   @override
   void initState() {
@@ -62,6 +72,9 @@ class _RandomBodyDoubleSettingsScreenState
       final profile =
           await ref.read(profileRepositoryProvider).getProfile(authUser.id);
       final settings = await _repository()?.loadRandomSafetySettings();
+      await ref
+          .read(bodyDoubleControllerProvider.notifier)
+          .refreshRandomEligibility();
       if (!mounted) return;
       setState(() {
         _ageBand = profile?.ageBand;
@@ -102,6 +115,9 @@ class _RandomBodyDoubleSettingsScreenState
       textAllowed: _textAllowed,
       voiceAllowed: _voiceAllowed,
     );
+    await ref
+        .read(bodyDoubleControllerProvider.notifier)
+        .refreshRandomEligibility();
     if (!mounted) return;
     setState(() {
       _saving = false;
@@ -149,8 +165,9 @@ class _RandomBodyDoubleSettingsScreenState
                   child: Padding(
                     padding: EdgeInsets.all(12),
                     child: Text(
-                      'Random body doubling is anonymous, optional, and safety-gated. '
-                      'Phase 3C/E allows limited adult-only text and voice when explicitly enabled. Minors stay preset-only. No video, profiles, or contact exchange.',
+                      'Random body doubling pairs you with another person for quiet task support. '
+                      'Do not share real names, contact details, location, social handles, photos, or private information. '
+                      'You can leave at any time. You can report a participant at any time.',
                     ),
                   ),
                 ),
@@ -163,6 +180,8 @@ class _RandomBodyDoubleSettingsScreenState
                   _adultSettings(context)
                 else
                   _minorNotice(context),
+                const Divider(height: 32),
+                _queueEntry(context),
                 const Divider(height: 32),
                 _guardianApproval(context),
               ],
@@ -211,14 +230,12 @@ class _RandomBodyDoubleSettingsScreenState
           onChanged:
               _saving ? null : (value) => setState(() => _textAllowed = value),
         ),
-        SwitchListTile(
-          title: const Text('Voice chat for adults'),
-          subtitle: const Text(
-            'Push-to-talk or timed check-in voice only. Safety monitored and reportable.',
+        const ListTile(
+          leading: Icon(Icons.mic_off_rounded),
+          title: Text('Voice is not available for random matching'),
+          subtitle: Text(
+            'Random voice stays off until a real monitored adult-only voice safety runtime is deployed. Minors can never use random voice.',
           ),
-          value: _voiceAllowed,
-          onChanged:
-              _saving ? null : (value) => setState(() => _voiceAllowed = value),
         ),
         FilledButton.icon(
           onPressed: _saving ? null : _saveAdultSettings,
@@ -283,5 +300,203 @@ class _RandomBodyDoubleSettingsScreenState
         ),
       ],
     );
+  }
+
+  Widget _queueEntry(BuildContext context) {
+    final state = ref.watch(bodyDoubleControllerProvider);
+    final eligibility = state.eligibility;
+    final canEnter = eligibility?.canEnterRandomQueue == true &&
+        eligibility!.allowsCommunicationMode(_communicationMode);
+    final queueId = state.queueId;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text('Enter random body double queue',
+                style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 8),
+            const Text(
+              'Safety gate runs before queue entry. Random matching is support, not social discovery.',
+            ),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<BodyDoubleSessionType>(
+              value: _sessionType,
+              decoration: const InputDecoration(
+                labelText: 'Safe session type',
+                border: OutlineInputBorder(),
+              ),
+              items: BodyDoubleSessionType.values
+                  .map((type) => DropdownMenuItem<BodyDoubleSessionType>(
+                        value: type,
+                        child: Text(type.label),
+                      ))
+                  .toList(),
+              onChanged: queueId == null
+                  ? (value) => setState(() {
+                        _sessionType = value ?? _sessionType;
+                        _sessionLengthMinutes = _sessionType.defaultMinutes ??
+                            _sessionLengthMinutes;
+                      })
+                  : null,
+            ),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<int>(
+              value: _sessionLengthMinutes,
+              decoration: const InputDecoration(
+                labelText: 'Session length',
+                border: OutlineInputBorder(),
+              ),
+              items: const <DropdownMenuItem<int>>[
+                DropdownMenuItem<int>(value: 5, child: Text('5 minutes')),
+                DropdownMenuItem<int>(value: 15, child: Text('15 minutes')),
+                DropdownMenuItem<int>(value: 25, child: Text('25 minutes')),
+                DropdownMenuItem<int>(value: 45, child: Text('45 minutes')),
+                DropdownMenuItem<int>(value: 60, child: Text('60 minutes')),
+              ],
+              onChanged: queueId == null
+                  ? (value) => setState(() =>
+                      _sessionLengthMinutes = value ?? _sessionLengthMinutes)
+                  : null,
+            ),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<BodyDoubleCommunicationMode>(
+              value: _communicationMode,
+              decoration: const InputDecoration(
+                labelText: 'Allowed communication mode',
+                border: OutlineInputBorder(),
+              ),
+              items: _allowedCommunicationModes()
+                  .map((mode) => DropdownMenuItem<BodyDoubleCommunicationMode>(
+                        value: mode,
+                        child: Text(_communicationLabel(mode)),
+                      ))
+                  .toList(),
+              onChanged: queueId == null
+                  ? (value) => setState(
+                      () => _communicationMode = value ?? _communicationMode)
+                  : null,
+            ),
+            const SizedBox(height: 12),
+            if (state.randomSafetyNotice != null)
+              Text(
+                state.randomSafetyNotice!,
+                style: TextStyle(color: Theme.of(context).colorScheme.primary),
+              ),
+            if (eligibility != null && !canEnter) ...<Widget>[
+              const SizedBox(height: 8),
+              Text(
+                _ineligibleMessage(eligibility),
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
+            ],
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: <Widget>[
+                FilledButton.icon(
+                  key: const ValueKey<String>('enter-random-queue-button'),
+                  onPressed: queueId != null || _enteringQueue || !canEnter
+                      ? null
+                      : _enterQueue,
+                  icon: const Icon(Icons.diversity_2_rounded),
+                  label: Text(_enteringQueue
+                      ? 'Checking safety…'
+                      : 'Enter safe random queue'),
+                ),
+                if (queueId != null)
+                  OutlinedButton.icon(
+                    key: const ValueKey<String>('cancel-random-queue-button'),
+                    onPressed: _enteringQueue
+                        ? null
+                        : () => ref
+                            .read(bodyDoubleControllerProvider.notifier)
+                            .cancelRandomQueue(),
+                    icon: const Icon(Icons.close_rounded),
+                    label: const Text('Cancel queue'),
+                  ),
+                if (state.activeSession?.mode == BodyDoubleMode.random &&
+                    state.activeSession?.status == BodyDoubleStatus.active)
+                  FilledButton.tonalIcon(
+                    onPressed: () => context.go('/body-double/session'),
+                    icon: const Icon(Icons.login_rounded),
+                    label: const Text('Open matched session'),
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<BodyDoubleCommunicationMode> _allowedCommunicationModes() {
+    final modes = <BodyDoubleCommunicationMode>[
+      BodyDoubleCommunicationMode.presetSignals,
+      BodyDoubleCommunicationMode.quiet,
+    ];
+    if (_isAdult && _textAllowed) {
+      modes.add(BodyDoubleCommunicationMode.textOnly);
+    }
+    // Do not expose random voice in Phase 3D/3E. There is no production voice
+    // room/monitoring runtime here, so showing it would be fake behaviour.
+    if (!modes.contains(_communicationMode)) {
+      _communicationMode = modes.first;
+    }
+    return modes;
+  }
+
+  String _communicationLabel(BodyDoubleCommunicationMode mode) {
+    switch (mode) {
+      case BodyDoubleCommunicationMode.quiet:
+        return 'Quiet presence';
+      case BodyDoubleCommunicationMode.presetSignals:
+        return 'Preset signals';
+      case BodyDoubleCommunicationMode.textOnly:
+        return 'Limited filtered text (adults only)';
+      case BodyDoubleCommunicationMode.voice:
+        return 'Voice (adults only, safety-gated)';
+    }
+  }
+
+  String _ineligibleMessage(RandomBodyDoubleEligibility eligibility) {
+    if (!eligibility.randomMatchingEnabled) {
+      return 'Random matching is off. Enable it in safety settings first.';
+    }
+    if (eligibility.ageBand != BodyDoubleAgeBand.adult &&
+        !eligibility.guardianApproved) {
+      return 'Guardian approval is required before a minor can use random matching.';
+    }
+    return 'This communication mode is not allowed by your safety settings.';
+  }
+
+  Future<void> _enterQueue() async {
+    setState(() {
+      _enteringQueue = true;
+      _message = null;
+    });
+    await ref.read(bodyDoubleControllerProvider.notifier).enterRandomQueue(
+          sessionType: _sessionType,
+          sessionLengthMinutes: _sessionLengthMinutes,
+          communicationMode: _communicationMode,
+          privacyLevel: BodyDoublePrivacyLevel.titleOnly,
+        );
+    if (!mounted) return;
+    final state = ref.read(bodyDoubleControllerProvider);
+    setState(() {
+      _enteringQueue = false;
+      _message = state.activeSession?.status == BodyDoubleStatus.active
+          ? 'Matched. Opening your anonymous session.'
+          : state.queueId != null
+              ? 'You are in the random queue. You can cancel anytime.'
+              : state.randomSafetyNotice ?? 'Could not enter random queue.';
+    });
+    if (state.activeSession?.mode == BodyDoubleMode.random &&
+        state.activeSession?.status == BodyDoubleStatus.active &&
+        mounted) {
+      context.go('/body-double/session');
+    }
   }
 }

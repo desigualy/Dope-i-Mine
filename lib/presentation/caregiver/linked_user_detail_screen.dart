@@ -57,7 +57,12 @@ class LinkedUserDetailScreen extends ConsumerWidget {
           const SizedBox(height: 24),
           _ActionGrid(relationship: relationship),
           const SizedBox(height: 32),
-          Text('Recent Alerts',
+          Text('Progress updates',
+              style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 12),
+          _ProgressSummary(tasks: tasks, routines: routines),
+          const SizedBox(height: 32),
+          Text('Recent support notes',
               style: Theme.of(context)
                   .textTheme
                   .titleMedium
@@ -65,7 +70,7 @@ class LinkedUserDetailScreen extends ConsumerWidget {
           const SizedBox(height: 12),
           _AlertList(relationshipId: relationshipId),
           const SizedBox(height: 32),
-          Text('Body Double History',
+          Text('Dope-i body double summaries',
               style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 12),
           _BodyDoubleHistoryList(userId: relationship.supportedUserId),
@@ -77,12 +82,12 @@ class LinkedUserDetailScreen extends ConsumerWidget {
             const Text('No active assignments for this user.',
                 style: TextStyle(color: Colors.grey)),
           ...tasks.map((t) => _AssignmentTile(
-              title: t.taskTitle ?? 'Task',
+              title: t.taskTitle,
               status: t.status.name,
               icon: Icons.task_alt_rounded)),
           ...routines.map((r) => _AssignmentTile(
-              title: r.routineTitle ?? 'Routine',
-              status: r.status,
+              title: r.routineTitle,
+              status: r.status.name,
               icon: Icons.repeat_rounded)),
         ],
       ),
@@ -157,21 +162,14 @@ class _ActionGrid extends ConsumerWidget {
               '/caregiver/assign-routine?uid=${relationship.supportedUserId}'),
         ),
         _ActionButton(
-          label: 'Suggest Side Quest',
+          label: 'Support task',
           icon: Icons.auto_awesome_rounded,
           color: Colors.pink,
           onTap: () =>
               _showSideQuestDialog(context, ref, relationship.supportedUserId),
         ),
         _ActionButton(
-          label: 'Body Double',
-          icon: Icons.people_rounded,
-          color: Colors.purple,
-          onTap: () => _showBodyDoubleInviteDialog(
-              context, ref, relationship.supportedUserId),
-        ),
-        _ActionButton(
-          label: 'Send Nudge',
+          label: 'Gentle nudge',
           icon: Icons.waving_hand_rounded,
           color: Colors.orange,
           onTap: () => _showNudgeDialog(
@@ -181,63 +179,16 @@ class _ActionGrid extends ConsumerWidget {
     );
   }
 
-  void _showBodyDoubleInviteDialog(
-      BuildContext context, WidgetRef ref, String uid) {
-    final categories = ['Chores', 'Admin', 'Work', 'Study', 'Personal'];
-    String selectedCategory = categories.first;
-
-    showDialog(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          title: const Text('Invite to Body Double'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Start a shared focus session.'),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: selectedCategory,
-                items: categories
-                    .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                    .toList(),
-                onChanged: (val) =>
-                    setDialogState(() => selectedCategory = val!),
-                decoration: const InputDecoration(labelText: 'Task Category'),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel')),
-            TextButton(
-              onPressed: () {
-                ref
-                    .read(caregiverControllerProvider.notifier)
-                    .inviteToBodyDouble(uid, selectedCategory);
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text('Body double invitation sent!')));
-              },
-              child: const Text('Invite'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   void _showSideQuestDialog(BuildContext context, WidgetRef ref, String uid) {
     final controller = TextEditingController();
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Suggest Side Quest'),
+        title: const Text('Support task idea'),
         content: TextField(
           controller: controller,
           decoration:
-              const InputDecoration(hintText: 'e.g. Try a 5-min stretch'),
+              const InputDecoration(hintText: 'e.g. Try one small reset step'),
         ),
         actions: [
           TextButton(
@@ -250,7 +201,7 @@ class _ActionGrid extends ConsumerWidget {
                   .suggestSideQuest(uid, controller.text.trim());
               Navigator.pop(context);
             },
-            child: const Text('Suggest'),
+            child: const Text('Offer support'),
           ),
         ],
       ),
@@ -263,10 +214,12 @@ class _ActionGrid extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Send Nudge'),
+        title: const Text('Send gentle nudge'),
         content: TextField(
           controller: controller,
-          decoration: const InputDecoration(hintText: 'e.g. You got this!'),
+          decoration: const InputDecoration(
+            hintText: 'e.g. Gentle reminder — ready when you are.',
+          ),
         ),
         actions: [
           TextButton(
@@ -274,14 +227,54 @@ class _ActionGrid extends ConsumerWidget {
               child: const Text('Cancel')),
           TextButton(
             onPressed: () {
-              ref
-                  .read(caregiverControllerProvider.notifier)
-                  .sendNudge(relId, uid, controller.text.trim());
+              ref.read(caregiverControllerProvider.notifier).sendNudge(
+                    relId,
+                    uid,
+                    controller.text.trim(),
+                  );
               Navigator.pop(context);
             },
             child: const Text('Send'),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ProgressSummary extends StatelessWidget {
+  const _ProgressSummary({required this.tasks, required this.routines});
+
+  final List<CaregiverAssignedTask> tasks;
+  final List<CaregiverAssignedRoutine> routines;
+
+  @override
+  Widget build(BuildContext context) {
+    final completedTasks = tasks
+        .where((task) => task.status == CaregiverTaskStatus.completed)
+        .length;
+    final completedRoutines = routines
+        .where((routine) => routine.status == CaregiverRoutineStatus.completed)
+        .length;
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+                'Support task progress: $completedTasks/${tasks.length} complete'),
+            const SizedBox(height: 8),
+            Text(
+                'Shared routine progress: $completedRoutines/${routines.length} complete'),
+            const SizedBox(height: 8),
+            const Text(
+              'Only permitted progress summaries are shown here — not private notes, voice transcripts, or personal overwhelm details.',
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -323,7 +323,7 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
     try {
       var query = client.from('caregiver_assigned_tasks').select('''
         *,
-        task:task_id(title)
+        task:task_id(normalized_title)
       ''');
 
       if (targetUserId != null) {
@@ -336,7 +336,7 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
       final res = await query;
       return (res as List<dynamic>).map((json) {
         final Map<String, dynamic> data = Map<String, dynamic>.from(json);
-        data['task_title'] = json['task']?['title'];
+        data['task_title'] ??= json['task']?['normalized_title'];
         return CaregiverAssignedTask.fromJson(data);
       }).toList();
     } catch (e) {
@@ -348,20 +348,50 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
   Future<void> assignTask({
     required String targetUserId,
     required String taskTitle,
+    String? taskDescription,
     List<String>? steps,
     DateTime? dueAt,
     String visibilityLevel = 'standard',
   }) async {
     if (userId == null) return;
+    final relationship = await _acceptedRelationshipForTarget(targetUserId);
+    if (relationship == null) return;
+    final permissions = await loadPermissions(relationship.id);
+    if (permissions?.canAssignTasks != true) return;
+
+    final title = taskTitle.trim();
+    if (title.isEmpty) return;
+
     try {
+      final task = await client
+          .from('tasks')
+          .insert(<String, dynamic>{
+            'user_id': targetUserId,
+            'source_text': title,
+            'normalized_title': title,
+            'category': 'caregiver_support',
+            'status': 'active',
+            'mode_used': 'caregiver_assignment',
+            'energy_level': 'medium',
+            'stress_level': 'medium',
+            'time_available': 'flexible',
+            'effort_band': 'medium',
+            'estimated_minutes': 15,
+          })
+          .select('id')
+          .single();
+
       await client.from('caregiver_assigned_tasks').insert({
+        'relationship_id': relationship.id,
         'caregiver_user_id': userId,
         'target_user_id': targetUserId,
+        'task_id': task['id'],
         'task_title': taskTitle,
+        'task_description': taskDescription,
         'steps': steps,
         'due_at': dueAt?.toIso8601String(),
         'visibility_level': visibilityLevel,
-        'status': 'suggested',
+        'status': 'assigned',
       });
     } catch (_) {}
   }
@@ -371,16 +401,23 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
     required String assignedTaskId,
     required CaregiverTaskStatus status,
   }) async {
+    if (!_isSupportedTaskTransition(status)) return;
     try {
-      await client.from('caregiver_assigned_tasks').update({
+      final updates = <String, dynamic>{
         'status': status.name,
-        'accepted_at': status == CaregiverTaskStatus.accepted
-            ? DateTime.now().toIso8601String()
-            : null,
-        'completed_at': status == CaregiverTaskStatus.completed
-            ? DateTime.now().toIso8601String()
-            : null,
-      }).eq('id', assignedTaskId);
+        'updated_at': DateTime.now().toIso8601String(),
+      };
+      if (status == CaregiverTaskStatus.accepted ||
+          status == CaregiverTaskStatus.active) {
+        updates['accepted_at'] = DateTime.now().toIso8601String();
+      }
+      if (status == CaregiverTaskStatus.completed) {
+        updates['completed_at'] = DateTime.now().toIso8601String();
+      }
+      await client.from('caregiver_assigned_tasks').update(updates).eq(
+            'id',
+            assignedTaskId,
+          );
     } catch (_) {}
   }
 
@@ -415,16 +452,53 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
   @override
   Future<void> assignRoutine({
     required String targetUserId,
-    required String routineId,
+    String? routineId,
+    required String routineTitle,
+    String schedule = 'Flexible',
   }) async {
     if (userId == null) return;
+    final relationship = await _acceptedRelationshipForTarget(targetUserId);
+    if (relationship == null) return;
+    final permissions = await loadPermissions(relationship.id);
+    if (permissions?.canAssignRoutines != true) return;
+
+    final title = routineTitle.trim();
+    if (title.isEmpty) return;
+
     try {
       await client.from('caregiver_assigned_routines').insert({
+        'relationship_id': relationship.id,
         'caregiver_user_id': userId,
         'target_user_id': targetUserId,
         'routine_id': routineId,
-        'status': 'active',
+        'routine_title': title,
+        'schedule': schedule.trim().isEmpty ? 'Flexible' : schedule.trim(),
+        'status': 'assigned',
       });
+    } catch (_) {}
+  }
+
+  @override
+  Future<void> respondToAssignedRoutine({
+    required String assignedRoutineId,
+    required CaregiverRoutineStatus status,
+  }) async {
+    if (!_isSupportedRoutineTransition(status)) return;
+    try {
+      final updates = <String, dynamic>{
+        'status': status.name,
+        'updated_at': DateTime.now().toIso8601String(),
+      };
+      if (status == CaregiverRoutineStatus.active) {
+        updates['started_at'] = DateTime.now().toIso8601String();
+      }
+      if (status == CaregiverRoutineStatus.completed) {
+        updates['completed_at'] = DateTime.now().toIso8601String();
+      }
+      await client.from('caregiver_assigned_routines').update(updates).eq(
+            'id',
+            assignedRoutineId,
+          );
     } catch (_) {}
   }
 
@@ -449,15 +523,23 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
     required String relationshipId,
     required String targetUserId,
     required String message,
+    CaregiverNudgeTone tone = CaregiverNudgeTone.gentle,
   }) async {
     if (userId == null) return;
+    final cleanMessage = _sanitizeNudgeMessage(message);
+    if (cleanMessage == null) return;
+    final relationship = await _acceptedRelationshipForTarget(targetUserId);
+    if (relationship == null || relationship.id != relationshipId) return;
+    final permissions = await loadPermissions(relationship.id);
+    if (permissions?.canSetReminders != true) return;
+
     try {
-      await client.from('caregiver_check_ins').insert({
+      await client.from('caregiver_nudges').insert({
         'relationship_id': relationshipId,
-        'sender_id': userId,
-        'receiver_id': targetUserId,
-        'message': message,
-        'check_in_type': 'encouragement',
+        'caregiver_user_id': userId,
+        'supported_user_id': targetUserId,
+        'message': cleanMessage,
+        'tone': tone.name,
       });
     } catch (_) {}
   }
@@ -545,5 +627,54 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
   Future<String> exportProgressReport(String userId) async {
     await Future.delayed(const Duration(seconds: 2));
     return 'https://api.dopeimine.com/reports/export_$userId.pdf';
+  }
+
+  Future<CaregiverRelationship?> _acceptedRelationshipForTarget(
+    String targetUserId,
+  ) async {
+    if (userId == null) return null;
+    try {
+      final row = await client
+          .from('caregiver_relationships')
+          .select()
+          .eq('caregiver_user_id', userId!)
+          .eq('supported_user_id', targetUserId)
+          .eq('status', 'accepted')
+          .maybeSingle();
+      if (row == null) return null;
+      return CaregiverRelationship.fromJson(row);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  bool _isSupportedTaskTransition(CaregiverTaskStatus status) {
+    return status == CaregiverTaskStatus.accepted ||
+        status == CaregiverTaskStatus.active ||
+        status == CaregiverTaskStatus.completed ||
+        status == CaregiverTaskStatus.declined;
+  }
+
+  bool _isSupportedRoutineTransition(CaregiverRoutineStatus status) {
+    return status == CaregiverRoutineStatus.active ||
+        status == CaregiverRoutineStatus.completed ||
+        status == CaregiverRoutineStatus.paused ||
+        status == CaregiverRoutineStatus.revoked;
+  }
+
+  String? _sanitizeNudgeMessage(String message) {
+    final trimmed = message.trim();
+    if (trimmed.isEmpty || trimmed.length > 240) return null;
+    final lower = trimmed.toLowerCase();
+    const blocked = <String>[
+      'lazy',
+      'failure',
+      'bad',
+      'broken',
+      "why haven't you",
+      'why havent you',
+    ];
+    if (blocked.any(lower.contains)) return null;
+    return trimmed;
   }
 }

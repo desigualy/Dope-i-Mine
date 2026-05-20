@@ -277,7 +277,7 @@ void main() {
     });
 
     test('minor random matching stays age-band exact and preset-only', () {
-      final now = DateTime(2026, 5, 9);
+      final now = DateTime.now();
       final teenOne = BodyDoubleQueueEntry(
         id: 'queue-teen-1',
         userId: 'teen-1',

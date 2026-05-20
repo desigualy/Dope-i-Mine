@@ -304,13 +304,28 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
     final client = _repository.client;
     final userId = _repository.userId;
     if (client == null || userId == null) return;
+    if (!RegExp(
+            r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$')
+        .hasMatch(sessionId)) {
+      await _repository.saveParticipant(BodyDoubleParticipant(
+        id: 'bdp-${DateTime.now().microsecondsSinceEpoch}',
+        sessionId: sessionId,
+        userId: userId,
+        role: role,
+        status: status == 'joined'
+            ? BodyDoubleParticipantStatus.active
+            : BodyDoubleParticipantStatus.invited,
+        joinedAt: DateTime.now(),
+      ));
+      return;
+    }
+    final participantStatus = status == 'joined' ? 'active' : status;
     try {
       await client.from('body_double_participants').upsert(<String, dynamic>{
         'session_id': sessionId,
         'user_id': userId,
         'role': role,
-        'status': status,
-        'privacy_level': privacyLevel,
+        'status': participantStatus,
       });
     } catch (e) {
       // Ignore
@@ -355,7 +370,18 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
   Future<void> restore() async {
     final active = await _repository.loadActiveSession();
     final summary = await _repository.loadLastSummary();
-    final invites = await _repository.loadFriendInvites();
+    final localInvites = await _repository.loadFriendInvites();
+    final remoteInvites = await _repository.loadRemotePendingInvites();
+
+    final mergedMap = <String, BodyDoubleInvite>{};
+    for (final item in localInvites) {
+      mergedMap[item.id] = item;
+    }
+    for (final item in remoteInvites) {
+      mergedMap[item.id] = item;
+    }
+    final invites = mergedMap.values.toList();
+
     state = state.copyWith(
       activeSession: active,
       lastSummary: summary,
@@ -374,7 +400,17 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
     state = state.copyWith(activeSession: session);
   }
 
-  Future<void> createFriendInvite({
+  Future<void> refreshRandomEligibility() async {
+    final eligibility = await _repository.loadRandomEligibility();
+    state = state.copyWith(
+      eligibility: eligibility,
+      randomSafetyNotice: eligibility == null
+          ? 'Random matching requires a signed-in profile and safety settings.'
+          : null,
+    );
+  }
+
+  Future<bool> createFriendInvite({
     required String senderId,
     required String receiverId,
     String? taskId,
@@ -382,7 +418,33 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
     BodyDoublePrivacyLevel privacyLevel = BodyDoublePrivacyLevel.titleOnly,
     bool isSpurAOn = false,
     int expiresInMinutes = 60,
+    BodyDoubleSessionType sessionType = BodyDoubleSessionType.focusSprint,
+    BodyDoubleCommunicationMode communicationMode =
+        BodyDoubleCommunicationMode.quiet,
+    int? sessionLengthMinutes,
+    Set<String>? allowedReceiverIds,
   }) async {
+    if (receiverId.trim().isEmpty) {
+      state = state.copyWith(
+        gentlePrompt: 'Choose a trusted person before sending an invite.',
+      );
+      return false;
+    }
+    if (senderId == receiverId) {
+      state = state.copyWith(
+        gentlePrompt:
+            'Choose someone else you trust for this body-double invite.',
+      );
+      return false;
+    }
+    if (allowedReceiverIds != null &&
+        !allowedReceiverIds.contains(receiverId)) {
+      state = state.copyWith(
+        gentlePrompt:
+            'Invite not sent. Body doubling is only available with accepted trusted relationships.',
+      );
+      return false;
+    }
     final now = DateTime.now();
 
     // Reuse existing waiting friend session if it matches the task
@@ -397,14 +459,16 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
         id: 'bd-friend-${now.microsecondsSinceEpoch}',
         mode: BodyDoubleMode.friend,
         status: BodyDoubleStatus.waiting,
-        sessionType: BodyDoubleSessionType.focusSprint,
+        sessionType: sessionType,
         taskId: taskId,
         taskTitle: taskTitle,
         startedAt: now,
-        communicationMode: BodyDoubleCommunicationMode.quiet,
+        sessionLengthMinutes: sessionLengthMinutes,
+        communicationMode: communicationMode,
         privacyLevel: privacyLevel,
-        quietMode: true,
-        textOnlyMode: true,
+        quietMode: communicationMode == BodyDoubleCommunicationMode.quiet,
+        textOnlyMode: communicationMode != BodyDoubleCommunicationMode.voice,
+        voiceEnabled: communicationMode == BodyDoubleCommunicationMode.voice,
       );
       await _repository.saveActiveSession(session);
       await _addParticipant(session.id, 'host', 'joined', privacyLevel.name);
@@ -421,7 +485,15 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
       isSpurAOn: isSpurAOn,
     );
 
-    await _repository.saveFriendInvite(invite);
+    try {
+      await _repository.saveFriendInvite(invite);
+    } catch (_) {
+      state = state.copyWith(
+        gentlePrompt:
+            'Invite was not sent. Check your connection and trusted relationship, then try again.',
+      );
+      return false;
+    }
 
     state = state.copyWith(
       activeSession: session,
@@ -430,6 +502,7 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
           ? 'Spur-a-on invite sent. They can offer extra encouragement if they accept.'
           : 'Invite sent. The shared session starts only if they accept.',
     );
+    return true;
   }
 
   Future<void> respondToFriendInvite({
@@ -450,11 +523,23 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
           : BodyDoubleInviteStatus.declined,
       respondedAt: DateTime.now(),
     );
-    await _repository.saveFriendInvite(updated);
-    final acceptedSession = accept
-        ? state.activeSession?.copyWith(status: BodyDoubleStatus.active)
-        : state.activeSession;
+    try {
+      await _repository.saveFriendInvite(updated);
+    } catch (_) {
+      state = state.copyWith(
+        gentlePrompt: 'Could not respond to this invite. Please try again.',
+      );
+      return;
+    }
+
+    BodyDoubleSession? acceptedSession = state.activeSession;
+    if (acceptedSession == null || acceptedSession.id != invite.sessionId) {
+      acceptedSession = await _repository.loadRemoteSession(invite.sessionId);
+    }
+
     if (accept && acceptedSession != null) {
+      acceptedSession =
+          acceptedSession.copyWith(status: BodyDoubleStatus.active);
       await _repository.saveActiveSession(acceptedSession);
       _subscribeToSession(acceptedSession.id);
       await updatePresence('online');
@@ -466,7 +551,7 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
         for (final item in state.friendInvites)
           if (item.id == inviteId) updated else item,
       ],
-      activeSession: acceptedSession,
+      activeSession: accept ? acceptedSession : state.activeSession,
       gentlePrompt: accept
           ? 'Consent confirmed. You can work quietly together.'
           : 'Invite declined. No pressure, no problem.',
@@ -807,6 +892,8 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
         sessionLengthMinutes: requested.sessionLengthMinutes,
         communicationMode: communicationMode,
         privacyLevel: privacyLevel,
+        language: language,
+        timezone: timezone,
       );
       if (queueId == null || queueId.isEmpty) {
         state = state.copyWith(
@@ -846,8 +933,22 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
 
       // Attempt to find a match via RPC
       try {
-        await client
-            .rpc('find_body_double_match', params: {'p_queue_id': queueId});
+        final matchedSessionId = await client.rpc<String?>(
+            'find_body_double_match',
+            params: {'p_queue_id': queueId});
+        final matchedSession = matchedSessionId == null
+            ? await _repository.loadMatchedRandomSession(queueId)
+            : await _repository.loadRemoteSession(matchedSessionId);
+        if (matchedSession != null) {
+          await _repository.saveActiveSession(matchedSession);
+          state = state.copyWith(
+            activeSession: matchedSession,
+            queueId: null,
+            gentlePrompt: 'Matched. Stay anonymous, task-focused, and kind.',
+          );
+          _subscribeToSession(matchedSession.id);
+          await updatePresence('online');
+        }
       } catch (_) {}
     } catch (e) {
       state = state.copyWith(
@@ -891,7 +992,11 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
     if (queueId != null) {
       await _repository.cancelRandomQueue(queueId);
     }
-    await emergencyExit();
+    state = state.copyWith(
+      queueId: null,
+      clearActiveSession: true,
+      gentlePrompt: 'Random queue cancelled. You can try again anytime.',
+    );
   }
 
   static BodyDoubleSignalType _presetSignalForBody(String body) {

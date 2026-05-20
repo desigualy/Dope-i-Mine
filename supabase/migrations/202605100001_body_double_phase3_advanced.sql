@@ -162,6 +162,17 @@ alter table public.body_double_queue drop constraint if exists body_double_queue
 alter table public.body_double_queue add constraint body_double_queue_communication_mode_check
   check (communication_mode in ('quiet', 'presetSignals', 'textOnly', 'voice'));
 
+alter table public.body_double_queue drop constraint if exists body_double_queue_minor_safety_check;
+alter table public.body_double_queue add constraint body_double_queue_minor_safety_check
+  check (
+    age_band = 'adult'
+    or (
+      random_matching_enabled = true
+      and guardian_approved = true
+      and communication_mode in ('quiet', 'presetSignals')
+    )
+  );
+
 -- 6. Eligibility Function Update
 drop function if exists public.get_random_body_double_eligibility(uuid);
 create or replace function public.get_random_body_double_eligibility(p_user_id uuid default auth.uid())
@@ -331,16 +342,34 @@ create or replace function public.find_body_double_match(p_queue_id uuid)
 returns uuid
 language plpgsql
 security definer
+set search_path = public
 as $$
 declare
   v_my_entry public.body_double_queue;
   v_match_session_id uuid;
-  v_match_queue_entry public.body_double_queue;
+  v_match_queue_entry public.body_double_queue%rowtype;
 begin
   update public.body_double_queue set status = 'timeout', updated_at = now() where status = 'waiting' and expires_at <= now();
 
   select * into v_my_entry from public.body_double_queue where id = p_queue_id and user_id = auth.uid() and status = 'waiting' and expires_at > now();
   if not found then return null; end if;
+
+  if exists (
+    select 1 from public.body_double_user_restrictions r
+    where r.user_id = v_my_entry.user_id
+      and r.status = 'active'
+      and r.restriction_type in ('random_suspended', 'body_double_suspended')
+      and r.starts_at <= now()
+      and (r.expires_at is null or r.expires_at > now())
+  ) then
+    return null;
+  end if;
+
+  if v_my_entry.age_band <> 'adult'
+     and (v_my_entry.guardian_approved is not true
+          or v_my_entry.communication_mode not in ('quiet', 'presetSignals')) then
+    return null;
+  end if;
 
   -- Join existing session (Phase 3D - Groups)
   select s.id into v_match_session_id
@@ -355,11 +384,20 @@ begin
       select 1 from public.body_double_participants p
       where p.session_id = s.id and (p.age_band_snapshot != v_my_entry.age_band or p.status = 'removed')
     )
-    and (select count(*) from public.body_double_participants p where p.session_id = s.id and p.status in ('joined', 'active', 'accepted')) < 4
+    and (select count(*) from public.body_double_participants p where p.session_id = s.id and p.status in ('active', 'accepted')) < 4
     and not exists (
       select 1 from public.body_double_participants p
       join public.user_blocks b on (b.blocker_id = v_my_entry.user_id and b.blocked_id = p.user_id) or (b.blocker_id = p.user_id and b.blocked_id = v_my_entry.user_id)
       where p.session_id = s.id
+    )
+    and not exists (
+      select 1 from public.body_double_participants p
+      join public.body_double_user_restrictions r on r.user_id = p.user_id
+      where p.session_id = s.id
+        and r.status = 'active'
+        and r.restriction_type in ('random_suspended', 'body_double_suspended')
+        and r.starts_at <= now()
+        and (r.expires_at is null or r.expires_at > now())
     )
   order by 
     (case when v_my_entry.language = (select q.language from public.body_double_queue q where q.user_id = s.user_id order by created_at desc limit 1) then 0 else 1 end) asc,
@@ -376,11 +414,21 @@ begin
   end if;
 
   -- Create new session (Phase 3F - Trust/Quality Matching)
-  select q.id into v_match_queue_entry
+  select q.* into v_match_queue_entry
   from public.body_double_queue q
   join public.users_profile p on p.id = q.user_id
-  where q.status = 'waiting' and q.id != p_queue_id and q.session_type = v_my_entry.session_type and q.age_band = v_my_entry.age_band and q.communication_mode = v_my_entry.communication_mode and q.session_length_minutes = v_my_entry.session_length_minutes and q.expires_at > now()
+  where q.status = 'waiting' and q.id != p_queue_id and q.user_id <> v_my_entry.user_id and q.session_type = v_my_entry.session_type and q.age_band = v_my_entry.age_band and q.communication_mode = v_my_entry.communication_mode and q.session_length_minutes = v_my_entry.session_length_minutes and q.expires_at > now()
+    and q.random_matching_enabled = true
+    and (q.age_band = 'adult' or (q.guardian_approved = true and q.communication_mode in ('quiet', 'presetSignals')))
     and not exists (select 1 from public.user_blocks b where (b.blocker_id = v_my_entry.user_id and b.blocked_id = q.user_id) or (b.blocker_id = q.user_id and b.blocked_id = v_my_entry.user_id))
+    and not exists (
+      select 1 from public.body_double_user_restrictions r
+      where r.user_id = q.user_id
+        and r.status = 'active'
+        and r.restriction_type in ('random_suspended', 'body_double_suspended')
+        and r.starts_at <= now()
+        and (r.expires_at is null or r.expires_at > now())
+    )
   order by 
     (case when q.language = v_my_entry.language then 0 else 1 end) asc,
     p.reliability_score desc,
@@ -392,11 +440,11 @@ begin
     values (v_my_entry.user_id, 'random', 'active', v_my_entry.session_type, v_my_entry.session_length_minutes, v_my_entry.communication_mode, case when v_my_entry.privacy_level = 'private' then 'private' else 'titleOnly' end, now())
     returning id into v_match_session_id;
     insert into public.body_double_participants (session_id, user_id, role, status, age_band_snapshot, anonymous_label, joined_at)
-    values (v_match_session_id, v_my_entry.user_id, 'random', 'active', v_my_entry.age_band, 'Body double 1', now()), (v_match_session_id, (select user_id from public.body_double_queue where id = v_match_queue_entry), 'random', 'active', v_my_entry.age_band, 'Body double 2', now());
+    values (v_match_session_id, v_my_entry.user_id, 'random', 'active', v_my_entry.age_band, 'Body double 1', now()), (v_match_session_id, v_match_queue_entry.user_id, 'random', 'active', v_my_entry.age_band, 'Body double 2', now());
     update public.body_double_queue set status = 'matched', matched_session_id = v_match_session_id where id = p_queue_id;
-    update public.body_double_queue set status = 'matched', matched_session_id = v_match_session_id where id = v_match_queue_entry;
+    update public.body_double_queue set status = 'matched', matched_session_id = v_match_session_id where id = v_match_queue_entry.id;
     insert into public.body_double_audit_events(actor_id, session_id, event_type, metadata)
-    values (v_my_entry.user_id, v_match_session_id, 'random_match_created', jsonb_build_object('age_band', v_my_entry.age_band)), ((select user_id from public.body_double_queue where id = v_match_queue_entry), v_match_session_id, 'random_match_created', jsonb_build_object('age_band', v_my_entry.age_band));
+    values (v_my_entry.user_id, v_match_session_id, 'random_match_created', jsonb_build_object('age_band', v_my_entry.age_band)), (v_match_queue_entry.user_id, v_match_session_id, 'random_match_created', jsonb_build_object('age_band', v_my_entry.age_band));
     return v_match_session_id;
   end if;
   return null;

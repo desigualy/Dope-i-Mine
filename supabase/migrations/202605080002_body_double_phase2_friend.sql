@@ -35,6 +35,9 @@ create table if not exists public.body_double_invites (
   responded_at timestamptz null
 );
 
+alter table public.body_double_sessions
+  add column if not exists task_title text null;
+
 create table if not exists public.body_double_presence (
   id uuid primary key default gen_random_uuid(),
   session_id uuid not null references public.body_double_sessions(id) on delete cascade,
@@ -43,6 +46,9 @@ create table if not exists public.body_double_presence (
   updated_at timestamptz not null default now(),
   unique(session_id, user_id)
 );
+
+alter table public.body_double_presence
+  add column if not exists steps_completed integer not null default 0;
 
 create table if not exists public.body_double_messages (
   id uuid primary key default gen_random_uuid(),
@@ -99,14 +105,28 @@ drop policy if exists "body_double_invites_sender_insert"
   on public.body_double_invites;
 create policy "body_double_invites_sender_insert"
   on public.body_double_invites for insert
-  with check (auth.uid() = sender_id);
+  with check (
+    auth.uid() = sender_id
+    and exists (
+      select 1 from public.caregiver_relationships r
+      where r.status = 'accepted'
+        and r.revoked_at is null
+        and (
+          (r.caregiver_user_id = sender_id and r.supported_user_id = receiver_id)
+          or (r.supported_user_id = sender_id and r.caregiver_user_id = receiver_id)
+        )
+    )
+  );
 
 drop policy if exists "body_double_invites_receiver_or_sender_update"
   on public.body_double_invites;
 create policy "body_double_invites_receiver_or_sender_update"
   on public.body_double_invites for update
   using (auth.uid() = sender_id or auth.uid() = receiver_id)
-  with check (auth.uid() = sender_id or auth.uid() = receiver_id);
+  with check (
+    (auth.uid() = sender_id and status in ('pending', 'cancelled', 'expired'))
+    or (auth.uid() = receiver_id and status in ('accepted', 'declined'))
+  );
 
 drop policy if exists "body_double_presence_visible_to_session_participants"
   on public.body_double_presence;

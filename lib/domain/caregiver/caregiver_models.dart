@@ -9,13 +9,17 @@ enum CaregiverRelationshipStatus {
 }
 
 enum CaregiverTaskStatus {
-  suggested,
+  assigned,
   accepted,
   active,
   completed,
   declined,
-  archived
+  revoked
 }
+
+enum CaregiverRoutineStatus { assigned, active, completed, paused, revoked }
+
+enum CaregiverNudgeTone { gentle, practical, reminder }
 
 enum CaregiverEmailInviteStatus { pending, accepted, expired, revoked }
 
@@ -205,49 +209,72 @@ class CaregiverPermissions {
 class CaregiverAssignedTask {
   const CaregiverAssignedTask({
     required this.id,
+    required this.relationshipId,
     required this.caregiverUserId,
     required this.targetUserId,
     required this.taskId,
+    required this.taskTitle,
     required this.status,
+    this.taskDescription,
+    this.steps = const <String>[],
     this.dueAt,
     this.visibilityLevel = 'standard',
     required this.assignedAt,
     this.acceptedAt,
     this.completedAt,
-    this.taskTitle,
+    required this.updatedAt,
   });
 
   final String id;
+  final String relationshipId;
   final String caregiverUserId;
   final String targetUserId;
   final String taskId;
+  final String taskTitle;
+  final String? taskDescription;
+  final List<String> steps;
   final CaregiverTaskStatus status;
   final DateTime? dueAt;
   final String visibilityLevel;
   final DateTime assignedAt;
   final DateTime? acceptedAt;
   final DateTime? completedAt;
-  final String? taskTitle;
+  final DateTime updatedAt;
 
   factory CaregiverAssignedTask.fromJson(Map<String, dynamic> json) {
+    final task = json['task'];
+    final rawSteps = json['steps'];
     return CaregiverAssignedTask(
       id: json['id'] as String,
+      relationshipId: json['relationship_id'] as String? ?? '',
       caregiverUserId: json['caregiver_user_id'] as String,
       targetUserId: json['target_user_id'] as String,
-      taskId: json['task_id'] as String,
-      status: CaregiverTaskStatus.values.byName(json['status'] as String),
+      taskId: json['task_id'] as String? ?? '',
+      taskTitle: json['task_title'] as String? ??
+          (task is Map ? task['normalized_title'] as String? : null) ??
+          'Support task',
+      taskDescription: json['task_description'] as String?,
+      steps: rawSteps is List
+          ? rawSteps.map((value) => value.toString()).toList(growable: false)
+          : const <String>[],
+      status: _taskStatusFromName(json['status'] as String? ?? 'assigned'),
       dueAt: json['due_at'] != null
           ? DateTime.parse(json['due_at'] as String)
           : null,
       visibilityLevel: json['visibility_level'] as String? ?? 'standard',
-      assignedAt: DateTime.parse(json['assigned_at'] as String),
+      assignedAt: DateTime.parse(
+          json['assigned_at'] as String? ?? json['created_at'] as String),
       acceptedAt: json['accepted_at'] != null
           ? DateTime.parse(json['accepted_at'] as String)
           : null,
       completedAt: json['completed_at'] != null
           ? DateTime.parse(json['completed_at'] as String)
           : null,
-      taskTitle: json['task_title'] as String?,
+      updatedAt: DateTime.parse(json['updated_at'] as String? ??
+          json['completed_at'] as String? ??
+          json['accepted_at'] as String? ??
+          json['assigned_at'] as String? ??
+          json['created_at'] as String),
     );
   }
 }
@@ -255,31 +282,111 @@ class CaregiverAssignedTask {
 class CaregiverAssignedRoutine {
   const CaregiverAssignedRoutine({
     required this.id,
+    required this.relationshipId,
     required this.caregiverUserId,
     required this.targetUserId,
-    required this.routineId,
+    this.routineId,
+    required this.routineTitle,
+    required this.schedule,
     required this.status,
     required this.assignedAt,
-    this.routineTitle,
+    this.startedAt,
+    this.completedAt,
+    required this.updatedAt,
   });
 
   final String id;
+  final String relationshipId;
   final String caregiverUserId;
   final String targetUserId;
-  final String routineId;
-  final String status; // active | completed | archived
+  final String? routineId;
+  final String routineTitle;
+  final String schedule;
+  final CaregiverRoutineStatus status;
   final DateTime assignedAt;
-  final String? routineTitle;
+  final DateTime? startedAt;
+  final DateTime? completedAt;
+  final DateTime updatedAt;
 
   factory CaregiverAssignedRoutine.fromJson(Map<String, dynamic> json) {
+    final routine = json['routine'];
     return CaregiverAssignedRoutine(
       id: json['id'] as String,
+      relationshipId: json['relationship_id'] as String? ?? '',
       caregiverUserId: json['caregiver_user_id'] as String,
       targetUserId: json['target_user_id'] as String,
-      routineId: json['routine_id'] as String,
-      status: json['status'] as String? ?? 'active',
-      assignedAt: DateTime.parse(json['assigned_at'] as String),
-      routineTitle: json['routine']?['title'] as String?,
+      routineId: json['routine_id'] as String?,
+      routineTitle: json['routine_title'] as String? ??
+          (routine is Map ? routine['title'] as String? : null) ??
+          'Shared routine',
+      schedule: json['schedule'] as String? ?? 'Flexible',
+      status: _routineStatusFromName(json['status'] as String? ?? 'assigned'),
+      assignedAt: DateTime.parse(
+          json['assigned_at'] as String? ?? json['created_at'] as String),
+      startedAt: json['started_at'] != null
+          ? DateTime.parse(json['started_at'] as String)
+          : null,
+      completedAt: json['completed_at'] != null
+          ? DateTime.parse(json['completed_at'] as String)
+          : null,
+      updatedAt: DateTime.parse(json['updated_at'] as String? ??
+          json['completed_at'] as String? ??
+          json['started_at'] as String? ??
+          json['assigned_at'] as String? ??
+          json['created_at'] as String),
     );
   }
+}
+
+class CaregiverNudge {
+  const CaregiverNudge({
+    required this.id,
+    required this.relationshipId,
+    required this.caregiverUserId,
+    required this.supportedUserId,
+    required this.message,
+    required this.tone,
+    required this.createdAt,
+    this.readAt,
+  });
+
+  final String id;
+  final String relationshipId;
+  final String caregiverUserId;
+  final String supportedUserId;
+  final String message;
+  final CaregiverNudgeTone tone;
+  final DateTime createdAt;
+  final DateTime? readAt;
+
+  factory CaregiverNudge.fromJson(Map<String, dynamic> json) {
+    return CaregiverNudge(
+      id: json['id'] as String,
+      relationshipId: json['relationship_id'] as String,
+      caregiverUserId: json['caregiver_user_id'] as String? ??
+          json['sender_id'] as String? ??
+          '',
+      supportedUserId: json['supported_user_id'] as String? ??
+          json['receiver_id'] as String? ??
+          '',
+      message: json['message'] as String,
+      tone:
+          CaregiverNudgeTone.values.byName(json['tone'] as String? ?? 'gentle'),
+      createdAt: DateTime.parse(json['created_at'] as String),
+      readAt: json['read_at'] != null
+          ? DateTime.parse(json['read_at'] as String)
+          : null,
+    );
+  }
+}
+
+CaregiverTaskStatus _taskStatusFromName(String name) {
+  if (name == 'suggested') return CaregiverTaskStatus.assigned;
+  if (name == 'archived') return CaregiverTaskStatus.revoked;
+  return CaregiverTaskStatus.values.byName(name);
+}
+
+CaregiverRoutineStatus _routineStatusFromName(String name) {
+  if (name == 'archived') return CaregiverRoutineStatus.revoked;
+  return CaregiverRoutineStatus.values.byName(name);
 }

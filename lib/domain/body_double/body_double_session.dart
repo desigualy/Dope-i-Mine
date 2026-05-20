@@ -217,7 +217,7 @@ class BodyDoubleSession {
 
   static BodyDoubleSession fromJson(Map<String, dynamic> json) {
     return BodyDoubleSession(
-      id: json['id'] as String? ?? '',
+      id: json['client_session_id'] as String? ?? json['id'] as String? ?? '',
       mode: _enumByName(
           json['mode'], BodyDoubleMode.values, BodyDoubleMode.dopei),
       status: _enumByName(
@@ -226,12 +226,12 @@ class BodyDoubleSession {
         BodyDoubleStatus.waiting,
       ),
       sessionType: _enumByName(
-        json['sessionType'],
+        json['sessionType'] ?? json['session_type'],
         BodyDoubleSessionType.values,
         BodyDoubleSessionType.quickStart,
       ),
-      taskId: json['taskId'] as String?,
-      taskTitle: json['taskTitle'] as String?,
+      taskId: json['taskId'] as String? ?? json['task_id'] as String?,
+      taskTitle: json['taskTitle'] as String? ?? json['task_title'] as String?,
       goal: json['goal'] as String?,
       startedAt: DateTime.tryParse(json['startedAt'] as String? ?? '') ??
           DateTime.now(),
@@ -247,12 +247,18 @@ class BodyDoubleSession {
         BodyDoublePrivacyLevel.values,
         BodyDoublePrivacyLevel.private,
       ),
-      checkInIntervalMinutes: json['checkInIntervalMinutes'] as int? ?? 5,
+      checkInIntervalMinutes: json['checkInIntervalMinutes'] as int? ??
+          json['check_in_interval_minutes'] as int? ??
+          5,
       quietMode: json['quietMode'] != false,
       textOnlyMode: json['textOnlyMode'] == true,
       voiceEnabled: json['voiceEnabled'] == true,
-      stepsCompleted: json['stepsCompleted'] as int? ?? 0,
-      overwhelmEvents: json['overwhelmEvents'] as int? ?? 0,
+      stepsCompleted: json['stepsCompleted'] as int? ??
+          json['steps_completed'] as int? ??
+          0,
+      overwhelmEvents: json['overwhelmEvents'] as int? ??
+          json['overwhelm_events'] as int? ??
+          0,
       summary: json['summary'] as String?,
     );
   }
@@ -320,23 +326,28 @@ class BodyDoubleParticipant {
   static BodyDoubleParticipant fromJson(Map<String, dynamic> json) {
     return BodyDoubleParticipant(
       id: json['id'] as String? ?? '',
-      sessionId: json['sessionId'] as String? ?? '',
-      userId: json['userId'] as String? ?? '',
+      sessionId:
+          json['sessionId'] as String? ?? json['session_id'] as String? ?? '',
+      userId: json['userId'] as String? ?? json['user_id'] as String? ?? '',
       role: json['role'] as String? ?? 'participant',
       status: _enumByName(
         json['status'],
         BodyDoubleParticipantStatus.values,
         BodyDoubleParticipantStatus.invited,
       ),
-      joinedAt: DateTime.tryParse(json['joinedAt'] as String? ?? ''),
-      leftAt: DateTime.tryParse(json['leftAt'] as String? ?? ''),
+      joinedAt: DateTime.tryParse(
+          json['joinedAt'] as String? ?? json['joined_at'] as String? ?? ''),
+      leftAt: DateTime.tryParse(
+          json['leftAt'] as String? ?? json['left_at'] as String? ?? ''),
       ageBandSnapshot: _enumByName(
-        json['ageBandSnapshot'],
+        json['ageBandSnapshot'] ?? json['age_band_snapshot'],
         BodyDoubleAgeBand.values,
         BodyDoubleAgeBand.adult,
       ),
-      displayNameSnapshot: json['displayNameSnapshot'] as String?,
-      anonymousLabel: json['anonymousLabel'] as String?,
+      displayNameSnapshot: json['displayNameSnapshot'] as String? ??
+          json['display_name_snapshot'] as String?,
+      anonymousLabel: json['anonymousLabel'] as String? ??
+          json['anonymous_label'] as String?,
     );
   }
 }
@@ -398,23 +409,33 @@ class BodyDoubleInvite {
 
   static BodyDoubleInvite fromJson(Map<String, dynamic> json) {
     return BodyDoubleInvite(
-      id: json['id'] as String? ?? '',
-      sessionId: json['sessionId'] as String? ?? '',
-      senderId: json['senderId'] as String? ?? '',
-      receiverId: json['receiverId'] as String? ?? '',
+      id: json['client_invite_id'] as String? ?? json['id'] as String? ?? '',
+      sessionId: json['sessionId'] as String? ??
+          json['session_client_id'] as String? ??
+          json['session_id'] as String? ??
+          '',
+      senderId:
+          json['senderId'] as String? ?? json['sender_id'] as String? ?? '',
+      receiverId:
+          json['receiverId'] as String? ?? json['receiver_id'] as String? ?? '',
       status: _enumByName(
         json['status'],
         BodyDoubleInviteStatus.values,
         BodyDoubleInviteStatus.pending,
       ),
-      expiresAt: DateTime.tryParse(json['expiresAt'] as String? ?? '') ??
+      expiresAt: DateTime.tryParse(json['expiresAt'] as String? ??
+              json['expires_at'] as String? ??
+              '') ??
           DateTime.now(),
-      createdAt: DateTime.tryParse(json['createdAt'] as String? ?? '') ??
+      createdAt: DateTime.tryParse(json['createdAt'] as String? ??
+              json['created_at'] as String? ??
+              '') ??
           DateTime.now(),
-      isSpurAOn: json['isSpurAOn'] as bool? ??
-          json['is_spur_a_on'] as bool? ??
-          false,
-      respondedAt: DateTime.tryParse(json['respondedAt'] as String? ?? ''),
+      isSpurAOn:
+          json['isSpurAOn'] as bool? ?? json['is_spur_a_on'] as bool? ?? false,
+      respondedAt: DateTime.tryParse(json['respondedAt'] as String? ??
+          json['responded_at'] as String? ??
+          ''),
     );
   }
 }
@@ -458,10 +479,20 @@ class BodyDoubleQueueEntry {
 
   bool canMatchWith(BodyDoubleQueueEntry other) {
     if (!canEnterRandomQueue || !other.canEnterRandomQueue) return false;
+    if (userId == other.userId) return false;
+    if (status != BodyDoubleStatus.waiting ||
+        other.status != BodyDoubleStatus.waiting) {
+      return false;
+    }
+    if (!expiresAt.isAfter(DateTime.now()) ||
+        !other.expiresAt.isAfter(DateTime.now())) {
+      return false;
+    }
     if (ageBand != other.ageBand) return false;
     if (isMinor && other.ageBand == BodyDoubleAgeBand.adult) return false;
     if (other.isMinor && ageBand == BodyDoubleAgeBand.adult) return false;
-    return communicationMode == other.communicationMode;
+    return communicationMode == other.communicationMode &&
+        sessionLengthMinutes == other.sessionLengthMinutes;
   }
 }
 
@@ -594,7 +625,7 @@ class RandomBodyDoubleTextSafety {
     }
     final lower = sanitized.toLowerCase();
     if (RegExp(
-            r'([\w.+-]+@[\w.-]+\.[a-z]{2,}|\+?\d[\d\s().-]{7,}\d|@[a-z0-9_.-]{3,})')
+            r'([\w.+-]+@[\w.-]+\.[a-z]{2,}|\+?\d[\d\s().-]{7,}\d|@[a-z0-9_.-]{3,}|\b(instagram|snapchat|tiktok|discord|whatsapp|telegram|facebook|fb|x handle)\b)')
         .hasMatch(lower)) {
       return RandomBodyDoubleTextSafetyResult(
         status: RandomBodyDoubleTextSafetyStatus.containsContactInfo,
@@ -609,7 +640,7 @@ class RandomBodyDoubleTextSafety {
       );
     }
     if (RegExp(
-            r'\b(where do you live|your address|my address|meet me|location|postcode|zip code)\b')
+            r'\b(where do you live|your address|my address|meet me|location|postcode|post code|zip code|street address|come to my|near you|near me)\b|\b[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}\b')
         .hasMatch(lower)) {
       return RandomBodyDoubleTextSafetyResult(
         status: RandomBodyDoubleTextSafetyStatus.containsLocationRequest,

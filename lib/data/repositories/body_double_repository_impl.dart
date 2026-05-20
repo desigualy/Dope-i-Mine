@@ -34,8 +34,12 @@ class BodyDoubleRepositoryImpl {
   }
 
   Future<void> saveFriendInvite(BodyDoubleInvite invite) async {
+    final hasRemoteUser =
+        client != null && userId != null && userId!.isNotEmpty;
+    if (hasRemoteUser) {
+      await _syncInvite(invite);
+    }
     await _localStore.saveFriendInvite(invite);
-    await _syncInvite(invite);
   }
 
   Future<List<BodyDoubleInvite>> loadFriendInvites() {
@@ -44,6 +48,7 @@ class BodyDoubleRepositoryImpl {
 
   Future<void> saveParticipant(BodyDoubleParticipant participant) async {
     await _localStore.saveParticipant(participant);
+    await _syncParticipant(participant);
   }
 
   Future<List<BodyDoubleParticipant>> loadParticipants() {
@@ -176,6 +181,8 @@ class BodyDoubleRepositoryImpl {
     required int sessionLengthMinutes,
     required BodyDoubleCommunicationMode communicationMode,
     required BodyDoublePrivacyLevel privacyLevel,
+    String language = 'en',
+    String? timezone,
   }) async {
     final client = this.client;
     final userId = this.userId;
@@ -189,6 +196,8 @@ class BodyDoubleRepositoryImpl {
           'p_session_length_minutes': sessionLengthMinutes,
           'p_communication_mode': communicationMode.name,
           'p_privacy_level': privacyLevel.name,
+          'p_language': language,
+          'p_timezone': timezone,
         },
       );
       return queueId;
@@ -443,6 +452,65 @@ class BodyDoubleRepositoryImpl {
     }
   }
 
+  Future<List<BodyDoubleInvite>> loadRemotePendingInvites() async {
+    final client = this.client;
+    final userId = this.userId;
+    if (client == null || userId == null || userId.isEmpty) {
+      return const <BodyDoubleInvite>[];
+    }
+    try {
+      final rows = await client
+          .from('body_double_invites')
+          .select()
+          .or('receiver_id.eq.$userId,sender_id.eq.$userId')
+          .eq('status', 'pending');
+      return (rows as List<dynamic>)
+          .map((row) =>
+              BodyDoubleInvite.fromJson(Map<String, dynamic>.from(row as Map)))
+          .toList();
+    } catch (e) {
+      debugPrint('Body double load remote invites skipped: $e');
+      return const <BodyDoubleInvite>[];
+    }
+  }
+
+  Future<BodyDoubleSession?> loadRemoteSession(String sessionId) async {
+    final client = this.client;
+    if (client == null) return null;
+    try {
+      final row = await client
+          .from('body_double_sessions')
+          .select()
+          .or('client_session_id.eq.$sessionId,id.eq.$sessionId')
+          .maybeSingle();
+      if (row == null) return null;
+      return BodyDoubleSession.fromJson(row);
+    } catch (e) {
+      debugPrint('Body double load remote session skipped: $e');
+      return null;
+    }
+  }
+
+  Future<BodyDoubleSession?> loadMatchedRandomSession(String queueId) async {
+    final client = this.client;
+    final userId = this.userId;
+    if (client == null || userId == null || userId.isEmpty) return null;
+    try {
+      final row = await client
+          .from('body_double_queue')
+          .select('matched_session_id')
+          .eq('id', queueId)
+          .eq('user_id', userId)
+          .maybeSingle();
+      final sessionId = row?['matched_session_id'] as String?;
+      if (sessionId == null || sessionId.isEmpty) return null;
+      return loadRemoteSession(sessionId);
+    } catch (error) {
+      debugPrint('Body double matched random session load skipped: $error');
+      return null;
+    }
+  }
+
   Future<void> _syncSession(BodyDoubleSession session) async {
     final client = this.client;
     final userId = this.userId;
@@ -461,23 +529,44 @@ class BodyDoubleRepositoryImpl {
     final client = this.client;
     final userId = this.userId;
     if (client == null || userId == null || userId.isEmpty) return;
+    await client.from('body_double_invites').upsert(
+      <String, dynamic>{
+        'client_invite_id': invite.id,
+        'session_client_id': invite.sessionId,
+        'sender_id': invite.senderId,
+        'receiver_id': invite.receiverId,
+        'status': invite.status.name,
+        'is_spur_a_on': invite.isSpurAOn,
+        'expires_at': invite.expiresAt.toIso8601String(),
+        'created_at': invite.createdAt.toIso8601String(),
+        'responded_at': invite.respondedAt?.toIso8601String(),
+      },
+      onConflict: 'client_invite_id',
+    );
+  }
+
+  Future<void> _syncParticipant(BodyDoubleParticipant participant) async {
+    final client = this.client;
+    final userId = this.userId;
+    if (client == null || userId == null || userId.isEmpty) return;
+    if (!_isUuid(participant.sessionId)) return;
     try {
-      await client.from('body_double_invites').upsert(
+      await client.from('body_double_participants').upsert(
         <String, dynamic>{
-          'client_invite_id': invite.id,
-          'session_client_id': invite.sessionId,
-          'sender_id': invite.senderId,
-          'receiver_id': invite.receiverId,
-          'status': invite.status.name,
-          'is_spur_a_on': invite.isSpurAOn,
-          'expires_at': invite.expiresAt.toIso8601String(),
-          'created_at': invite.createdAt.toIso8601String(),
-          'responded_at': invite.respondedAt?.toIso8601String(),
+          'session_id': participant.sessionId,
+          'user_id': participant.userId,
+          'role': participant.role,
+          'status': participant.status.name,
+          'joined_at': participant.joinedAt?.toIso8601String(),
+          'left_at': participant.leftAt?.toIso8601String(),
+          'age_band_snapshot': participant.ageBandSnapshot?.name,
+          'display_name_snapshot': participant.displayNameSnapshot,
+          'anonymous_label': participant.anonymousLabel,
         },
-        onConflict: 'client_invite_id',
+        onConflict: 'session_id,user_id',
       );
     } catch (error) {
-      debugPrint('Body double invite remote sync skipped: $error');
+      debugPrint('Body double participant remote sync skipped: $error');
     }
   }
 
@@ -488,6 +577,7 @@ class BodyDoubleRepositoryImpl {
       'mode': session.mode.name,
       'status': session.status.name,
       'task_id': _uuidOrNull(session.taskId),
+      'task_title': session.taskTitle,
       'session_type': session.sessionType.name,
       'session_length_minutes': session.sessionLengthMinutes,
       'communication_mode': session.communicationMode.name,
@@ -508,6 +598,12 @@ class BodyDoubleRepositoryImpl {
       r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
     );
     return uuidPattern.hasMatch(value) ? value : null;
+  }
+
+  bool _isUuid(String value) {
+    return RegExp(
+      r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+    ).hasMatch(value);
   }
 
   Future<void> updateReliabilityScore({

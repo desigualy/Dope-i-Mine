@@ -271,13 +271,16 @@ class _FakeCaregiverRepository implements CaregiverRepository {
   @override
   Future<void> assignRoutine({
     required String targetUserId,
-    required String routineId,
+    String? routineId,
+    required String routineTitle,
+    String schedule = 'Flexible',
   }) async {}
 
   @override
   Future<void> assignTask({
     required String targetUserId,
     required String taskTitle,
+    String? taskDescription,
     List<String>? steps,
     DateTime? dueAt,
     String visibilityLevel = 'standard',
@@ -317,6 +320,12 @@ class _FakeCaregiverRepository implements CaregiverRepository {
       null;
 
   @override
+  Future<void> respondToAssignedRoutine({
+    required String assignedRoutineId,
+    required CaregiverRoutineStatus status,
+  }) async {}
+
+  @override
   Future<void> respondToAssignedTask({
     required String assignedTaskId,
     required CaregiverTaskStatus status,
@@ -333,6 +342,7 @@ class _FakeCaregiverRepository implements CaregiverRepository {
     required String relationshipId,
     required String targetUserId,
     required String message,
+    CaregiverNudgeTone tone = CaregiverNudgeTone.gentle,
   }) async {}
 
   @override

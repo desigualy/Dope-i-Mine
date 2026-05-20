@@ -69,7 +69,8 @@ class _FriendBodyDoubleSessionScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isRandom ? 'Random body double' : 'Friend body double'),
+        title:
+            Text(isRandom ? 'Random body double' : 'Known-person body double'),
         actions: <Widget>[
           PopupMenuButton<String>(
             onSelected: (val) async {
@@ -140,9 +141,12 @@ class _FriendBodyDoubleSessionScreenState
                 style: Theme.of(context).textTheme.titleSmall,
               ),
               const SizedBox(height: 8),
-              const _SafetyTip(text: 'Never share your real name or contact info.'),
-              const _SafetyTip(text: 'This session is anonymous and adult-only.'),
-              const _SafetyTip(text: 'You can leave or report anytime from the menu.'),
+              const _SafetyTip(
+                  text: 'Never share your real name or contact info.'),
+              const _SafetyTip(
+                  text: 'This session is anonymous and safety-gated.'),
+              const _SafetyTip(
+                  text: 'You can leave or report anytime from the menu.'),
               if (state.randomSafetyNotice != null) ...<Widget>[
                 const SizedBox(height: 12),
                 _RandomSafetyNotice(text: state.randomSafetyNotice!),
@@ -175,6 +179,7 @@ class _FriendBodyDoubleSessionScreenState
               participants: state.participants,
               presences: state.participantPresences,
               steps: state.participantSteps,
+              anonymousOnly: isRandom,
               currentUserId:
                   ref.watch(authRepositoryProvider).getCurrentUser()?.id,
             ),
@@ -227,7 +232,8 @@ class _FriendBodyDoubleSessionScreenState
                 ),
               ],
             ),
-            if (session.communicationMode == BodyDoubleCommunicationMode.voice) ...<Widget>[
+            if (session.communicationMode ==
+                BodyDoubleCommunicationMode.voice) ...<Widget>[
               const SizedBox(height: 24),
               _VoiceActivityCard(),
             ],
@@ -259,7 +265,8 @@ class _FriendBodyDoubleSessionScreenState
                       .sendChatMessage(value),
                 ),
               ],
-            ] else ...<Widget>[
+            ] else if (session.communicationMode ==
+                BodyDoubleCommunicationMode.textOnly) ...<Widget>[
               _SessionChatPanel(
                 title: 'Session Chat',
                 hintText: 'Quiet message...',
@@ -271,10 +278,56 @@ class _FriendBodyDoubleSessionScreenState
                     .read(bodyDoubleControllerProvider.notifier)
                     .sendChatMessage(value),
               ),
+            ] else ...<Widget>[
+              _KnownPersonPresetSignals(
+                onSignal: (signalType) => ref
+                    .read(bodyDoubleControllerProvider.notifier)
+                    .sendPresetSignal(signalType),
+              ),
             ],
           ],
         ],
       ),
+    );
+  }
+}
+
+class _KnownPersonPresetSignals extends StatelessWidget {
+  const _KnownPersonPresetSignals({required this.onSignal});
+
+  final ValueChanged<BodyDoubleSignalType> onSignal;
+
+  @override
+  Widget build(BuildContext context) {
+    const signals = <BodyDoubleSignalType, String>{
+      BodyDoubleSignalType.started: 'I’m starting',
+      BodyDoubleSignalType.stillHere: 'Still here',
+      BodyDoubleSignalType.stepDone: 'Step done',
+      BodyDoubleSignalType.breakStart: 'Taking a short break',
+      BodyDoubleSignalType.breakEnd: 'Back now',
+      BodyDoubleSignalType.wrappingUp: 'Wrapping up',
+      BodyDoubleSignalType.thanks: 'Thanks',
+    };
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text('Preset signals', style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 8),
+        const Text(
+            'Use small, calm signals. No free chat is shared in this mode.'),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: <Widget>[
+            for (final entry in signals.entries)
+              OutlinedButton(
+                onPressed: () => onSignal(entry.key),
+                child: Text(entry.value),
+              ),
+          ],
+        ),
+      ],
     );
   }
 }
@@ -504,22 +557,26 @@ class _FriendSessionTimingCard extends StatelessWidget {
     );
   }
 }
+
 class _ParticipantsList extends ConsumerWidget {
   const _ParticipantsList({
     required this.participants,
     required this.presences,
     required this.steps,
+    this.anonymousOnly = false,
     this.currentUserId,
   });
 
   final List<BodyDoubleParticipant> participants;
   final Map<String, String> presences;
   final Map<String, int> steps;
+  final bool anonymousOnly;
   final String? currentUserId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final others = participants.where((p) => p.userId != currentUserId).toList();
+    final others =
+        participants.where((p) => p.userId != currentUserId).toList();
     if (others.isEmpty) return const SizedBox.shrink();
 
     return Column(
@@ -540,20 +597,37 @@ class _ParticipantsList extends ConsumerWidget {
               ),
               title: Row(
                 children: [
-                  Expanded(child: Text(p.anonymousLabel ?? p.displayNameSnapshot ?? 'Double')),
+                  Expanded(
+                      child: Text(anonymousOnly
+                          ? (p.anonymousLabel ?? 'Body double')
+                          : (p.anonymousLabel ??
+                              p.displayNameSnapshot ??
+                              'Double'))),
                   if (others.isNotEmpty) // Safety check
                     IconButton(
-                      icon: const Icon(Icons.report_problem_outlined, color: Colors.redAccent, size: 18),
+                      icon: const Icon(Icons.report_problem_outlined,
+                          color: Colors.redAccent, size: 18),
                       onPressed: () => showDialog(
                         context: context,
                         builder: (context) => ReportParticipantDialog(
                           participantUserId: p.userId,
-                          sessionId: ref.watch(bodyDoubleControllerProvider).session?.id ?? '',
-                          displayName: p.anonymousLabel ?? p.displayNameSnapshot ?? 'Double',
+                          sessionId: ref
+                                  .watch(bodyDoubleControllerProvider)
+                                  .session
+                                  ?.id ??
+                              '',
+                          displayName: anonymousOnly
+                              ? (p.anonymousLabel ?? 'Body double')
+                              : (p.anonymousLabel ??
+                                  p.displayNameSnapshot ??
+                                  'Double'),
                         ),
                       ),
                     ),
-                  if (ref.watch(bodyDoubleControllerProvider).speakingParticipantIds.contains(p.userId))
+                  if (ref
+                      .watch(bodyDoubleControllerProvider)
+                      .speakingParticipantIds
+                      .contains(p.userId))
                     const _VoiceIndicator(),
                 ],
               ),
@@ -600,7 +674,9 @@ class _VoiceActivityCardState extends ConsumerState<_VoiceActivityCard> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    _isSpeaking ? 'You are speaking...' : 'Voice active (Adult-only)',
+                    _isSpeaking
+                        ? 'You are speaking...'
+                        : 'Voice active (Adult-only)',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
@@ -621,15 +697,20 @@ class _VoiceActivityCardState extends ConsumerState<_VoiceActivityCard> {
             GestureDetector(
               onLongPressStart: (_) {
                 setState(() => _isSpeaking = true);
-                ref.read(bodyDoubleControllerProvider.notifier).setSpeaking(true);
+                ref
+                    .read(bodyDoubleControllerProvider.notifier)
+                    .setSpeaking(true);
               },
               onLongPressEnd: (_) {
                 setState(() => _isSpeaking = false);
-                ref.read(bodyDoubleControllerProvider.notifier).setSpeaking(false);
+                ref
+                    .read(bodyDoubleControllerProvider.notifier)
+                    .setSpeaking(false);
               },
               child: ElevatedButton.icon(
                 onPressed: () {}, // Handled by long press
-                icon: Icon(_isSpeaking ? Icons.mic_rounded : Icons.mic_none_rounded),
+                icon: Icon(
+                    _isSpeaking ? Icons.mic_rounded : Icons.mic_none_rounded),
                 label: Text(_isSpeaking ? 'RELEASE TO STOP' : 'HOLD TO SPEAK'),
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
@@ -644,6 +725,7 @@ class _VoiceActivityCardState extends ConsumerState<_VoiceActivityCard> {
     );
   }
 }
+
 class _SafetyTip extends StatelessWidget {
   final String text;
   const _SafetyTip({required this.text});

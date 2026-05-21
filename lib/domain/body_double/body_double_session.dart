@@ -1,5 +1,5 @@
 /// The type of presence alongside the user during a body double session.
-enum BodyDoubleMode { dopei, friend, random }
+enum BodyDoubleMode { dopei, friend, random, knownGroup, randomGroup }
 
 /// Mirrors the server-side body_double_sessions.status contract.
 ///
@@ -26,7 +26,30 @@ enum BodyDoubleParticipantStatus {
   declined,
   active,
   left,
-  removed
+  removed,
+  reported
+}
+
+class BodyDoubleGroupPolicy {
+  const BodyDoubleGroupPolicy._();
+
+  static const int minimumParticipants = 2;
+  static const int maximumParticipants = 3;
+
+  static bool isGroupMode(BodyDoubleMode mode) =>
+      mode == BodyDoubleMode.knownGroup || mode == BodyDoubleMode.randomGroup;
+
+  static bool isRandomGroupSafeCommunication(
+    BodyDoubleCommunicationMode mode, {
+    bool textExplicitlyAllowed = false,
+  }) {
+    if (mode == BodyDoubleCommunicationMode.voice) return false;
+    if (mode == BodyDoubleCommunicationMode.textOnly) {
+      return textExplicitlyAllowed;
+    }
+    return mode == BodyDoubleCommunicationMode.quiet ||
+        mode == BodyDoubleCommunicationMode.presetSignals;
+  }
 }
 
 enum BodyDoubleInviteStatus { pending, accepted, declined, expired, cancelled }
@@ -132,6 +155,9 @@ class BodyDoubleSession {
     this.stepsCompleted = 0,
     this.overwhelmEvents = 0,
     this.summary,
+    this.createdBy,
+    this.maxParticipants = 1,
+    this.currentParticipantCount = 1,
   });
 
   final String id;
@@ -153,6 +179,16 @@ class BodyDoubleSession {
   final int stepsCompleted;
   final int overwhelmEvents;
   final String? summary;
+  final String? createdBy;
+  final int maxParticipants;
+  final int currentParticipantCount;
+
+  bool get isGroupSession => BodyDoubleGroupPolicy.isGroupMode(mode);
+  bool get isRandomGroup => mode == BodyDoubleMode.randomGroup;
+  bool get isKnownGroup => mode == BodyDoubleMode.knownGroup;
+  bool get hasMinimumGroupParticipants =>
+      currentParticipantCount >= BodyDoubleGroupPolicy.minimumParticipants;
+  bool get isGroupFull => currentParticipantCount >= maxParticipants;
 
   int get durationSeconds {
     final end = endedAt ?? DateTime.now();
@@ -167,6 +203,7 @@ class BodyDoubleSession {
     String? summary,
     BodyDoubleCommunicationMode? communicationMode,
     BodyDoublePrivacyLevel? privacyLevel,
+    int? currentParticipantCount,
   }) {
     return BodyDoubleSession(
       id: id,
@@ -188,6 +225,10 @@ class BodyDoubleSession {
       stepsCompleted: stepsCompleted ?? this.stepsCompleted,
       overwhelmEvents: overwhelmEvents ?? this.overwhelmEvents,
       summary: summary ?? this.summary,
+      createdBy: createdBy,
+      maxParticipants: maxParticipants,
+      currentParticipantCount:
+          currentParticipantCount ?? this.currentParticipantCount,
     );
   }
 
@@ -212,6 +253,9 @@ class BodyDoubleSession {
       'stepsCompleted': stepsCompleted,
       'overwhelmEvents': overwhelmEvents,
       'summary': summary,
+      'createdBy': createdBy,
+      'maxParticipants': maxParticipants,
+      'currentParticipantCount': currentParticipantCount,
     };
   }
 
@@ -260,6 +304,13 @@ class BodyDoubleSession {
           json['overwhelm_events'] as int? ??
           0,
       summary: json['summary'] as String?,
+      createdBy: json['createdBy'] as String? ?? json['created_by'] as String?,
+      maxParticipants: json['maxParticipants'] as int? ??
+          json['max_participants'] as int? ??
+          1,
+      currentParticipantCount: json['currentParticipantCount'] as int? ??
+          json['current_participant_count'] as int? ??
+          1,
     );
   }
 }
@@ -453,6 +504,10 @@ class BodyDoubleQueueEntry {
     required this.expiresAt,
     this.guardianApproved = false,
     this.randomMatchingEnabled = false,
+    this.wantsGroupSession = false,
+    this.maxGroupSize = BodyDoubleGroupPolicy.minimumParticipants,
+    this.blockedUserIds = const <String>{},
+    this.restricted = false,
   });
 
   final String id;
@@ -466,15 +521,35 @@ class BodyDoubleQueueEntry {
   final DateTime expiresAt;
   final bool guardianApproved;
   final bool randomMatchingEnabled;
+  final bool wantsGroupSession;
+  final int maxGroupSize;
+  final Set<String> blockedUserIds;
+  final bool restricted;
 
   bool get isMinor => ageBand != BodyDoubleAgeBand.adult;
 
   bool get canEnterRandomQueue {
+    if (restricted) return false;
     if (!randomMatchingEnabled) return false;
     if (!isMinor) return true;
     return guardianApproved &&
         communicationMode != BodyDoubleCommunicationMode.textOnly &&
         communicationMode != BodyDoubleCommunicationMode.voice;
+  }
+
+  bool get canEnterRandomGroupQueue {
+    if (restricted || !randomMatchingEnabled) return false;
+    if (ageBand != BodyDoubleAgeBand.adult) return false;
+    if (!wantsGroupSession) return false;
+    if (maxGroupSize < BodyDoubleGroupPolicy.minimumParticipants ||
+        maxGroupSize > BodyDoubleGroupPolicy.maximumParticipants) {
+      return false;
+    }
+    return BodyDoubleGroupPolicy.isRandomGroupSafeCommunication(
+      communicationMode,
+      textExplicitlyAllowed:
+          communicationMode == BodyDoubleCommunicationMode.textOnly,
+    );
   }
 
   bool canMatchWith(BodyDoubleQueueEntry other) {
@@ -493,6 +568,36 @@ class BodyDoubleQueueEntry {
     if (other.isMinor && ageBand == BodyDoubleAgeBand.adult) return false;
     return communicationMode == other.communicationMode &&
         sessionLengthMinutes == other.sessionLengthMinutes;
+  }
+
+  bool canJoinRandomGroup({
+    required List<BodyDoubleParticipant> participants,
+    required BodyDoubleSession session,
+  }) {
+    if (!canEnterRandomGroupQueue) return false;
+    if (session.mode != BodyDoubleMode.randomGroup) return false;
+    if (session.status != BodyDoubleStatus.waiting &&
+        session.status != BodyDoubleStatus.active) {
+      return false;
+    }
+    if (session.isGroupFull || participants.length >= maxGroupSize) {
+      return false;
+    }
+    if (!expiresAt.isAfter(DateTime.now())) return false;
+    if (session.communicationMode != communicationMode ||
+        session.sessionLengthMinutes != sessionLengthMinutes ||
+        session.privacyLevel != BodyDoublePrivacyLevel.titleOnly) {
+      return false;
+    }
+    for (final participant in participants) {
+      if (participant.userId == userId) return false;
+      if (participant.status == BodyDoubleParticipantStatus.removed ||
+          participant.status == BodyDoubleParticipantStatus.reported) {
+        return false;
+      }
+      if (blockedUserIds.contains(participant.userId)) return false;
+    }
+    return true;
   }
 }
 

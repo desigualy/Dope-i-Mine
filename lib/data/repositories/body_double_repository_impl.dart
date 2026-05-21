@@ -1,10 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../domain/body_double/moderation/body_double_moderation.dart';
 import '../../domain/body_double/body_double_session.dart';
 import '../local/local_body_double_store.dart';
 
-class BodyDoubleRepositoryImpl {
+class BodyDoubleRepositoryImpl implements BodyDoubleModerationRepository {
   BodyDoubleRepositoryImpl({
     required LocalBodyDoubleStore localStore,
     this.client,
@@ -207,6 +208,90 @@ class BodyDoubleRepositoryImpl {
     }
   }
 
+  Future<String?> enterGroupBodyDoubleQueue({
+    required BodyDoubleSessionType sessionType,
+    required String taskCategory,
+    required int sessionLengthMinutes,
+    BodyDoubleCommunicationMode communicationMode =
+        BodyDoubleCommunicationMode.presetSignals,
+    BodyDoublePrivacyLevel privacyLevel = BodyDoublePrivacyLevel.titleOnly,
+    int maxGroupSize = BodyDoubleGroupPolicy.maximumParticipants,
+    String language = 'en',
+    String? timezone,
+  }) async {
+    final client = this.client;
+    final userId = this.userId;
+    if (client == null || userId == null || userId.isEmpty) return null;
+    try {
+      return await client.rpc<String>(
+        'enter_group_body_double_queue',
+        params: <String, dynamic>{
+          'p_session_type': sessionType.name,
+          'p_task_category': taskCategory,
+          'p_session_length_minutes': sessionLengthMinutes,
+          'p_communication_mode': communicationMode.name,
+          'p_privacy_level': privacyLevel.name,
+          'p_max_group_size': maxGroupSize,
+          'p_language': language,
+          'p_timezone': timezone,
+        },
+      );
+    } catch (error) {
+      debugPrint('Body double group queue entry skipped: $error');
+      return null;
+    }
+  }
+
+  Future<String?> findGroupBodyDoubleMatch(String queueId) async {
+    final client = this.client;
+    final userId = this.userId;
+    if (client == null || userId == null || userId.isEmpty) return null;
+    try {
+      return await client.rpc<String?>(
+        'find_group_body_double_match',
+        params: <String, dynamic>{'p_queue_id': queueId},
+      );
+    } catch (error) {
+      debugPrint('Body double group match skipped: $error');
+      return null;
+    }
+  }
+
+  Future<void> leaveGroupBodyDoubleSession(String sessionId) async {
+    final client = this.client;
+    final userId = this.userId;
+    if (client == null || userId == null || userId.isEmpty) return;
+    try {
+      await client.rpc<void>(
+        'leave_group_body_double_session',
+        params: <String, dynamic>{'p_session_id': sessionId},
+      );
+    } catch (error) {
+      debugPrint('Body double group leave skipped: $error');
+    }
+  }
+
+  Future<String?> createKnownGroupBodyDoubleInvite({
+    required String sessionId,
+    required String receiverId,
+  }) async {
+    final client = this.client;
+    final userId = this.userId;
+    if (client == null || userId == null || userId.isEmpty) return null;
+    try {
+      return await client.rpc<String>(
+        'create_known_group_body_double_invite',
+        params: <String, dynamic>{
+          'p_session_id': sessionId,
+          'p_receiver_id': receiverId,
+        },
+      );
+    } catch (error) {
+      debugPrint('Known group invite skipped: $error');
+      return null;
+    }
+  }
+
   Future<void> cancelRandomQueue(String queueId) async {
     final client = this.client;
     final userId = this.userId;
@@ -272,32 +357,103 @@ class BodyDoubleRepositoryImpl {
     }
   }
 
-  Future<List<Map<String, dynamic>>> loadModerationReports() async {
+  @override
+  Future<bool> isCurrentUserModerator() async {
+    final client = this.client;
+    final userId = this.userId;
+    if (client == null || userId == null || userId.isEmpty) return false;
+    try {
+      return await client.rpc<bool>('is_body_double_moderator');
+    } catch (error) {
+      debugPrint('Body double moderator check skipped: $error');
+      return false;
+    }
+  }
+
+  @override
+  Future<List<BodyDoubleModerationReport>> loadModerationReports() async {
     final client = this.client;
     final userId = this.userId;
     if (client == null || userId == null || userId.isEmpty) {
-      return const <Map<String, dynamic>>[];
+      return const <BodyDoubleModerationReport>[];
     }
     try {
       final rows = await client
           .from('user_reports')
           .select(
               'id, reporter_id, reported_id, session_id, reason, details, status, created_at, '
-              'reported_profile:users_profile!user_reports_reported_id_fkey(display_name, reliability_score)')
+              'reported_profile:users_profile!user_reports_reported_id_fkey(display_name, age_band, reliability_score), '
+              'reporter_profile:users_profile!user_reports_reporter_id_fkey(display_name, age_band, reliability_score)')
+          .order('status', ascending: false)
           .order('created_at', ascending: false)
           .limit(50);
       return (rows as List<dynamic>)
-          .map((row) => Map<String, dynamic>.from(row as Map))
+          .map((row) => BodyDoubleModerationReport.fromJson(
+                Map<String, dynamic>.from(row as Map),
+              ))
           .toList();
     } catch (error) {
       debugPrint('Body double moderation reports load skipped: $error');
-      return const <Map<String, dynamic>>[];
+      return const <BodyDoubleModerationReport>[];
     }
   }
 
+  @override
+  Future<BodyDoubleModerationReportDetails?> loadModerationReportDetails(
+    String reportId,
+  ) async {
+    final client = this.client;
+    final userId = this.userId;
+    if (client == null || userId == null || userId.isEmpty) return null;
+    try {
+      final row = await client
+          .from('user_reports')
+          .select(
+              'id, reporter_id, reported_id, session_id, reason, details, status, created_at, '
+              'reported_profile:users_profile!user_reports_reported_id_fkey(display_name, age_band, reliability_score), '
+              'reporter_profile:users_profile!user_reports_reporter_id_fkey(display_name, age_band, reliability_score)')
+          .eq('id', reportId)
+          .maybeSingle();
+      if (row == null) return null;
+      final report = BodyDoubleModerationReport.fromJson(row);
+      BodyDoubleModerationSessionSummary? session;
+      if (report.sessionId != null) {
+        final sessionRow = await client
+            .from('body_double_sessions')
+            .select(
+                'id, mode, status, session_type, communication_mode, privacy_level, started_at, ended_at')
+            .eq('id', report.sessionId!)
+            .maybeSingle();
+        if (sessionRow != null) {
+          session = BodyDoubleModerationSessionSummary.fromJson(sessionRow);
+        }
+      }
+      final restrictions = await loadUserRestrictions(
+        targetUserId: report.reported?.userId,
+      );
+      return BodyDoubleModerationReportDetails(
+        report: report,
+        session: session,
+        moderationEvents: await loadModerationEvents(
+          sessionId: report.sessionId,
+          reportId: report.id,
+        ),
+        auditEvents: await loadBodyDoubleAuditEvents(
+          sessionId: report.sessionId,
+          reportId: report.id,
+        ),
+        restrictions: restrictions,
+      );
+    } catch (error) {
+      debugPrint('Body double moderation report detail load skipped: $error');
+      return null;
+    }
+  }
+
+  @override
   Future<void> reviewModerationReport({
     required String reportId,
-    required String status,
+    required BodyDoubleReportStatus status,
   }) async {
     final client = this.client;
     final userId = this.userId;
@@ -307,7 +463,7 @@ class BodyDoubleRepositoryImpl {
         'review_body_double_report',
         params: <String, dynamic>{
           'p_report_id': reportId,
-          'p_status': status,
+          'p_status': status.value,
         },
       );
     } catch (error) {
@@ -315,76 +471,113 @@ class BodyDoubleRepositoryImpl {
     }
   }
 
-  Future<List<Map<String, dynamic>>> loadModerationAuditEvents() async {
+  Future<List<BodyDoubleAuditEvent>> loadModerationAuditEvents() {
+    return loadBodyDoubleAuditEvents();
+  }
+
+  @override
+  Future<List<BodyDoubleAuditEvent>> loadBodyDoubleAuditEvents({
+    String? sessionId,
+    String? reportId,
+  }) async {
     final client = this.client;
     final userId = this.userId;
     if (client == null || userId == null || userId.isEmpty) {
-      return const <Map<String, dynamic>>[];
+      return const <BodyDoubleAuditEvent>[];
     }
     try {
-      final rows = await client
-          .from('body_double_audit_events')
-          .select(
-              'id, actor_id, session_id, queue_id, event_type, metadata, created_at')
-          .order('created_at', ascending: false)
-          .limit(100);
-      return (rows as List<dynamic>)
-          .map((row) => Map<String, dynamic>.from(row as Map))
+      var query = client.from('body_double_audit_events').select(
+          'id, actor_id, session_id, queue_id, event_type, metadata, created_at');
+      if (sessionId != null && sessionId.isNotEmpty) {
+        query = query.eq('session_id', sessionId);
+      }
+      final rows = await query.order('created_at', ascending: false).limit(100);
+      final events = (rows as List<dynamic>)
+          .map((row) => BodyDoubleAuditEvent.fromJson(
+                Map<String, dynamic>.from(row as Map),
+              ))
+          .toList();
+      if (reportId == null || reportId.isEmpty) return events;
+      return events
+          .where((event) => event.metadata['report_id']?.toString() == reportId)
           .toList();
     } catch (error) {
       debugPrint('Body double moderation audit load skipped: $error');
-      return const <Map<String, dynamic>>[];
+      return const <BodyDoubleAuditEvent>[];
     }
   }
 
-  Future<List<Map<String, dynamic>>> loadMessageModerationEvents() async {
+  Future<List<BodyDoubleModerationEvent>> loadMessageModerationEvents() {
+    return loadModerationEvents();
+  }
+
+  @override
+  Future<List<BodyDoubleModerationEvent>> loadModerationEvents({
+    String? sessionId,
+    String? reportId,
+  }) async {
     final client = this.client;
     final userId = this.userId;
     if (client == null || userId == null || userId.isEmpty) {
-      return const <Map<String, dynamic>>[];
+      return const <BodyDoubleModerationEvent>[];
     }
     try {
-      final rows = await client
-          .from('body_double_message_moderation_events')
-          .select(
-              'id, session_id, sender_id, message_id, report_id, action, reason, body_preview, created_at')
-          .order('created_at', ascending: false)
-          .limit(100);
+      var query = client.from('body_double_message_moderation_events').select(
+          'id, session_id, sender_id, message_id, report_id, action, reason, body_preview, created_at');
+      if (sessionId != null && sessionId.isNotEmpty) {
+        query = query.eq('session_id', sessionId);
+      }
+      if (reportId != null && reportId.isNotEmpty) {
+        query = query.eq('report_id', reportId);
+      }
+      final rows = await query.order('created_at', ascending: false).limit(100);
       return (rows as List<dynamic>)
-          .map((row) => Map<String, dynamic>.from(row as Map))
+          .map((row) => BodyDoubleModerationEvent.fromJson(
+                Map<String, dynamic>.from(row as Map),
+              ))
           .toList();
     } catch (error) {
       debugPrint('Body double message moderation load skipped: $error');
-      return const <Map<String, dynamic>>[];
+      return const <BodyDoubleModerationEvent>[];
     }
   }
 
-  Future<List<Map<String, dynamic>>> loadUserRestrictions() async {
+  @override
+  Future<List<BodyDoubleUserRestriction>> loadUserRestrictions({
+    String? targetUserId,
+    bool? activeOnly,
+  }) async {
     final client = this.client;
-    final userId = this.userId;
-    if (client == null || userId == null || userId.isEmpty) {
-      return const <Map<String, dynamic>>[];
+    final currentUserId = userId;
+    if (client == null || currentUserId == null || currentUserId.isEmpty) {
+      return const <BodyDoubleUserRestriction>[];
     }
     try {
-      final rows = await client
-          .from('body_double_user_restrictions')
-          .select(
-              'id, user_id, restricted_by, restriction_type, reason, status, starts_at, expires_at, created_at, '
-              'user_profile:users_profile(display_name, reliability_score)')
-          .order('created_at', ascending: false)
-          .limit(100);
+      var query = client.from('body_double_user_restrictions').select(
+          'id, user_id, restricted_by, restriction_type, reason, status, starts_at, expires_at, created_at, '
+          'user_profile:users_profile(display_name, age_band, reliability_score)');
+      if (targetUserId != null && targetUserId.isNotEmpty) {
+        query = query.eq('user_id', targetUserId);
+      }
+      if (activeOnly == true) {
+        query = query.eq('status', 'active');
+      }
+      final rows = await query.order('created_at', ascending: false).limit(100);
       return (rows as List<dynamic>)
-          .map((row) => Map<String, dynamic>.from(row as Map))
+          .map((row) => BodyDoubleUserRestriction.fromJson(
+                Map<String, dynamic>.from(row as Map),
+              ))
           .toList();
     } catch (error) {
       debugPrint('Body double restrictions load skipped: $error');
-      return const <Map<String, dynamic>>[];
+      return const <BodyDoubleUserRestriction>[];
     }
   }
 
+  @override
   Future<String?> restrictUser({
     required String targetUserId,
-    required String restrictionType,
+    required BodyDoubleRestrictionType restrictionType,
     required String reason,
     DateTime? expiresAt,
     String? reportId,
@@ -397,7 +590,7 @@ class BodyDoubleRepositoryImpl {
         'restrict_body_double_user',
         params: <String, dynamic>{
           'p_user_id': targetUserId,
-          'p_restriction_type': restrictionType,
+          'p_restriction_type': restrictionType.value,
           'p_reason': reason,
           'p_expires_at': expiresAt?.toIso8601String(),
           'p_report_id': reportId,
@@ -409,6 +602,7 @@ class BodyDoubleRepositoryImpl {
     }
   }
 
+  @override
   Future<void> revokeRestriction({
     required String restrictionId,
     required String reason,
@@ -426,6 +620,33 @@ class BodyDoubleRepositoryImpl {
       );
     } catch (error) {
       debugPrint('Body double restriction revoke skipped: $error');
+    }
+  }
+
+  @override
+  Future<BodyDoubleModerationRetentionCleanupResult?>
+      runModerationRetentionCleanup() async {
+    final client = this.client;
+    final userId = this.userId;
+    if (client == null || userId == null || userId.isEmpty) return null;
+    try {
+      final rows = await client.rpc<List<dynamic>>(
+        'cleanup_body_double_moderation_retention',
+      );
+      if (rows.isEmpty) {
+        return const BodyDoubleModerationRetentionCleanupResult(
+          allowedPreviewsScrubbed: 0,
+          blockedPreviewsScrubbed: 0,
+          reportedPreviewsScrubbed: 0,
+          auditEventsDeleted: 0,
+        );
+      }
+      return BodyDoubleModerationRetentionCleanupResult.fromJson(
+        Map<String, dynamic>.from(rows.first as Map),
+      );
+    } catch (error) {
+      debugPrint('Body double moderation retention cleanup skipped: $error');
+      return null;
     }
   }
 
@@ -582,6 +803,9 @@ class BodyDoubleRepositoryImpl {
       'session_length_minutes': session.sessionLengthMinutes,
       'communication_mode': session.communicationMode.name,
       'privacy_level': session.privacyLevel.name,
+      'created_by': session.createdBy ?? userId,
+      'max_participants': session.maxParticipants,
+      'current_participant_count': session.currentParticipantCount,
       'check_in_interval_minutes': session.checkInIntervalMinutes,
       'steps_completed': session.stepsCompleted,
       'overwhelm_events': session.overwhelmEvents,

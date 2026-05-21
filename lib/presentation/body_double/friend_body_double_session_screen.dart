@@ -50,7 +50,8 @@ class _FriendBodyDoubleSessionScreenState
 
     if (session == null ||
         (session.mode != BodyDoubleMode.friend &&
-            session.mode != BodyDoubleMode.random)) {
+            session.mode != BodyDoubleMode.random &&
+            !session.isGroupSession)) {
       return Scaffold(
         appBar: AppBar(title: const Text('Shared session')),
         body: Center(
@@ -63,14 +64,19 @@ class _FriendBodyDoubleSessionScreenState
     }
 
     final isWaiting = session.status == BodyDoubleStatus.waiting;
-    final isRandom = session.mode == BodyDoubleMode.random;
+    final isRandom =
+        session.mode == BodyDoubleMode.random || session.isRandomGroup;
+    final isGroup = session.isGroupSession;
     final randomTextEnabled = isRandom &&
         session.communicationMode == BodyDoubleCommunicationMode.textOnly;
 
     return Scaffold(
       appBar: AppBar(
-        title:
-            Text(isRandom ? 'Random body double' : 'Known-person body double'),
+        title: Text(isGroup
+            ? 'Small group body double'
+            : isRandom
+                ? 'Random body double'
+                : 'Known-person body double'),
         actions: <Widget>[
           PopupMenuButton<String>(
             onSelected: (val) async {
@@ -90,6 +96,10 @@ class _FriendBodyDoubleSessionScreenState
                   await ref
                       .read(bodyDoubleControllerProvider.notifier)
                       .cancelRandomQueue();
+                } else if (isGroup) {
+                  await ref
+                      .read(bodyDoubleControllerProvider.notifier)
+                      .leaveGroupSession();
                 } else {
                   await ref
                       .read(bodyDoubleControllerProvider.notifier)
@@ -119,9 +129,11 @@ class _FriendBodyDoubleSessionScreenState
                 size: 64, color: Colors.grey),
             const SizedBox(height: 16),
             Text(
-              isRandom
-                  ? 'Waiting for a safe match...'
-                  : 'Waiting for friend to join...',
+              isGroup
+                  ? 'Waiting for your quiet support group...'
+                  : isRandom
+                      ? 'Waiting for a safe match...'
+                      : 'Waiting for friend to join...',
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleLarge,
             ),
@@ -155,6 +167,23 @@ class _FriendBodyDoubleSessionScreenState
           ] else ...<Widget>[
             const Icon(Icons.people_alt_rounded, size: 64, color: Colors.teal),
             const SizedBox(height: 16),
+            if (isGroup) ...<Widget>[
+              Text(
+                session.isRandomGroup
+                    ? 'Quiet support group'
+                    : 'Small known-person group',
+                key: const ValueKey<String>('group-session-label'),
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Participants: ${session.currentParticipantCount}/${session.maxParticipants}',
+                key: const ValueKey<String>('group-participant-count'),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+            ],
             Text(
               state.participants.length > 1
                   ? '${state.participants.length} doubles working together'
@@ -175,13 +204,55 @@ class _FriendBodyDoubleSessionScreenState
               ),
             ],
             const SizedBox(height: 24),
+            if (isGroup) ...<Widget>[
+              _RandomSafetyNotice(
+                text: session.isRandomGroup
+                    ? 'Anonymous labels only. Preset signals only by default. No voice, video, profiles, contact exchange, or location sharing. You can leave at any time.'
+                    : 'Trusted small group. Share only what you chose. You can leave at any time and report concerns.',
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      key: const ValueKey<String>('group-leave-button'),
+                      onPressed: () async {
+                        await ref
+                            .read(bodyDoubleControllerProvider.notifier)
+                            .leaveGroupSession();
+                        if (context.mounted) context.go('/body-double/summary');
+                      },
+                      icon: const Icon(Icons.logout_rounded),
+                      label: const Text('Leave group'),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      key: const ValueKey<String>('group-report-button'),
+                      onPressed: () async {
+                        await ref
+                            .read(bodyDoubleControllerProvider.notifier)
+                            .reportParticipant(
+                              'Safety concern',
+                              'Reported from group body-double session',
+                            );
+                        if (context.mounted) context.go('/body-double/summary');
+                      },
+                      icon: const Icon(Icons.report_problem_outlined),
+                      label: const Text('Report participant'),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+            ],
             _ParticipantsList(
               participants: state.participants,
               presences: state.participantPresences,
               steps: state.participantSteps,
               anonymousOnly: isRandom,
-              currentUserId:
-                  ref.watch(authRepositoryProvider).getCurrentUser()?.id,
+              currentUserId: ref.watch(supabaseProvider)?.auth.currentUser?.id,
             ),
             const SizedBox(height: 24),
             _FriendSessionTimingCard(
@@ -254,7 +325,7 @@ class _FriendBodyDoubleSessionScreenState
                   hintText: 'Short, task-focused message…',
                   messages: state.messages,
                   currentUserId:
-                      ref.watch(authRepositoryProvider).getCurrentUser()?.id,
+                      ref.watch(supabaseProvider)?.auth.currentUser?.id,
                   controller: _chatController,
                   safetyCopy:
                       'Adult-only filtered text. No links, contact details, locations, medical/sexual/abusive content, or social handles. Reports keep an audit trail.',
@@ -272,7 +343,7 @@ class _FriendBodyDoubleSessionScreenState
                 hintText: 'Quiet message...',
                 messages: state.messages,
                 currentUserId:
-                    ref.watch(authRepositoryProvider).getCurrentUser()?.id,
+                    ref.watch(supabaseProvider)?.auth.currentUser?.id,
                 controller: _chatController,
                 onSend: (value) => ref
                     .read(bodyDoubleControllerProvider.notifier)

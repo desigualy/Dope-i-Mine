@@ -1,7 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/repositories/caregiver_repository.dart';
 import '../../data/repositories/caregiver_repository_impl.dart';
+import '../../data/repositories/notification_repository_impl.dart';
 import '../../domain/caregiver/caregiver_models.dart';
+import '../../domain/notifications/app_notification.dart';
 import '../../providers.dart';
 
 class CaregiverState {
@@ -52,15 +54,20 @@ final caregiverRepositoryProvider = Provider<CaregiverRepository>((ref) {
 
 final caregiverControllerProvider =
     StateNotifierProvider<CaregiverController, CaregiverState>((ref) {
-  return CaregiverController(ref.watch(caregiverRepositoryProvider));
+  return CaregiverController(
+    ref.watch(caregiverRepositoryProvider),
+    ref.watch(notificationRepositoryProvider),
+  );
 });
 
 class CaregiverController extends StateNotifier<CaregiverState> {
-  CaregiverController(this._repository) : super(const CaregiverState()) {
+  CaregiverController(this._repository, this._notifications)
+      : super(const CaregiverState()) {
     refresh();
   }
 
   final CaregiverRepository _repository;
+  final NotificationRepositoryImpl _notifications;
 
   Future<void> refresh() async {
     state = state.copyWith(isLoading: true, clearError: true);
@@ -142,13 +149,25 @@ class CaregiverController extends StateNotifier<CaregiverState> {
     List<String>? steps,
     DateTime? due,
   }) async {
-    await _repository.assignTask(
+    final taskId = await _repository.assignTask(
       targetUserId: targetUserId,
       taskTitle: title,
       taskDescription: description,
       steps: steps,
       dueAt: due,
     );
+    if (taskId != null) {
+      await _notifications.createNotification(
+        userId: targetUserId,
+        type: AppNotificationType.caregiverTaskAssigned,
+        title: 'New caregiver task',
+        body: 'A caregiver assigned you a task: $title.',
+        route: '/tasks/summary',
+        routeParams: <String, dynamic>{'source': 'caregiver'},
+        sourceType: 'caregiver_task',
+        sourceId: taskId,
+      );
+    }
     await refresh();
   }
 
@@ -166,12 +185,24 @@ class CaregiverController extends StateNotifier<CaregiverState> {
     required String routineTitle,
     String schedule = 'Flexible',
   }) async {
-    await _repository.assignRoutine(
+    final succeeded = await _repository.assignRoutine(
       targetUserId: targetUserId,
       routineId: routineId,
       routineTitle: routineTitle,
       schedule: schedule,
     );
+    if (succeeded) {
+      await _notifications.createNotification(
+        userId: targetUserId,
+        type: AppNotificationType.caregiverRoutineAssigned,
+        title: 'New caregiver routine',
+        body: 'A caregiver assigned you a routine: $routineTitle.',
+        route: '/routines',
+        routeParams: <String, dynamic>{'source': 'caregiver'},
+        sourceType: 'caregiver_routine',
+        sourceId: routineId,
+      );
+    }
     await refresh();
   }
 
@@ -191,6 +222,16 @@ class CaregiverController extends StateNotifier<CaregiverState> {
       targetUserId: targetUserId,
       title: title,
     );
+    await _notifications.createNotification(
+      userId: targetUserId,
+      type: AppNotificationType.sideQuestSuggested,
+      title: 'Side quest suggestion',
+      body: 'A caregiver suggested a side quest: $title.',
+      route: '/tasks/summary',
+      routeParams: <String, dynamic>{'source': 'caregiver'},
+      sourceType: 'side_quest',
+      sourceId: null,
+    );
     await refresh();
   }
 
@@ -205,6 +246,16 @@ class CaregiverController extends StateNotifier<CaregiverState> {
       targetUserId: targetUserId,
       message: msg,
       tone: tone,
+    );
+    await _notifications.createNotification(
+      userId: targetUserId,
+      type: AppNotificationType.caregiverNudge,
+      title: 'Caregiver nudge',
+      body: msg,
+      route: '/tasks/summary',
+      routeParams: <String, dynamic>{'source': 'caregiver'},
+      sourceType: 'caregiver_nudge',
+      sourceId: relId,
     );
     await refresh();
   }
@@ -222,6 +273,16 @@ class CaregiverController extends StateNotifier<CaregiverState> {
     await _repository.inviteToBodyDouble(
       targetUserId: targetUserId,
       taskCategory: category,
+    );
+    await _notifications.createNotification(
+      userId: targetUserId,
+      type: AppNotificationType.bodyDoubleInvite,
+      title: 'Body double invite',
+      body: 'A caregiver invited you to a body double session.',
+      route: '/body-double/session',
+      routeParams: <String, dynamic>{'source': 'caregiver'},
+      sourceType: 'body_double_invite',
+      sourceId: null,
     );
     await refresh();
   }

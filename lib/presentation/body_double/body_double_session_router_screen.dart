@@ -14,10 +14,12 @@ class BodyDoubleSessionRouterScreen extends ConsumerWidget {
     final state = ref.watch(bodyDoubleControllerProvider);
     final session = state.activeSession;
 
-    if (session?.mode == BodyDoubleMode.friend || session?.mode == BodyDoubleMode.random) {
+    if (session?.mode == BodyDoubleMode.friend ||
+        session?.mode == BodyDoubleMode.random ||
+        session?.isGroupSession == true) {
       return const FriendBodyDoubleSessionScreen();
     }
-    
+
     return const DopeiBodyDoubleSessionScreen();
   }
 }

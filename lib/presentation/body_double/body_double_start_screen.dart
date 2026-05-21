@@ -20,7 +20,7 @@ class BodyDoubleStartScreen extends ConsumerStatefulWidget {
 }
 
 class _BodyDoubleStartScreenState extends ConsumerState<BodyDoubleStartScreen> {
-  // Mode Selection: 'dopei' or 'friend'
+  // Mode Selection: 'dopei', 'friend', 'knownGroup', or 'randomGroup'
   String _mode = 'dopei';
 
   // Config options for Dope-i
@@ -36,6 +36,7 @@ class _BodyDoubleStartScreenState extends ConsumerState<BodyDoubleStartScreen> {
   BodyDoublePrivacyLevel _privacyLevel = BodyDoublePrivacyLevel.titleOnly;
   BodyDoubleCommunicationMode _communicationMode =
       BodyDoubleCommunicationMode.quiet;
+  final Set<String> _selectedGroupReceiverIds = <String>{};
 
   @override
   void initState() {
@@ -235,6 +236,16 @@ class _BodyDoubleStartScreenState extends ConsumerState<BodyDoubleStartScreen> {
                 label: Text('Body double with someone I know'),
                 icon: Icon(Icons.people_rounded),
               ),
+              ButtonSegment<String>(
+                value: 'knownGroup',
+                label: Text('Small group body double'),
+                icon: Icon(Icons.groups_2_rounded),
+              ),
+              ButtonSegment<String>(
+                value: 'randomGroup',
+                label: Text('Quiet support group'),
+                icon: Icon(Icons.diversity_3_rounded),
+              ),
             ],
             selected: <String>{_mode},
             onSelectionChanged: (Set<String> selection) {
@@ -338,6 +349,68 @@ class _BodyDoubleStartScreenState extends ConsumerState<BodyDoubleStartScreen> {
               icon: const Icon(Icons.self_improvement_rounded),
               label: const Text('Start with Dope-i'),
             ),
+          ] else if (_mode == 'randomGroup') ...[
+            Card(
+              key: const ValueKey<String>('random-group-body-double-card'),
+              elevation: 0,
+              color:
+                  Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.2),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(color: Colors.grey.shade800),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Small group body double',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Quiet support group for adult users only. Max 3 people, anonymous labels, preset signals only by default, and you can leave at any time.',
+                      style:
+                          TextStyle(fontSize: 12, color: Colors.grey.shade400),
+                    ),
+                    const SizedBox(height: 12),
+                    _calmBullet(Icons.shield_rounded,
+                        'No public rooms, profile browsing, voice, video, or contact exchange.'),
+                    const SizedBox(height: 4),
+                    _calmBullet(Icons.no_accounts_rounded,
+                        'Random groups are hidden/blocked for minors in this phase.'),
+                    const SizedBox(height: 4),
+                    _calmBullet(Icons.report_problem_outlined,
+                        'Report a participant or leave instantly at any time.'),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            FilledButton.icon(
+              key: const ValueKey<String>('enter-random-group-queue-button'),
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.teal.shade700,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.all(16),
+              ),
+              onPressed: () async {
+                await ref
+                    .read(bodyDoubleControllerProvider.notifier)
+                    .enterRandomGroupQueue(
+                      sessionType: BodyDoubleSessionType.focusSprint,
+                      taskCategory: 'general',
+                      sessionLengthMinutes: 25,
+                      communicationMode:
+                          BodyDoubleCommunicationMode.presetSignals,
+                    );
+                if (mounted) context.go('/body-double/session');
+              },
+              icon: const Icon(Icons.groups_2_rounded),
+              label: const Text('Enter quiet group queue'),
+            ),
           ] else ...[
             // Known Person Mode Options
             if (knownPersons.isEmpty) ...[
@@ -375,6 +448,106 @@ class _BodyDoubleStartScreenState extends ConsumerState<BodyDoubleStartScreen> {
                     ],
                   ),
                 ),
+              ),
+            ] else if (_mode == 'knownGroup') ...[
+              Card(
+                elevation: 0,
+                color: Theme.of(context)
+                    .colorScheme
+                    .surfaceVariant
+                    .withOpacity(0.2),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: BorderSide(color: Colors.grey.shade800),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Small known-person group',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Invite up to two accepted trusted people. The session starts when at least two people accept, and everyone can leave at any time.',
+                        style: TextStyle(
+                            fontSize: 12, color: Colors.grey.shade400),
+                      ),
+                      const SizedBox(height: 12),
+                      ...knownPersons.map((person) => CheckboxListTile(
+                            value:
+                                _selectedGroupReceiverIds.contains(person.id),
+                            title: Text(person.label),
+                            subtitle:
+                                const Text('Accepted trusted relationship'),
+                            onChanged: (selected) {
+                              setState(() {
+                                if (selected == true &&
+                                    _selectedGroupReceiverIds.length <
+                                        BodyDoubleGroupPolicy
+                                                .maximumParticipants -
+                                            1) {
+                                  _selectedGroupReceiverIds.add(person.id);
+                                } else if (selected != true) {
+                                  _selectedGroupReceiverIds.remove(person.id);
+                                }
+                              });
+                            },
+                          )),
+                      const SizedBox(height: 8),
+                      _calmBullet(Icons.groups_rounded,
+                          'Group size is capped at 3 people.'),
+                      const SizedBox(height: 4),
+                      _calmBullet(Icons.logout_rounded,
+                          'You can leave at any time. No forced continuation.'),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              FilledButton.icon(
+                key: const ValueKey<String>('send-known-group-invites-button'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: Colors.teal.shade700,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.all(16),
+                ),
+                onPressed: _selectedGroupReceiverIds.isEmpty
+                    ? null
+                    : () async {
+                        final senderId = currentUserId;
+                        if (senderId == null) return;
+                        final sent = await ref
+                            .read(bodyDoubleControllerProvider.notifier)
+                            .createKnownGroupInvites(
+                              senderId: senderId,
+                              receiverIds: _selectedGroupReceiverIds.toList(),
+                              taskId: taskState.task?.id,
+                              taskTitle: taskState.task?.normalizedTitle,
+                              privacyLevel: _privacyLevel,
+                              sessionType: _friendType,
+                              communicationMode:
+                                  BodyDoubleCommunicationMode.presetSignals,
+                              sessionLengthMinutes: _sessionLengthMinutes,
+                              allowedReceiverIds: knownPersonIds,
+                            );
+                        if (!mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(sent
+                                ? 'Small group invites sent. The session starts after consent.'
+                                : ref
+                                    .read(bodyDoubleControllerProvider)
+                                    .gentlePrompt),
+                          ),
+                        );
+                        if (sent) context.go('/body-double/session');
+                      },
+                icon: const Icon(Icons.send_rounded),
+                label: const Text('Send small group invites'),
               ),
             ] else ...[
               // Setup Invite Form

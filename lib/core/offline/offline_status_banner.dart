@@ -13,8 +13,9 @@ class OfflineStatusBanner extends ConsumerWidget {
     final status = ref.watch(connectivityControllerProvider);
     final syncStatus = ref.watch(syncStatusControllerProvider);
     final pendingCount = syncStatus.pendingCount;
+    final failedCount = syncStatus.failedCount;
 
-    if (status == ConnectivityStatus.online && pendingCount == 0) {
+    if (status == ConnectivityStatus.online && pendingCount == 0 && failedCount == 0) {
       return const SizedBox.shrink();
     }
 
@@ -47,7 +48,9 @@ class OfflineStatusBanner extends ConsumerWidget {
               child: Text(
                 offline
                     ? 'You’re offline. Dope-i-Mine will keep working and sync when connected.'
-                    : 'Sync pending: $pendingCount item${pendingCount == 1 ? '' : 's'} waiting.',
+                    : failedCount > 0
+                        ? 'Sync pending: $pendingCount item${pendingCount == 1 ? '' : 's'} waiting, $failedCount failed item${failedCount == 1 ? '' : 's'} needs retry.'
+                        : 'Sync pending: $pendingCount item${pendingCount == 1 ? '' : 's'} waiting.',
                 style: TextStyle(
                   color: offline
                       ? colorScheme.onErrorContainer

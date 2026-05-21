@@ -39,6 +39,8 @@ class OfflineSyncPanel extends ConsumerWidget {
             const SizedBox(height: 12),
             Text('Connection: ${connectivity.label}'),
             Text('Pending sync items: ${sync.pendingCount}'),
+            if (sync.failedCount > 0)
+              Text('Failed sync items: ${sync.failedCount}'),
             Text(
               'Last sync: ${sync.lastSyncAt?.toLocal().toString() ?? 'Not yet'}',
             ),

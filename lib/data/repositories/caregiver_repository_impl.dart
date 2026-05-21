@@ -345,7 +345,7 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
   }
 
   @override
-  Future<void> assignTask({
+  Future<String?> assignTask({
     required String targetUserId,
     required String taskTitle,
     String? taskDescription,
@@ -353,14 +353,14 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
     DateTime? dueAt,
     String visibilityLevel = 'standard',
   }) async {
-    if (userId == null) return;
+    if (userId == null) return null;
     final relationship = await _acceptedRelationshipForTarget(targetUserId);
-    if (relationship == null) return;
+    if (relationship == null) return null;
     final permissions = await loadPermissions(relationship.id);
-    if (permissions?.canAssignTasks != true) return;
+    if (permissions?.canAssignTasks != true) return null;
 
     final title = taskTitle.trim();
-    if (title.isEmpty) return;
+    if (title.isEmpty) return null;
 
     try {
       final task = await client
@@ -381,11 +381,14 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
           .select('id')
           .single();
 
+      final taskId = task['id'] as String?;
+      if (taskId == null) return null;
+
       await client.from('caregiver_assigned_tasks').insert({
         'relationship_id': relationship.id,
         'caregiver_user_id': userId,
         'target_user_id': targetUserId,
-        'task_id': task['id'],
+        'task_id': taskId,
         'task_title': taskTitle,
         'task_description': taskDescription,
         'steps': steps,
@@ -393,7 +396,10 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
         'visibility_level': visibilityLevel,
         'status': 'assigned',
       });
-    } catch (_) {}
+      return taskId;
+    } catch (_) {
+      return null;
+    }
   }
 
   @override
@@ -450,20 +456,20 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
   }
 
   @override
-  Future<void> assignRoutine({
+  Future<bool> assignRoutine({
     required String targetUserId,
     String? routineId,
     required String routineTitle,
     String schedule = 'Flexible',
   }) async {
-    if (userId == null) return;
+    if (userId == null) return false;
     final relationship = await _acceptedRelationshipForTarget(targetUserId);
-    if (relationship == null) return;
+    if (relationship == null) return false;
     final permissions = await loadPermissions(relationship.id);
-    if (permissions?.canAssignRoutines != true) return;
+    if (permissions?.canAssignRoutines != true) return false;
 
     final title = routineTitle.trim();
-    if (title.isEmpty) return;
+    if (title.isEmpty) return false;
 
     try {
       await client.from('caregiver_assigned_routines').insert({
@@ -475,7 +481,10 @@ class CaregiverRepositoryImpl implements CaregiverRepository {
         'schedule': schedule.trim().isEmpty ? 'Flexible' : schedule.trim(),
         'status': 'assigned',
       });
-    } catch (_) {}
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   @override

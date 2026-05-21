@@ -240,7 +240,8 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
     if (session == null || text.trim().isEmpty) {
       return;
     }
-    if (session.mode == BodyDoubleMode.random) {
+    if (session.mode == BodyDoubleMode.random ||
+        session.mode == BodyDoubleMode.randomGroup) {
       if (session.communicationMode == BodyDoubleCommunicationMode.textOnly) {
         final error = await _repository.sendRandomTextMessage(
           sessionId: session.id,
@@ -389,7 +390,8 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
       remainingSeconds: active == null ? null : _remainingSecondsFor(active),
       friendInvites: invites,
     );
-    if (active != null && active.mode == BodyDoubleMode.friend) {
+    if (active != null &&
+        (active.mode == BodyDoubleMode.friend || active.isGroupSession)) {
       _subscribeToSession(active.id);
       await updatePresence('online');
     }
@@ -501,6 +503,89 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
       gentlePrompt: isSpurAOn
           ? 'Spur-a-on invite sent. They can offer extra encouragement if they accept.'
           : 'Invite sent. The shared session starts only if they accept.',
+    );
+    return true;
+  }
+
+  Future<bool> createKnownGroupInvites({
+    required String senderId,
+    required List<String> receiverIds,
+    String? taskId,
+    String? taskTitle,
+    BodyDoublePrivacyLevel privacyLevel = BodyDoublePrivacyLevel.titleOnly,
+    BodyDoubleSessionType sessionType = BodyDoubleSessionType.focusSprint,
+    BodyDoubleCommunicationMode communicationMode =
+        BodyDoubleCommunicationMode.presetSignals,
+    int? sessionLengthMinutes,
+    Set<String>? allowedReceiverIds,
+  }) async {
+    final uniqueReceivers = receiverIds
+        .map((id) => id.trim())
+        .where((id) => id.isNotEmpty && id != senderId)
+        .toSet()
+        .take(BodyDoubleGroupPolicy.maximumParticipants - 1)
+        .toList();
+    if (uniqueReceivers.isEmpty) {
+      state = state.copyWith(
+        gentlePrompt:
+            'Choose at least one trusted person for a small group body double.',
+      );
+      return false;
+    }
+    if (allowedReceiverIds != null &&
+        uniqueReceivers.any((id) => !allowedReceiverIds.contains(id))) {
+      state = state.copyWith(
+        gentlePrompt:
+            'Group invite not sent. Small groups are limited to accepted trusted relationships.',
+      );
+      return false;
+    }
+
+    final now = DateTime.now();
+    final session = BodyDoubleSession(
+      id: 'bd-known-group-${now.microsecondsSinceEpoch}',
+      mode: BodyDoubleMode.knownGroup,
+      status: BodyDoubleStatus.waiting,
+      sessionType: sessionType,
+      taskId: taskId,
+      taskTitle: taskTitle,
+      startedAt: now,
+      sessionLengthMinutes: sessionLengthMinutes ?? sessionType.defaultMinutes,
+      communicationMode: communicationMode,
+      privacyLevel: privacyLevel,
+      textOnlyMode: communicationMode != BodyDoubleCommunicationMode.voice,
+      voiceEnabled: communicationMode == BodyDoubleCommunicationMode.voice,
+      createdBy: senderId,
+      maxParticipants: BodyDoubleGroupPolicy.maximumParticipants,
+      currentParticipantCount: 1,
+    );
+    await _repository.saveActiveSession(session);
+    await _addParticipant(session.id, 'host', 'joined', privacyLevel.name);
+
+    final invites = <BodyDoubleInvite>[];
+    for (final receiverId in uniqueReceivers) {
+      await _repository.createKnownGroupBodyDoubleInvite(
+        sessionId: session.id,
+        receiverId: receiverId,
+      );
+      final invite = BodyDoubleInvite(
+        id: 'bdgi-${now.microsecondsSinceEpoch}-$receiverId',
+        sessionId: session.id,
+        senderId: senderId,
+        receiverId: receiverId,
+        status: BodyDoubleInviteStatus.pending,
+        expiresAt: now.add(const Duration(minutes: 60)),
+        createdAt: now,
+      );
+      await _repository.saveFriendInvite(invite);
+      invites.add(invite);
+    }
+
+    state = state.copyWith(
+      activeSession: session,
+      friendInvites: <BodyDoubleInvite>[...state.friendInvites, ...invites],
+      gentlePrompt:
+          'Small group invites sent. The quiet support group starts when at least two people accept.',
     );
     return true;
   }
@@ -687,7 +772,8 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
       // TaskController might not be active or in a state to complete a step
     }
 
-    if (session.mode == BodyDoubleMode.random) {
+    if (session.mode == BodyDoubleMode.random ||
+        session.mode == BodyDoubleMode.randomGroup) {
       await sendPresetSignal(BodyDoubleSignalType.stepDone);
     }
     await updatePresence('online');
@@ -764,6 +850,15 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
 
   Future<void> emergencyExit() =>
       endSession(status: BodyDoubleStatus.cancelled);
+
+  Future<void> leaveGroupSession() async {
+    final session = state.activeSession;
+    if (session == null) return;
+    if (session.isGroupSession) {
+      await _repository.leaveGroupBodyDoubleSession(session.id);
+    }
+    await emergencyExit();
+  }
 
   Future<void> _awardCompletionXp(BodyDoubleSession session) async {
     if (session.mode != BodyDoubleMode.dopei ||
@@ -955,6 +1050,111 @@ class BodyDoubleController extends StateNotifier<BodyDoubleState> {
         randomSafetyNotice:
             'Could not enter the random queue. Dope-i body doubling is still available.',
       );
+    }
+  }
+
+  Future<void> enterRandomGroupQueue({
+    required BodyDoubleSessionType sessionType,
+    BodyDoublePrivacyLevel privacyLevel = BodyDoublePrivacyLevel.titleOnly,
+    String taskCategory = 'general',
+    int? sessionLengthMinutes,
+    BodyDoubleCommunicationMode communicationMode =
+        BodyDoubleCommunicationMode.presetSignals,
+    String language = 'en',
+    String? timezone,
+  }) async {
+    final client = _repository.client;
+    final userId = _repository.userId;
+    if (client == null || userId == null) return;
+
+    final eligibility = await _repository.loadRandomEligibility();
+    final safeLength = sessionLengthMinutes ?? sessionType.defaultMinutes ?? 25;
+    final requested = BodyDoubleQueueEntry(
+      id: 'pending-group',
+      userId: userId,
+      ageBand: eligibility?.ageBand ?? BodyDoubleAgeBand.child,
+      taskCategory: taskCategory,
+      sessionLengthMinutes: safeLength,
+      communicationMode: communicationMode,
+      status: BodyDoubleStatus.waiting,
+      createdAt: DateTime.now(),
+      expiresAt: DateTime.now().add(const Duration(minutes: 10)),
+      randomMatchingEnabled: eligibility?.randomMatchingEnabled ?? false,
+      wantsGroupSession: true,
+      maxGroupSize: BodyDoubleGroupPolicy.maximumParticipants,
+    );
+    if (eligibility == null ||
+        !eligibility.canEnterRandomQueue ||
+        eligibility.ageBand != BodyDoubleAgeBand.adult ||
+        !requested.canEnterRandomGroupQueue ||
+        !eligibility.allowsCommunicationMode(communicationMode) ||
+        communicationMode == BodyDoubleCommunicationMode.voice) {
+      state = state.copyWith(
+        randomSafetyNotice:
+            'Random group body double is adult-only, anonymous, capped at 3, and preset/quiet by default. Minors cannot join random groups.',
+        gentlePrompt:
+            'Safety first. Try Dope-i or a trusted known-person group.',
+      );
+      return;
+    }
+
+    final queueId = await _repository.enterGroupBodyDoubleQueue(
+      sessionType: sessionType,
+      taskCategory: taskCategory,
+      sessionLengthMinutes: safeLength,
+      communicationMode: communicationMode,
+      privacyLevel: privacyLevel,
+      maxGroupSize: BodyDoubleGroupPolicy.maximumParticipants,
+      language: language,
+      timezone: timezone,
+    );
+    if (queueId == null || queueId.isEmpty) {
+      state = state.copyWith(
+        randomSafetyNotice:
+            'Could not enter the random group queue. Dope-i body doubling is still available.',
+      );
+      return;
+    }
+
+    final waiting = BodyDoubleSession(
+      id: queueId,
+      mode: BodyDoubleMode.randomGroup,
+      status: BodyDoubleStatus.waiting,
+      sessionType: sessionType,
+      startedAt: DateTime.now(),
+      sessionLengthMinutes: safeLength,
+      communicationMode: communicationMode,
+      privacyLevel: BodyDoublePrivacyLevel.titleOnly,
+      textOnlyMode: communicationMode == BodyDoubleCommunicationMode.textOnly,
+      voiceEnabled: false,
+      createdBy: userId,
+      maxParticipants: BodyDoubleGroupPolicy.maximumParticipants,
+      currentParticipantCount: 1,
+    );
+    await _repository.saveActiveSession(waiting);
+    state = state.copyWith(
+      activeSession: waiting,
+      queueId: queueId,
+      gentlePrompt: 'Looking for a quiet support group...',
+      randomSafetyNotice:
+          'Small group body double. Adult-only, anonymous labels, max 3, preset signals only by default. You can leave at any time.',
+    );
+    _subscribeToQueue(queueId);
+    final matchedSessionId =
+        await _repository.findGroupBodyDoubleMatch(queueId);
+    final matchedSession = matchedSessionId == null
+        ? await _repository.loadMatchedRandomSession(queueId)
+        : await _repository.loadRemoteSession(matchedSessionId);
+    if (matchedSession != null) {
+      await _repository.saveActiveSession(matchedSession);
+      state = state.copyWith(
+        activeSession: matchedSession,
+        queueId: null,
+        gentlePrompt:
+            'Quiet support group ready. Stay anonymous and task-focused.',
+      );
+      _subscribeToSession(matchedSession.id);
+      await updatePresence('online');
     }
   }
 

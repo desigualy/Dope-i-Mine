@@ -42,11 +42,28 @@ class SyncQueueService {
 
   Future<void> enqueue(SyncQueueItem item) async {
     final existing = await loadQueue();
-    final alreadyQueued = existing.any((queued) =>
-        queued.idempotencyKey == item.idempotencyKey &&
-        queued.type == item.type &&
-        queued.status != SyncQueueStatus.failed);
-    if (alreadyQueued) return;
+
+    for (final queued in existing) {
+      if (queued.idempotencyKey == item.idempotencyKey && queued.type == item.type) {
+        if (queued.status == SyncQueueStatus.synced) {
+          return;
+        }
+
+        await _save(existing.map((current) {
+          if (current.id != queued.id) return current;
+          return current.copyWith(
+            payload: item.payload,
+            status: queued.status == SyncQueueStatus.failed
+                ? SyncQueueStatus.pending
+                : queued.status,
+            lastError: queued.status == SyncQueueStatus.failed ? null : queued.lastError,
+            updatedAt: DateTime.now().toUtc(),
+          );
+        }).toList());
+        return;
+      }
+    }
+
     await _save(<SyncQueueItem>[...existing, item]);
   }
 
@@ -91,6 +108,11 @@ class SyncQueueService {
   Future<int> pendingCount() async {
     final queue = await loadQueue();
     return queue.where((item) => item.status != SyncQueueStatus.synced).length;
+  }
+
+  Future<int> failedCount() async {
+    final queue = await loadQueue();
+    return queue.where((item) => item.status == SyncQueueStatus.failed).length;
   }
 
   Future<DateTime?> lastSyncAt() async {

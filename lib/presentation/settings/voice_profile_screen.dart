@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/sync/sync_queue_item.dart';
+import '../../core/sync/sync_queue_service.dart';
 import '../../core/widgets/primary_scaffold.dart';
 import '../../domain/voice/voice_profile_model.dart';
 import '../../domain/voice/voice_settings_model.dart';
@@ -29,6 +31,18 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final authUser = ref.read(authRepositoryProvider).getCurrentUser();
       if (authUser == null) return;
+      final localSettings = await ref
+          .read(localVoiceSettingsStoreProvider)
+          .load(authUser.id);
+      if (localSettings != null) {
+        setState(() {
+          selectedVoiceId = localSettings.activeVoiceProfileId;
+          speechRate = localSettings.speechRate;
+          autoReadSteps = localSettings.autoReadSteps;
+          autoReadSidequests = localSettings.autoReadSidequests;
+        });
+      }
+
       final repo = ref.read(voiceSettingsRepositoryProvider);
       final settings = await repo.getSettings(authUser.id);
       final availableProfiles = await repo.getVoiceProfiles();
@@ -36,12 +50,18 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
       setState(() {
         profiles = availableProfiles;
         selectedVoiceId = settings?.activeVoiceProfileId ??
+            selectedVoiceId ??
             (availableProfiles.isNotEmpty ? availableProfiles.first.id : null);
-        speechRate = settings?.speechRate ?? 1.0;
-        autoReadSteps = settings?.autoReadSteps ?? false;
-        autoReadSidequests = settings?.autoReadSidequests ?? false;
+        speechRate = settings?.speechRate ?? speechRate;
+        autoReadSteps = settings?.autoReadSteps ?? autoReadSteps;
+        autoReadSidequests = settings?.autoReadSidequests ?? autoReadSidequests;
         loading = false;
       });
+      if (settings != null) {
+        await ref
+            .read(localVoiceSettingsStoreProvider)
+            .save(userId: authUser.id, settings: settings);
+      }
     });
   }
 
@@ -103,16 +123,40 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
                     final authUser =
                         ref.read(authRepositoryProvider).getCurrentUser();
                     if (authUser == null) return;
-                    await ref.read(voiceSettingsRepositoryProvider).save(
-                          userId: authUser.id,
-                          settings: VoiceSettingsModel(
-                            activeVoiceProfileId: selectedVoiceId,
-                            localeId: _profileFor(selectedVoiceId)?.localeId,
-                            speechRate: speechRate,
-                            autoReadSteps: autoReadSteps,
-                            autoReadSidequests: autoReadSidequests,
-                          ),
-                        );
+                    final nextSettings = VoiceSettingsModel(
+                      activeVoiceProfileId: selectedVoiceId,
+                      localeId: _profileFor(selectedVoiceId)?.localeId,
+                      speechRate: speechRate,
+                      autoReadSteps: autoReadSteps,
+                      autoReadSidequests: autoReadSidequests,
+                    );
+                    await ref
+                        .read(localVoiceSettingsStoreProvider)
+                        .save(userId: authUser.id, settings: nextSettings);
+                    try {
+                      await ref.read(voiceSettingsRepositoryProvider).save(
+                            userId: authUser.id,
+                            settings: nextSettings,
+                          );
+                    } catch (error) {
+                      debugPrint('Saved voice settings locally; remote sync failed: $error');
+                      await ref.read(syncQueueServiceProvider).enqueue(
+                            SyncQueueItem.create(
+                              type: 'save_voice_settings',
+                              idempotencyKey:
+                                  'save_voice_settings_${authUser.id}',
+                              payload: <String, dynamic>{
+                                'userId': authUser.id,
+                                'activeVoiceProfileId': nextSettings.activeVoiceProfileId,
+                                'localeId': nextSettings.localeId,
+                                'speechRate': nextSettings.speechRate,
+                                'autoReadSteps': nextSettings.autoReadSteps,
+                                'autoReadSidequests': nextSettings.autoReadSidequests,
+                              },
+                            ),
+                          );
+                    }
+
                     if (mounted) Navigator.pop(context);
                   },
                   child: const Text('Save voice settings'),

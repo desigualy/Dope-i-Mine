@@ -1,0 +1,15 @@
+diff --git a/supabase/sql/body_double_phase3_rls_rpc_tests.sql b/supabase/sql/body_double_phase3_rls_rpc_tests.sql
+--- a/supabase/sql/body_double_phase3_rls_rpc_tests.sql
++++ b/supabase/sql/body_double_phase3_rls_rpc_tests.sql
+@@
+-  if not exists (
++  -- Moderation events are intentionally moderator-only under RLS.
++  -- adult_a is seeded as the local verification moderator, so switch
++  -- to that auth context before asserting the reported moderation row.
++  perform set_config('request.jwt.claim.sub', adult_a::text, true);
++
++  if not exists (
+     select 1 from public.body_double_message_moderation_events e
+     where e.session_id = text_session_id
+       and e.sender_id = adult_a
+       and e.report_id = linked_report_id

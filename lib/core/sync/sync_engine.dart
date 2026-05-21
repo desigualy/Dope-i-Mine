@@ -51,6 +51,21 @@ class SyncEngine {
       case 'create_task':
         await _syncCreateTask(item);
         return;
+      case 'complete_routine_step':
+        await _syncCompleteRoutineStep(item);
+        return;
+      case 'save_notification_preferences':
+        await _syncSaveNotificationPreferences(item);
+        return;
+      case 'update_sensory_settings':
+        await _syncSensorySettings(item);
+        return;
+      case 'save_voice_settings':
+        await _syncVoiceSettings(item);
+        return;
+      case 'create_notification':
+        await _syncCreateNotification(item);
+        return;
       case 'breakdown_step':
       case 'avatar_update':
       case 'routine_update':
@@ -93,6 +108,141 @@ class SyncEngine {
         sideQuests: result.sideQuests,
       ));
     }
+  }
+
+  Future<void> _syncCompleteRoutineStep(SyncQueueItem item) async {
+    final payload = item.payload;
+    final userId = payload['userId'] as String?;
+    final routineId = payload['routineId'] as String?;
+    final stepId = payload['stepId'] as String?;
+
+    if (userId == null || routineId == null || stepId == null) {
+      throw StateError('Cannot sync complete_routine_step without user/routine/step IDs.');
+    }
+
+    await supabaseClient!.from('progress_logs').upsert(
+      <String, dynamic>{
+        'user_id': userId,
+        'task_id': null,
+        'step_id': stepId,
+        'event_type': 'routine_step_completed',
+        'metadata': <String, dynamic>{
+          'routine_id': routineId,
+          'idempotency_key': item.idempotencyKey,
+        },
+      },
+      onConflict: 'user_id,step_id,event_type',
+    );
+
+    try {
+      await supabaseClient!.from('rewards').insert(<String, dynamic>{
+        'user_id': userId,
+        'reward_type': 'xp',
+        'reward_key': 'routine_step_completed',
+        'amount': 5,
+        'source_type': 'routine_step',
+        'source_id': stepId,
+      });
+    } catch (_) {
+      // Reward writes are helpful, not critical.
+    }
+  }
+
+  Future<void> _syncSaveNotificationPreferences(SyncQueueItem item) async {
+    final payload = item.payload;
+    final userId = payload['userId'] as String?;
+
+    if (userId == null) {
+      throw StateError('Cannot sync save_notification_preferences without a user ID.');
+    }
+
+    await supabaseClient!.from('notification_preferences').upsert(<String, dynamic>{
+      'user_id': userId,
+      'enabled': payload['enabled'] ?? false,
+      'quiet_hours_start': payload['quietHoursStart'],
+      'quiet_hours_end': payload['quietHoursEnd'],
+      'allow_task_reminders': payload['allowTaskReminders'] ?? false,
+      'allow_caregiver_notifications': payload['allowCaregiverNotifications'] ?? false,
+      'allow_body_double_notifications': payload['allowBodyDoubleNotifications'] ?? false,
+      'allow_side_quests': payload['allowSideQuests'] ?? false,
+      'allow_moderation_updates': payload['allowModerationUpdates'] ?? false,
+      'updated_at': DateTime.now().toUtc().toIso8601String(),
+    }, onConflict: 'user_id');
+  }
+
+  Future<void> _syncSensorySettings(SyncQueueItem item) async {
+    final payload = item.payload;
+    final userId = payload['userId'] as String?;
+    if (userId == null) {
+      throw StateError('Cannot sync update_sensory_settings without a user ID.');
+    }
+    final updates = <String, dynamic>{
+      'user_id': userId,
+      'updated_at': DateTime.now().toUtc().toIso8601String(),
+    };
+    if (payload.containsKey('reducedAnimation')) {
+      updates['reduced_animation'] = payload['reducedAnimation'];
+    }
+    if (payload.containsKey('largeText')) {
+      updates['large_text'] = payload['largeText'];
+    }
+    if (payload.containsKey('soundEnabled')) {
+      updates['sound_enabled'] = payload['soundEnabled'];
+    }
+    if (payload.containsKey('softColors')) {
+      updates['soft_colors'] = payload['softColors'];
+    }
+    if (payload.containsKey('praiseLevel')) {
+      updates['praise_level'] = payload['praiseLevel'];
+    }
+    if (payload.containsKey('iconMode')) {
+      updates['icon_mode'] = payload['iconMode'];
+    }
+    if (payload.containsKey('reduceSurprises')) {
+      updates['reduce_surprises'] = payload['reduceSurprises'];
+    }
+
+    await supabaseClient!.from('sensory_settings').upsert(updates, onConflict: 'user_id');
+  }
+
+  Future<void> _syncVoiceSettings(SyncQueueItem item) async {
+    final payload = item.payload;
+    final userId = payload['userId'] as String?;
+    if (userId == null) {
+      throw StateError('Cannot sync save_voice_settings without a user ID.');
+    }
+    await supabaseClient!.from('user_voice_settings').upsert(<String, dynamic>{
+      'user_id': userId,
+      'active_voice_profile_id': payload['activeVoiceProfileId'],
+      'locale_id': payload['localeId'],
+      'speech_rate': payload['speechRate'] ?? 1.0,
+      'auto_read_steps': payload['autoReadSteps'] ?? false,
+      'auto_read_sidequests': payload['autoReadSidequests'] ?? false,
+      'updated_at': DateTime.now().toUtc().toIso8601String(),
+    }, onConflict: 'user_id');
+  }
+
+  Future<void> _syncCreateNotification(SyncQueueItem item) async {
+    final payload = item.payload;
+    final userId = payload['userId'] as String?;
+    if (userId == null) {
+      throw StateError('Cannot sync create_notification without a user ID.');
+    }
+    await supabaseClient!.from('app_notifications').insert(<String, dynamic>{
+      'user_id': userId,
+      'type': payload['type'] ?? 'general',
+      'title': payload['title'],
+      'body': payload['body'],
+      'route': payload['route'],
+      'route_params': payload['routeParams'] ?? <String, dynamic>{},
+      'status': 'unread',
+      'priority': payload['priority'] ?? 'normal',
+      'source_type': payload['sourceType'],
+      'source_id': payload['sourceId'],
+      'scheduled_for': payload['scheduledFor'],
+      'created_at': DateTime.now().toUtc().toIso8601String(),
+      'updated_at': DateTime.now().toUtc().toIso8601String(),
+    });
   }
 
   Future<void> _syncCompleteStep(SyncQueueItem item) async {

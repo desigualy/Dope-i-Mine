@@ -35,9 +35,6 @@ create table if not exists public.body_double_invites (
   responded_at timestamptz null
 );
 
-alter table public.body_double_sessions
-  add column if not exists task_title text null;
-
 create table if not exists public.body_double_presence (
   id uuid primary key default gen_random_uuid(),
   session_id uuid not null references public.body_double_sessions(id) on delete cascade,
@@ -47,14 +44,13 @@ create table if not exists public.body_double_presence (
   unique(session_id, user_id)
 );
 
-alter table public.body_double_presence
-  add column if not exists steps_completed integer not null default 0;
-
 create table if not exists public.body_double_messages (
   id uuid primary key default gen_random_uuid(),
   session_id uuid not null references public.body_double_sessions(id) on delete cascade,
   sender_id uuid not null references auth.users(id) on delete cascade,
-  message_type text not null default 'preset' check (message_type in ('preset', 'system')),
+  message_type text not null default 'preset' check (
+    message_type in ('preset', 'system')
+  ),
   body text not null,
   created_at timestamptz not null default now()
 );
@@ -72,11 +68,15 @@ alter table public.body_double_messages enable row level security;
 
 drop policy if exists "body_double_participants_visible_to_participant"
   on public.body_double_participants;
+
 create policy "body_double_participants_visible_to_participant"
-  on public.body_double_participants for select
+  on public.body_double_participants
+  for select
   using (
-    auth.uid() = user_id or exists (
-      select 1 from public.body_double_participants p
+    auth.uid() = user_id
+    or exists (
+      select 1
+      from public.body_double_participants p
       where p.session_id = body_double_participants.session_id
         and p.user_id = auth.uid()
     )
@@ -84,79 +84,105 @@ create policy "body_double_participants_visible_to_participant"
 
 drop policy if exists "body_double_participants_self_insert"
   on public.body_double_participants;
+
 create policy "body_double_participants_self_insert"
-  on public.body_double_participants for insert
+  on public.body_double_participants
+  for insert
   with check (auth.uid() = user_id);
 
 drop policy if exists "body_double_participants_self_update"
   on public.body_double_participants;
+
 create policy "body_double_participants_self_update"
-  on public.body_double_participants for update
+  on public.body_double_participants
+  for update
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
 
 drop policy if exists "body_double_invites_visible_to_sender_or_receiver"
   on public.body_double_invites;
-create policy "body_double_invites_visible_to_sender_or_receiver"
-  on public.body_double_invites for select
-  using (auth.uid() = sender_id or auth.uid() = receiver_id);
 
+create policy "body_double_invites_visible_to_sender_or_receiver"
+  on public.body_double_invites
+  for select
+  using (
+    auth.uid() = sender_id
+    or auth.uid() = receiver_id
+  );
+
+-- IMPORTANT:
+-- This early migration must NOT reference public.caregiver_relationships,
+-- because caregiver_relationships is created later in 202605110001_caregiver_phase1.sql.
+-- The stricter known-person RLS is added later in
+-- 202605200002_body_double_known_person_invite_rls.sql.
 drop policy if exists "body_double_invites_sender_insert"
   on public.body_double_invites;
+
 create policy "body_double_invites_sender_insert"
-  on public.body_double_invites for insert
-  with check (
-    auth.uid() = sender_id
-    and exists (
-      select 1 from public.caregiver_relationships r
-      where r.status = 'accepted'
-        and r.revoked_at is null
-        and (
-          (r.caregiver_user_id = sender_id and r.supported_user_id = receiver_id)
-          or (r.supported_user_id = sender_id and r.caregiver_user_id = receiver_id)
-        )
-    )
-  );
+  on public.body_double_invites
+  for insert
+  with check (auth.uid() = sender_id);
 
 drop policy if exists "body_double_invites_receiver_or_sender_update"
   on public.body_double_invites;
+
 create policy "body_double_invites_receiver_or_sender_update"
-  on public.body_double_invites for update
-  using (auth.uid() = sender_id or auth.uid() = receiver_id)
+  on public.body_double_invites
+  for update
+  using (
+    auth.uid() = sender_id
+    or auth.uid() = receiver_id
+  )
   with check (
-    (auth.uid() = sender_id and status in ('pending', 'cancelled', 'expired'))
-    or (auth.uid() = receiver_id and status in ('accepted', 'declined'))
+    auth.uid() = sender_id
+    or auth.uid() = receiver_id
   );
 
 drop policy if exists "body_double_presence_visible_to_session_participants"
   on public.body_double_presence;
+
 create policy "body_double_presence_visible_to_session_participants"
-  on public.body_double_presence for select
-  using (exists (
-    select 1 from public.body_double_participants p
-    where p.session_id = body_double_presence.session_id
-      and p.user_id = auth.uid()
-  ));
+  on public.body_double_presence
+  for select
+  using (
+    exists (
+      select 1
+      from public.body_double_participants p
+      where p.session_id = body_double_presence.session_id
+        and p.user_id = auth.uid()
+    )
+  );
 
 drop policy if exists "body_double_presence_self_all"
   on public.body_double_presence;
+
 create policy "body_double_presence_self_all"
-  on public.body_double_presence for all
+  on public.body_double_presence
+  for all
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
 
 drop policy if exists "body_double_messages_visible_to_session_participants"
   on public.body_double_messages;
+
 create policy "body_double_messages_visible_to_session_participants"
-  on public.body_double_messages for select
-  using (exists (
-    select 1 from public.body_double_participants p
-    where p.session_id = body_double_messages.session_id
-      and p.user_id = auth.uid()
-  ));
+  on public.body_double_messages
+  for select
+  using (
+    exists (
+      select 1
+      from public.body_double_participants p
+      where p.session_id = body_double_messages.session_id
+        and p.user_id = auth.uid()
+    )
+  );
 
 drop policy if exists "body_double_messages_sender_insert"
   on public.body_double_messages;
+
 create policy "body_double_messages_sender_insert"
-  on public.body_double_messages for insert
+  on public.body_double_messages
+  for insert
   with check (auth.uid() = sender_id);
+
+select pg_notify('pgrst', 'reload schema');

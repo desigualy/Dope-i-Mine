@@ -23,6 +23,33 @@ void main() {
     expect(items.single.type, 'complete_step');
   });
 
+  test('failed items are counted and requeued when enqueued again', () async {
+    final prefs = await SharedPreferences.getInstance();
+    final queue = SyncQueueService(preferences: prefs);
+    final item = SyncQueueItem.create(
+      type: 'save_voice_settings',
+      idempotencyKey: 'voice-user-1',
+      payload: <String, dynamic>{'userId': 'user-1'},
+    );
+
+    await queue.enqueue(item);
+    await queue.markFailed(item.id, Exception('network unavailable'));
+
+    expect(await queue.failedCount(), 1);
+    expect(await queue.pendingCount(), 1);
+
+    await queue.enqueue(SyncQueueItem.create(
+      type: 'save_voice_settings',
+      idempotencyKey: 'voice-user-1',
+      payload: <String, dynamic>{'userId': 'user-1'},
+    ));
+
+    expect(await queue.failedCount(), 0);
+    expect(await queue.pendingCount(), 1);
+    final reloaded = await queue.loadQueue();
+    expect(reloaded.single.status, SyncQueueStatus.pending);
+  });
+
   test('synced items are cleared', () async {
     final prefs = await SharedPreferences.getInstance();
     final queue = SyncQueueService(preferences: prefs);

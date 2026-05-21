@@ -26,7 +26,7 @@ abstract class CaregiverRepository {
   Future<void> updatePermissions(CaregiverPermissions permissions);
 
   Future<List<CaregiverAssignedTask>> loadAssignedTasks({String? targetUserId});
-  Future<void> assignTask({
+  Future<String?> assignTask({
     required String targetUserId,
     required String taskTitle,
     String? taskDescription,
@@ -40,7 +40,7 @@ abstract class CaregiverRepository {
   });
   Future<List<CaregiverAssignedRoutine>> loadAssignedRoutines(
       {String? targetUserId});
-  Future<void> assignRoutine({
+  Future<bool> assignRoutine({
     required String targetUserId,
     String? routineId,
     required String routineTitle,

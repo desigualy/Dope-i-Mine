@@ -48,6 +48,8 @@ import '../presentation/settings/companion_screen.dart';
 import '../presentation/settings/pronunciation_settings_screen.dart';
 import '../presentation/settings/voice_profile_screen.dart';
 import '../presentation/settings/settings_screen.dart';
+import '../presentation/notifications/notification_preferences_screen.dart';
+import '../presentation/notifications/notifications_screen.dart';
 import '../presentation/tasks/task_breakdown_screen.dart';
 import '../presentation/tasks/task_input_screen.dart';
 import '../presentation/tasks/task_summary_screen.dart';
@@ -257,6 +259,14 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: '/settings/voice',
         builder: (_, __) => const VoiceProfileScreen()),
+    GoRoute(
+      path: '/settings/notifications',
+      builder: (_, __) => const NotificationPreferencesScreen(),
+    ),
+    GoRoute(
+      path: '/notifications',
+      builder: (_, __) => const NotificationsScreen(),
+    ),
     GoRoute(
         path: '/settings/companion',
         builder: (_, __) => const CompanionScreen()),

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/sync/sync_queue_service.dart';
 import '../../core/widgets/primary_scaffold.dart';
+import '../../core/sync/sync_queue_item.dart';
 import '../../domain/profile/sensory_settings_model.dart';
 import '../../providers.dart';
 import '../auth/auth_controller.dart';
@@ -118,6 +120,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           );
     } catch (error) {
       debugPrint('Saved sensory setting locally; remote sync failed: $error');
+      await ref.read(syncQueueServiceProvider).enqueue(SyncQueueItem.create(
+            type: 'update_sensory_settings',
+            idempotencyKey: 'update_sensory_settings_$id',
+            payload: <String, dynamic>{
+              'userId': id,
+              if (reducedAnimation != null) 'reducedAnimation': reducedAnimation,
+              if (largeText != null) 'largeText': largeText,
+              if (soundEnabled != null) 'soundEnabled': soundEnabled,
+            },
+          ));
     }
   }
 

@@ -4,13 +4,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/network/connectivity_controller.dart';
+import 'core/network/connectivity_status.dart';
 import 'core/services/local_task_session_cache_service.dart';
+import 'core/services/permissions_service.dart';
 import 'core/services/reminder_service.dart';
 import 'core/services/speech_to_text_service.dart';
 import 'core/services/text_to_speech_service.dart';
 import 'core/sync/sync_engine.dart';
 import 'core/sync/sync_queue_service.dart';
+import 'core/sync/sync_status_controller.dart';
 import 'data/local/local_body_double_store.dart';
+import 'data/local/local_notification_preferences_store.dart';
+import 'data/local/local_voice_settings_store.dart';
 import 'data/local/local_reward_store.dart';
 import 'data/local/local_settings_cache.dart';
 import 'data/local/local_task_store.dart';
@@ -22,6 +27,7 @@ import 'data/repositories/caregiver_assignments_repository_impl.dart';
 import 'data/repositories/caregiver_repository_impl.dart';
 import 'data/repositories/companion_repository_impl.dart';
 import 'data/repositories/offline_first_task_repository.dart';
+import 'data/repositories/notification_repository_impl.dart';
 import 'data/repositories/profile_repository_impl.dart';
 import 'data/repositories/progress_repository_impl.dart';
 import 'data/repositories/reminder_repository_impl.dart';
@@ -66,6 +72,16 @@ final localSettingsCacheProvider =
     FutureProvider<LocalSettingsCache>((ref) async {
   final prefs = await SharedPreferences.getInstance();
   return LocalSettingsCache(prefs);
+});
+
+final localNotificationPreferencesStoreProvider =
+    Provider<LocalNotificationPreferencesStore>((ref) {
+  return LocalNotificationPreferencesStore();
+});
+
+final localVoiceSettingsStoreProvider =
+    Provider<LocalVoiceSettingsStore>((ref) {
+  return LocalVoiceSettingsStore();
 });
 
 final bodyDoubleRepositoryProvider = Provider<BodyDoubleRepositoryImpl>((ref) {
@@ -156,6 +172,23 @@ final syncEngineProvider = Provider<SyncEngine>((ref) {
   );
 });
 
+final syncAutoRunnerProvider = Provider<SyncAutoRunner>((ref) {
+  final syncEngine = ref.watch(syncEngineProvider);
+  final statusNotifier = ref.watch(syncStatusControllerProvider.notifier);
+
+  ref.listen<ConnectivityStatus>(connectivityControllerProvider,
+      (previous, next) async {
+    if (next == ConnectivityStatus.online) {
+      await syncEngine.syncNow();
+      await statusNotifier.refresh();
+    }
+  });
+
+  return SyncAutoRunner();
+});
+
+class SyncAutoRunner {}
+
 final reminderRepositoryProvider = Provider<ReminderRepositoryImpl>((ref) {
   return ReminderRepositoryImpl();
 });
@@ -184,6 +217,14 @@ final localTaskSessionCacheProvider =
 final flutterLocalNotificationsPluginProvider =
     Provider<FlutterLocalNotificationsPlugin>((ref) {
   return FlutterLocalNotificationsPlugin();
+});
+
+final permissionsServiceProvider = Provider<PermissionsService>((ref) {
+  return PermissionsService(ref.watch(flutterLocalNotificationsPluginProvider));
+});
+
+final notificationRepositoryProvider = Provider<NotificationRepositoryImpl>((ref) {
+  return NotificationRepositoryImpl(ref.watch(supabaseProvider));
 });
 
 final reminderServiceProvider = Provider<ReminderService>((ref) {

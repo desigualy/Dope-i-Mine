@@ -1,4 +1,4 @@
-1import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 import '../../domain/avatar/avatar_enums.dart';
 import '../../domain/avatar/user_avatar_profile.dart';

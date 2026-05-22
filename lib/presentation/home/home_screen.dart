@@ -9,6 +9,15 @@ import '../../domain/companion/dopei_mood.dart' as companion;
 import '../avatar/current_user_avatar_provider.dart';
 import '../core/controllers/avatar_controller.dart';
 import '../core/widgets/dopei_guide.dart';
+import 'widgets/primary_action_card.dart';
+import 'widgets/dopei_support_card.dart';
+import 'widgets/todays_tasks_card.dart';
+import 'widgets/home_sync_status_card.dart';
+import 'widgets/beta_feedback_card.dart';
+import 'widgets/caregiver_card.dart';
+import 'widgets/body_double_invites_card.dart';
+import 'widgets/notifications_summary_card.dart';
+import 'widgets/accessibility_shortcuts_card.dart';
 
 String _getWelcomeMessage(WidgetRef ref) {
   final hour = DateTime.now().hour;
@@ -68,57 +77,24 @@ class HomeScreen extends ConsumerWidget {
                   ),
             ),
             const SizedBox(height: 28),
-            _MenuButton(
-              title: 'My avatar',
-              subtitle: userAvatarConfig.maybeWhen(
-                data: (config) => config.displayLabel,
-                orElse: () => 'Set up your personal portrait',
-              ),
-              icon: Icons.face_retouching_natural_rounded,
-              color: Colors.tealAccent[700]!,
-              onPressed: () => context.push('/avatar/customize'),
-            ),
+            const PrimaryActionCard(),
             const SizedBox(height: 12),
-            _MenuButton(
-              title: 'New task',
-              subtitle: 'Break down something new',
-              icon: Icons.add_rounded,
-              color: Colors.cyan[700]!,
-              onPressed: () => context.go('/tasks/new'),
-            ),
+            const DopeiSupportCard(),
             const SizedBox(height: 12),
-            _MenuButton(
-              title: 'Body double',
-              subtitle: 'Get calm focus support while you work',
-              icon: Icons.self_improvement_rounded,
-              color: Colors.greenAccent[700]!,
-              onPressed: () => context.go('/body-double/start'),
-            ),
+            const TodaysTasksCard(),
             const SizedBox(height: 12),
-            _MenuButton(
-              title: 'My routines',
-              subtitle: 'Follow your daily patterns',
-              icon: Icons.repeat_rounded,
-              color: Colors.purple[700]!,
-              onPressed: () => context.go('/routines'),
-            ),
+            const HomeSyncStatusCard(),
             const SizedBox(height: 12),
-            _MenuButton(
-              title: 'My progress',
-              subtitle: 'See how far you\'ve come',
-              icon: Icons.bar_chart_rounded,
-              color: Colors.amber[700]!,
-              onPressed: () => context.go('/progress'),
-            ),
+            const BetaFeedbackCard(),
             const SizedBox(height: 12),
-            _MenuButton(
-              title: 'Caregiver support',
-              subtitle: 'Link helpers and manage shared support',
-              icon: Icons.diversity_1_rounded,
-              color: Colors.lightBlueAccent[700]!,
-              onPressed: () => context.go('/caregiver'),
-            ),
-            const SizedBox(height: 24),
+            const CaregiverCard(),
+            const SizedBox(height: 12),
+            const BodyDoubleInvitesCard(),
+            const SizedBox(height: 12),
+            const NotificationsSummaryCard(),
+            const SizedBox(height: 12),
+            const AccessibilityShortcutsCard(),
+            const SizedBox(height: 12),
           ],
         ),
       ),
@@ -162,87 +138,6 @@ class _HomeAvatarHero extends StatelessWidget {
       freckles: profile.skinDetail.name == 'freckles',
       facialHairStyleId: 'none',
       updatedAtIso: DateTime.now().toUtc().toIso8601String(),
-    );
-  }
-}
-
-class _MenuButton extends StatelessWidget {
-  const _MenuButton({
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-    required this.color,
-    required this.onPressed,
-  });
-
-  final String title;
-  final String subtitle;
-  final IconData icon;
-  final Color color;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.grey[900],
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.3)),
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            color: color.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(20),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              children: <Widget>[
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: color.withOpacity(0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(icon, color: color, size: 28),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Text(
-                        subtitle,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[400],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Icon(Icons.chevron_right_rounded, color: Colors.grey[600]),
-              ],
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

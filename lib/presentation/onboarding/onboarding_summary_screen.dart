@@ -104,6 +104,10 @@ class _OnboardingSummaryScreenState
                             praiseLevel: state.praiseLevel,
                             iconMode: state.iconMode,
                             reduceSurprises: state.reduceSurprises,
+                            onboardingRole: state.role.name,
+                            notificationsEnabled: state.notificationsEnabled,
+                            bodyDoubleEnabled: state.bodyDoubleEnabled,
+                            sideQuestsEnabled: state.sideQuestsEnabled,
                           );
                     }
                     if (mounted) {
@@ -195,6 +199,23 @@ class _OnboardingSummaryScreenState
                   'Reduced animation: ${state.reducedAnimation} · Large text: ${state.largeText} · Soft colors: ${state.softColors} · Icon mode: ${state.iconMode} · Reduce surprises: ${state.reduceSurprises} · Praise: ${state.praiseLevel}',
               onEdit: () =>
                   context.go('/onboarding/accessibility?return=summary'),
+            ),
+            _summaryRow(
+              label: 'Role',
+              value: state.role.label,
+              onEdit: () =>
+                  context.go('/onboarding/phase4/role?return=summary'),
+            ),
+            _summaryRow(
+              label: 'Task reminders',
+              value: state.notificationsEnabled ? 'Enabled' : 'Disabled',
+              onEdit: () => context.go('/onboarding/phase4/notifications?return=summary'),
+            ),
+            _summaryRow(
+              label: 'Body-double invites',
+              value: state.bodyDoubleEnabled ? 'Enabled' : 'Disabled',
+              onEdit: () =>
+                  context.go('/onboarding/phase4/body-double?return=summary'),
             ),
             _summaryRow(
               label: 'Permissions',

@@ -79,8 +79,22 @@ extension PronounSetLabel on PronounSet {
   }
 }
 
+enum OnboardingRole { self, caregiver, supported, both }
+
+extension OnboardingRoleLabel on OnboardingRole {
+  String get label {
+    return switch (this) {
+      OnboardingRole.self => 'Self',
+      OnboardingRole.caregiver => 'Caregiver',
+      OnboardingRole.supported => 'Supported user',
+      OnboardingRole.both => 'Self & supported',
+    };
+  }
+}
+
 class OnboardingState {
   const OnboardingState({
+    this.role = OnboardingRole.self,
     this.ageBand = AgeBand.adult,
     this.sexAtBirth = SexAtBirth.preferNotToSay,
     this.genderIdentity = GenderIdentity.preferNotToSay,
@@ -103,6 +117,8 @@ class OnboardingState {
     this.activeVoiceProfileId,
     this.notificationsEnabled = false,
     this.microphoneEnabled = false,
+    this.bodyDoubleEnabled = false,
+    this.sideQuestsEnabled = false,
   });
 
   final AgeBand ageBand;
@@ -121,6 +137,7 @@ class OnboardingState {
   final bool reduceSurprises;
   final String praiseLevel;
   final bool voiceEnabled;
+  final OnboardingRole role;
 
   // Voice setup
   final double speechRate;
@@ -131,6 +148,8 @@ class OnboardingState {
   // Permissions preferences (best-effort; platform may override)
   final bool notificationsEnabled;
   final bool microphoneEnabled;
+  final bool bodyDoubleEnabled;
+  final bool sideQuestsEnabled;
 
   String get pronounDisplay {
     if (pronouns == PronounSet.custom && customPronouns.trim().isNotEmpty) {
@@ -140,6 +159,7 @@ class OnboardingState {
   }
 
   OnboardingState copyWith({
+    OnboardingRole? role,
     AgeBand? ageBand,
     SexAtBirth? sexAtBirth,
     GenderIdentity? genderIdentity,
@@ -162,8 +182,11 @@ class OnboardingState {
     String? activeVoiceProfileId,
     bool? notificationsEnabled,
     bool? microphoneEnabled,
+    bool? bodyDoubleEnabled,
+    bool? sideQuestsEnabled,
   }) {
     return OnboardingState(
+      role: role ?? this.role,
       ageBand: ageBand ?? this.ageBand,
       sexAtBirth: sexAtBirth ?? this.sexAtBirth,
       genderIdentity: genderIdentity ?? this.genderIdentity,
@@ -186,6 +209,10 @@ class OnboardingState {
       activeVoiceProfileId: activeVoiceProfileId ?? this.activeVoiceProfileId,
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       microphoneEnabled: microphoneEnabled ?? this.microphoneEnabled,
+      bodyDoubleEnabled: bodyDoubleEnabled ?? this.bodyDoubleEnabled,
+      sideQuestsEnabled: sideQuestsEnabled ?? this.sideQuestsEnabled,
     );
   }
 }
+
+enum OnboardingRole { self, caregiver, supported, both }

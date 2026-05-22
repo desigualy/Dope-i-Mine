@@ -37,6 +37,12 @@ import '../presentation/onboarding/avatar_setup_screen.dart';
 import '../presentation/onboarding/identity_screen.dart';
 import '../presentation/onboarding/voice_setup_screen.dart';
 import '../presentation/onboarding/voice_preferences_screen.dart';
+import '../presentation/onboarding/onboarding_role_setup_screen.dart';
+import '../presentation/onboarding/onboarding_voice_setup_screen.dart';
+import '../presentation/onboarding/onboarding_notification_setup_screen.dart';
+import '../presentation/onboarding/onboarding_accessibility_setup_screen.dart';
+import '../presentation/onboarding/onboarding_body_double_setup_screen.dart';
+import '../presentation/onboarding/onboarding_first_task_prompt_screen.dart';
 import '../presentation/onboarding/welcome_screen.dart';
 import '../presentation/progress/progress_screen.dart';
 import '../presentation/reminders/reminder_settings_screen.dart';
@@ -50,6 +56,7 @@ import '../presentation/settings/voice_profile_screen.dart';
 import '../presentation/settings/settings_screen.dart';
 import '../presentation/notifications/notification_preferences_screen.dart';
 import '../presentation/notifications/notifications_screen.dart';
+import '../presentation/feedback/beta_feedback_screen.dart';
 import '../presentation/tasks/task_breakdown_screen.dart';
 import '../presentation/tasks/task_input_screen.dart';
 import '../presentation/tasks/task_summary_screen.dart';
@@ -169,6 +176,12 @@ final GoRouter appRouter = GoRouter(
       path: '/onboarding/summary',
       builder: (_, __) => const OnboardingSummaryScreen(),
     ),
+    GoRoute(path: '/onboarding/phase4/role', builder: (_, __) => const OnboardingRoleSetupScreen()),
+    GoRoute(path: '/onboarding/phase4/voice', builder: (_, __) => const OnboardingVoiceSetupScreen()),
+    GoRoute(path: '/onboarding/phase4/notifications', builder: (_, __) => const OnboardingNotificationSetupScreen()),
+    GoRoute(path: '/onboarding/phase4/accessibility', builder: (_, __) => const OnboardingAccessibilitySetupScreen()),
+    GoRoute(path: '/onboarding/phase4/body-double', builder: (_, __) => const OnboardingBodyDoubleSetupScreen()),
+    GoRoute(path: '/onboarding/phase4/first-task', builder: (_, __) => const OnboardingFirstTaskPromptScreen()),
     GoRoute(path: '/tasks/new', builder: (_, __) => const TaskInputScreen()),
     GoRoute(
         path: '/tasks/breakdown',
@@ -270,6 +283,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: '/settings/companion',
         builder: (_, __) => const CompanionScreen()),
+    GoRoute(path: '/feedback/beta', builder: (_, __) => const BetaFeedbackScreen()),
     GoRoute(
         path: '/settings/pronunciation',
         builder: (_, __) => const PronunciationSettingsScreen()),

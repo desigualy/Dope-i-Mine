@@ -17,6 +17,7 @@ import 'data/local/local_body_double_store.dart';
 import 'data/local/local_notification_preferences_store.dart';
 import 'data/local/local_voice_settings_store.dart';
 import 'data/local/local_reward_store.dart';
+import 'data/local/local_feedback_store.dart';
 import 'data/local/local_settings_cache.dart';
 import 'data/local/local_task_store.dart';
 import 'data/repositories/analytics_repository_impl.dart';
@@ -212,6 +213,10 @@ final textToSpeechServiceProvider = Provider<TextToSpeechService>((ref) {
 final localTaskSessionCacheProvider =
     Provider<LocalTaskSessionCacheService>((ref) {
   return LocalTaskSessionCacheService();
+});
+
+final localFeedbackStoreProvider = Provider<LocalFeedbackStore>((ref) {
+  return LocalFeedbackStore();
 });
 
 final flutterLocalNotificationsPluginProvider =

@@ -189,6 +189,10 @@ class ProfileRepositoryImpl {
     String? genderIdentity,
     String? pronouns,
     String? customPronouns,
+    String? onboardingRole,
+    bool? notificationsEnabled,
+    bool? bodyDoubleEnabled,
+    bool? sideQuestsEnabled,
   }) async {
     await ensureProfileExists(
       userId: userId,
@@ -208,6 +212,10 @@ class ProfileRepositoryImpl {
         'gender_identity': genderIdentity,
         'pronouns': pronouns,
         'custom_pronouns': customPronouns,
+        'onboarding_role': onboardingRole,
+        'notifications_enabled': notificationsEnabled,
+        'body_double_enabled': bodyDoubleEnabled,
+        'side_quests_enabled': sideQuestsEnabled,
         'onboarding_completed': true,
         'onboarding_completed_at': now,
         'updated_at': now,

@@ -5,11 +5,12 @@ import 'package:go_router/go_router.dart';
 import '../../core/services/permissions_service.dart';
 import '../../core/services/speech_to_text_service.dart';
 import '../../core/services/text_to_speech_service.dart';
+import '../../providers.dart';
 import 'onboarding_controller.dart';
 import 'widgets/onboarding_step_scaffold.dart';
 
 final _permissionsServiceProvider = Provider<PermissionsService>((ref) {
-  return PermissionsService();
+  return PermissionsService(ref.watch(flutterLocalNotificationsPluginProvider));
 });
 
 final _sttServiceProvider = Provider<SpeechToTextService>((ref) {

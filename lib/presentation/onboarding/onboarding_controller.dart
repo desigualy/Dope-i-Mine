@@ -31,6 +31,11 @@ class OnboardingController extends StateNotifier<OnboardingState> {
       state = state.copyWith(soundEnabled: value);
   void setVoiceEnabled(bool value) =>
       state = state.copyWith(voiceEnabled: value);
+    void setRole(OnboardingRole role) => state = state.copyWith(role: role);
+    void setBodyDoubleEnabled(bool value) => state = state.copyWith(bodyDoubleEnabled: value);
+    void setRemindersEnabled(bool value) => state = state.copyWith(notificationsEnabled: value);
+    void setReducedMotion(bool value) => state = state.copyWith(reducedAnimation: value);
+    void setCalmMode(bool value) => state = state.copyWith(softColors: value);
 
   void setSoftColors(bool value) => state = state.copyWith(softColors: value);
   void setIconMode(bool value) => state = state.copyWith(iconMode: value);

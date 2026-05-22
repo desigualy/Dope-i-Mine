@@ -194,6 +194,10 @@ class _FakeProfileRepository implements ProfileRepositoryImpl {
     String? genderIdentity,
     String? pronouns,
     String? customPronouns,
+    String? onboardingRole,
+    bool? notificationsEnabled,
+    bool? bodyDoubleEnabled,
+    bool? sideQuestsEnabled,
   }) async {
     onboardingComplete = true;
   }

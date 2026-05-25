@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'onboarding_controller.dart';
-import 'widgets/onboarding_step_scaffold.dart';
+import 'widgets/onboarding_page_scaffold.dart';
 
 class VoicePreferencesScreen extends ConsumerWidget {
   const VoicePreferencesScreen({super.key, this.returnToSummary = false});
@@ -15,10 +15,8 @@ class VoicePreferencesScreen extends ConsumerWidget {
     final state = ref.watch(onboardingControllerProvider);
     final controller = ref.read(onboardingControllerProvider.notifier);
 
-    return OnboardingStepScaffold(
+    return OnboardingPageScaffold(
       title: 'Voice preferences',
-      stepNumber: 9,
-      totalSteps: 12,
       onBack: () => context.go(
         returnToSummary ? '/onboarding/summary' : '/onboarding/permissions',
       ),

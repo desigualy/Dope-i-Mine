@@ -57,7 +57,7 @@ void main() {
     expect(content, contains('/onboarding/avatar'));
   });
 
-  test('summary and repository persist identity fields', () {
+  test('repository and onboarding state persist identity fields', () {
     final summary =
         File('lib/presentation/onboarding/onboarding_summary_screen.dart')
             .readAsStringSync();
@@ -67,11 +67,11 @@ void main() {
     final state =
         File('lib/domain/onboarding/onboarding_state.dart').readAsStringSync();
 
-    expect(summary, contains('Sex, gender & pronouns'));
-    expect(summary, contains('state.sexAtBirth.label'));
-    expect(summary, contains('state.genderIdentity.label'));
-    expect(summary, contains('state.pronounDisplay'));
-    expect(summary, contains('/onboarding/identity?return=summary'));
+    expect(summary, contains('sexAtBirth: state.sexAtBirth.name'));
+    expect(summary, contains('genderIdentity: state.genderIdentity.name'));
+    expect(summary, contains('pronouns: state.pronouns.name'));
+    expect(summary, contains('customPronouns: state.customPronouns'));
+    expect(summary, contains('identity, avatar, and voice details'));
 
     expect(repository, contains('sex_at_birth'));
     expect(repository, contains('gender_identity'));

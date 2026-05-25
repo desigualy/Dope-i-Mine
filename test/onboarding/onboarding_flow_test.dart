@@ -615,11 +615,12 @@ void main() {
     final onboardingStateSource =
         File('lib/domain/onboarding/onboarding_state.dart').readAsStringSync();
 
-    expect(summarySource, contains('Sex, gender & pronouns'));
-    expect(summarySource, contains('sexAtBirth'));
-    expect(summarySource, contains('genderIdentity'));
-    expect(summarySource, contains('pronounDisplay'));
-    expect(summarySource, contains('/onboarding/identity?return=summary'));
+    expect(summarySource, contains('sexAtBirth: state.sexAtBirth.name'));
+    expect(
+        summarySource, contains('genderIdentity: state.genderIdentity.name'));
+    expect(summarySource, contains('pronouns: state.pronouns.name'));
+    expect(summarySource, contains('customPronouns: state.customPronouns'));
+    expect(summarySource, contains('identity, avatar, and voice details'));
 
     expect(repositorySource, contains('sex_at_birth'));
     expect(repositorySource, contains('gender_identity'));

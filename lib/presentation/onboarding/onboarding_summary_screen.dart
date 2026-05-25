@@ -4,13 +4,14 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/errors/user_facing_error_mapper.dart';
 import '../../core/widgets/error_banner.dart';
-import '../../domain/onboarding/onboarding_state.dart';
+import '../../core/widgets/primary_scaffold.dart';
 import '../../providers.dart';
 import 'onboarding_controller.dart';
-import 'widgets/onboarding_step_scaffold.dart';
 
 class OnboardingSummaryScreen extends ConsumerStatefulWidget {
-  const OnboardingSummaryScreen({super.key});
+  const OnboardingSummaryScreen({super.key, this.settingsMode = false});
+
+  final bool settingsMode;
 
   @override
   ConsumerState<OnboardingSummaryScreen> createState() =>
@@ -55,131 +56,99 @@ class _OnboardingSummaryScreenState
   Widget build(BuildContext context) {
     final state = ref.watch(onboardingControllerProvider);
 
-    return OnboardingStepScaffold(
-      title: 'Setup summary',
-      stepNumber: 13,
-      totalSteps: 13,
-      onBack: () => context.go('/onboarding/phase4/first-task'),
-      bottom: SizedBox(
-        width: double.infinity,
-        child: FilledButton(
-          onPressed: _loading ? null : _finishSetup,
-          child: Text(_loading ? 'Saving...' : 'Finish'),
-        ),
-      ),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            if (_errorText != null) ...<Widget>[
-              ErrorBanner(message: _errorText!),
-              const SizedBox(height: 12),
-            ],
-            _summaryRow(
-              label: 'Assistant intro',
-              value: 'Meet Dope-i',
-              onEdit: () => context.go('/branding/intro?return=summary'),
+    return PrimaryScaffold(
+      title: widget.settingsMode ? 'Setup choices' : 'Setup summary',
+      child: Column(
+        children: <Widget>[
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  if (_errorText != null) ...<Widget>[
+                    ErrorBanner(message: _errorText!),
+                    const SizedBox(height: 12),
+                  ],
+                  Text(
+                    widget.settingsMode
+                        ? 'Review the core setup choices. More optional controls live in Settings.'
+                        : 'Review the essentials before you start.',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  const SizedBox(height: 16),
+                  _summaryRow(
+                    label: 'Pronunciation',
+                    value: state.pronunciation.label,
+                    onEdit: () =>
+                        context.go('/branding/pronunciation?return=summary'),
+                  ),
+                  _summaryRow(
+                    label: 'Support style',
+                    value: state.mode.name,
+                    onEdit: () => context.go('/onboarding/mode?return=summary'),
+                  ),
+                  _summaryRow(
+                    label: 'Voice choice',
+                    value:
+                        '${state.voiceEnabled ? 'Enabled' : 'Disabled'}; microphone ${state.microphoneEnabled ? 'prepared' : 'not now'}',
+                    onEdit: () =>
+                        context.go('/onboarding/voice?return=summary'),
+                  ),
+                  _summaryRow(
+                    label: 'Accessibility basics',
+                    value:
+                        'Large text: ${state.largeText ? 'on' : 'off'}; reduced motion: ${state.reducedAnimation ? 'on' : 'off'}; sound: ${state.soundEnabled ? 'on' : 'off'}',
+                    onEdit: () =>
+                        context.go('/onboarding/accessibility?return=summary'),
+                  ),
+                  _summaryRow(
+                    label: 'Age band',
+                    value: state.ageBand.name,
+                    onEdit: () =>
+                        context.go('/onboarding/age-band?return=summary'),
+                  ),
+                  _summaryRow(
+                    label: 'Assistant name',
+                    value: state.assistantDisplayName,
+                    onEdit: () =>
+                        context.go('/onboarding/assistant-name?return=summary'),
+                  ),
+                  const SizedBox(height: 8),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.tune_rounded),
+                    title: const Text('Optional setup'),
+                    subtitle: const Text(
+                      'Role, reminders, body double, side quests, identity, avatar, and voice details are editable from Settings.',
+                    ),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: () => context.go(
+                      widget.settingsMode ? '/settings' : '/settings/setup',
+                    ),
+                  ),
+                ],
+              ),
             ),
-            _summaryRow(
-              label: 'Pronunciation',
-              value: state.pronunciation.label,
-              onEdit: () =>
-                  context.go('/branding/pronunciation?return=summary'),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: _loading
+                  ? null
+                  : widget.settingsMode
+                      ? () => context.go('/settings')
+                      : _finishSetup,
+              child: Text(
+                _loading
+                    ? 'Saving...'
+                    : widget.settingsMode
+                        ? 'Done'
+                        : 'Finish',
+              ),
             ),
-            _summaryRow(
-              label: 'Role choice',
-              value: state.role.label,
-              onEdit: () =>
-                  context.go('/onboarding/phase4/role?return=summary'),
-            ),
-            _summaryRow(
-              label: 'Support style',
-              value: state.mode.name,
-              onEdit: () => context.go('/onboarding/mode?return=summary'),
-            ),
-            _summaryRow(
-              label: 'Caregiver support',
-              value: switch (state.role) {
-                final role when role.name == 'caregiver' =>
-                  'Support someone else',
-                final role when role.name == 'supported' =>
-                  'Someone supports me',
-                final role when role.name == 'both' =>
-                  'Both caregiver and supported-user options apply',
-                _ => 'Not set up now',
-              },
-              onEdit: () =>
-                  context.go('/onboarding/phase4/role?return=summary'),
-            ),
-            _summaryRow(
-              label: 'Voice choice',
-              value:
-                  'Voice: ${state.voiceEnabled ? 'Enabled' : 'Disabled'} | Microphone: ${state.microphoneEnabled ? 'Prepared' : 'Not now'}',
-              onEdit: () =>
-                  context.go('/onboarding/phase4/voice?return=summary'),
-            ),
-            _summaryRow(
-              label: 'Voice setup',
-              value:
-                  'Rate: ${state.speechRate.toStringAsFixed(2)} | Read steps: ${state.autoReadSteps}',
-              onEdit: () =>
-                  context.go('/onboarding/voice-setup?return=summary'),
-            ),
-            _summaryRow(
-              label: 'Notification choice',
-              value: state.notificationsEnabled ? 'Enabled' : 'Disabled',
-              onEdit: () =>
-                  context.go('/onboarding/phase4/notifications?return=summary'),
-            ),
-            _summaryRow(
-              label: 'Accessibility and sensory choices',
-              value:
-                  'Large text: ${state.largeText} | Reduced motion: ${state.reducedAnimation} | Sensory-friendly colours: ${state.softColors} | Calm mode: ${state.reduceSurprises} | Sound: ${state.soundEnabled}',
-              onEdit: () =>
-                  context.go('/onboarding/phase4/accessibility?return=summary'),
-            ),
-            _summaryRow(
-              label: 'Side quest choice',
-              value: state.sideQuestsEnabled ? 'Enabled' : 'Disabled',
-              onEdit: () =>
-                  context.go('/onboarding/phase4/notifications?return=summary'),
-            ),
-            _summaryRow(
-              label: 'Body-double preference',
-              value: state.bodyDoubleEnabled ? 'Enabled' : 'Disabled',
-              onEdit: () =>
-                  context.go('/onboarding/phase4/body-double?return=summary'),
-            ),
-            _summaryRow(
-              label: 'First task choice',
-              value: state.firstTaskChoice,
-              onEdit: () =>
-                  context.go('/onboarding/phase4/first-task?return=summary'),
-            ),
-            _summaryRow(
-              label: 'Age band',
-              value: state.ageBand.name,
-              onEdit: () => context.go('/onboarding/age-band?return=summary'),
-            ),
-            _summaryRow(
-              label: 'Assistant name',
-              value: state.assistantDisplayName,
-              onEdit: () =>
-                  context.go('/onboarding/assistant-name?return=summary'),
-            ),
-            _summaryRow(
-              label: 'Sex, gender & pronouns',
-              value:
-                  'Sex at birth: ${state.sexAtBirth.label} | Gender: ${state.genderIdentity.label} | Pronouns: ${state.pronounDisplay}',
-              onEdit: () => context.go('/onboarding/identity?return=summary'),
-            ),
-            _summaryRow(
-              label: 'Avatar',
-              value: 'Avatar V4 setup',
-              onEdit: () => context.go('/onboarding/avatar?return=summary'),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

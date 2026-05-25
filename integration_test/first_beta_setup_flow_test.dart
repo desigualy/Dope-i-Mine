@@ -71,10 +71,12 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Setup summary'), findsOneWidget);
-    expect(find.text('Role choice'), findsOneWidget);
+    expect(find.text('Pronunciation'), findsOneWidget);
+    expect(find.text('Support style'), findsOneWidget);
     expect(find.text('Voice choice'), findsOneWidget);
-    expect(find.text('Notification choice'), findsOneWidget);
-    expect(find.text('Accessibility and sensory choices'), findsOneWidget);
-    expect(find.text('Body-double preference'), findsOneWidget);
+    expect(find.text('Accessibility basics'), findsOneWidget);
+    expect(find.text('Optional setup'), findsOneWidget);
+    expect(find.text('Notification choice'), findsNothing);
+    expect(find.text('Body-double preference'), findsNothing);
   });
 }

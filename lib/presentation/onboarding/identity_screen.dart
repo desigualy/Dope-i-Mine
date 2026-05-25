@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../domain/onboarding/onboarding_state.dart';
 import 'onboarding_controller.dart';
-import 'widgets/onboarding_step_scaffold.dart';
+import 'widgets/onboarding_page_scaffold.dart';
 
 class IdentityScreen extends ConsumerWidget {
   const IdentityScreen({super.key, this.returnToSummary = false});
@@ -16,10 +16,8 @@ class IdentityScreen extends ConsumerWidget {
     final state = ref.watch(onboardingControllerProvider);
     final controller = ref.read(onboardingControllerProvider.notifier);
 
-    return OnboardingStepScaffold(
+    return OnboardingPageScaffold(
       title: 'Sex, gender & pronouns',
-      stepNumber: 11,
-      totalSteps: 13,
       onBack: () => context.go(
         returnToSummary ? '/onboarding/summary' : '/onboarding/voice-setup',
       ),

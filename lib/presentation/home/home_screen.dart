@@ -10,14 +10,7 @@ import '../avatar/current_user_avatar_provider.dart';
 import '../core/controllers/avatar_controller.dart';
 import '../core/widgets/dopei_guide.dart';
 import 'widgets/primary_action_card.dart';
-import 'widgets/dopei_support_card.dart';
 import 'widgets/todays_tasks_card.dart';
-import 'widgets/home_sync_status_card.dart';
-import 'widgets/beta_feedback_card.dart';
-import 'widgets/caregiver_card.dart';
-import 'widgets/body_double_invites_card.dart';
-import 'widgets/notifications_summary_card.dart';
-import 'widgets/accessibility_shortcuts_card.dart';
 
 String _getWelcomeMessage(WidgetRef ref) {
   final hour = DateTime.now().hour;
@@ -52,48 +45,31 @@ class HomeScreen extends ConsumerWidget {
               text: _getWelcomeMessage(ref),
               mood: DopeiMood.happy,
             ),
-            const SizedBox(height: 24),
             const SizedBox(height: 16),
             _HomeAvatarHero(
               configState: userAvatarConfig,
               mood: avatarMood,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 12),
             Text(
               'Hi there!',
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.onSurface,
                   ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Text(
               'Ready to tackle your day?',
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.w500,
-                  ),
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 20),
             const PrimaryActionCard(),
             const SizedBox(height: 12),
-            const DopeiSupportCard(),
-            const SizedBox(height: 12),
             const TodaysTasksCard(),
-            const SizedBox(height: 12),
-            const HomeSyncStatusCard(),
-            const SizedBox(height: 12),
-            const BetaFeedbackCard(),
-            const SizedBox(height: 12),
-            const CaregiverCard(),
-            const SizedBox(height: 12),
-            const BodyDoubleInvitesCard(),
-            const SizedBox(height: 12),
-            const NotificationsSummaryCard(),
-            const SizedBox(height: 12),
-            const AccessibilityShortcutsCard(),
+            const SizedBox(height: 20),
+            const _HomeSupportLinks(),
             const SizedBox(height: 12),
           ],
         ),
@@ -124,7 +100,7 @@ class _HomeAvatarHero extends StatelessWidget {
           AvatarRiveView(
             key: const ValueKey<String>('home-avatar-v4-rive'),
             config: config,
-            size: 132,
+            size: 92,
           ),
           TextButton(
             onPressed: () => context.push('/avatar/customize'),
@@ -146,6 +122,95 @@ class _HomeAvatarHero extends StatelessWidget {
       freckles: profile.skinDetail.name == 'freckles',
       facialHairStyleId: 'none',
       updatedAtIso: DateTime.now().toUtc().toIso8601String(),
+    );
+  }
+}
+
+class _HomeSupportLinks extends StatelessWidget {
+  const _HomeSupportLinks();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          'Support',
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 4),
+        _SupportLink(
+          key: const ValueKey<String>('home-support-body-double'),
+          icon: Icons.groups_2_rounded,
+          label: 'Body-double',
+          route: '/body-double/start',
+        ),
+        _SupportLink(
+          key: const ValueKey<String>('home-support-caregiver'),
+          icon: Icons.volunteer_activism_rounded,
+          label: 'Caregiver',
+          route: '/caregiver',
+        ),
+        _SupportLink(
+          key: const ValueKey<String>('home-support-notifications'),
+          icon: Icons.notifications_active_rounded,
+          label: 'Notifications',
+          route: '/notifications',
+        ),
+        _SupportLink(
+          key: const ValueKey<String>('home-support-sync'),
+          icon: Icons.sync_rounded,
+          label: 'Sync queue',
+          route: '/settings',
+        ),
+        _SupportLink(
+          key: const ValueKey<String>('home-support-accessibility'),
+          icon: Icons.accessibility_new_rounded,
+          label: 'Accessibility',
+          route: '/settings',
+        ),
+        _SupportLink(
+          key: const ValueKey<String>('home-support-voice'),
+          icon: Icons.record_voice_over_rounded,
+          label: 'Voice',
+          route: '/settings/voice',
+        ),
+        _SupportLink(
+          key: const ValueKey<String>('home-support-feedback'),
+          icon: Icons.feedback_rounded,
+          label: 'Feedback',
+          route: '/feedback/beta',
+        ),
+      ],
+    );
+  }
+}
+
+class _SupportLink extends StatelessWidget {
+  const _SupportLink({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.route,
+  });
+
+  final IconData icon;
+  final String label;
+  final String route;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      dense: true,
+      contentPadding: EdgeInsets.zero,
+      leading: Icon(icon),
+      title: Text(label),
+      trailing: const Icon(Icons.chevron_right_rounded),
+      onTap: () => context.push(route),
     );
   }
 }

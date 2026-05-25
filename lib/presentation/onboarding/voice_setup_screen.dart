@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../domain/voice/voice_profile_model.dart';
 import '../../providers.dart';
 import 'onboarding_controller.dart';
-import 'widgets/onboarding_step_scaffold.dart';
+import 'widgets/onboarding_page_scaffold.dart';
 
 class VoiceSetupScreen extends ConsumerStatefulWidget {
   const VoiceSetupScreen({super.key, this.returnToSummary = false});
@@ -23,10 +23,8 @@ class _VoiceSetupScreenState extends ConsumerState<VoiceSetupScreen> {
     final controller = ref.read(onboardingControllerProvider.notifier);
     final authUser = ref.read(authRepositoryProvider).getCurrentUser();
 
-    return OnboardingStepScaffold(
+    return OnboardingPageScaffold(
       title: 'Voice setup',
-      stepNumber: 10,
-      totalSteps: 13,
       onBack: () => context.go(
         widget.returnToSummary ? '/onboarding/summary' : '/onboarding/voice',
       ),

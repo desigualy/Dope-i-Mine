@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/widgets/section_header.dart';
-import '../onboarding/widgets/onboarding_step_scaffold.dart';
+import '../onboarding/widgets/onboarding_page_scaffold.dart';
 
 class DopeIIntroScreen extends StatelessWidget {
   const DopeIIntroScreen({super.key, this.returnToSummary = false});
@@ -11,16 +11,12 @@ class DopeIIntroScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // This screen is always part of onboarding. The legacy PrimaryScaffold
-    // import remains for any future non-onboarding entry points.
     final backTarget = returnToSummary ? '/onboarding/summary' : '/';
     final nextTarget =
         returnToSummary ? '/onboarding/summary' : '/branding/pronunciation';
 
-    return OnboardingStepScaffold(
+    return OnboardingPageScaffold(
       title: 'Meet Dope-i',
-      stepNumber: 1,
-      totalSteps: 12,
       onBack: () => context.go(backTarget),
       onNext: () => context.go(nextTarget),
       nextLabel: returnToSummary ? 'Done' : 'Continue',

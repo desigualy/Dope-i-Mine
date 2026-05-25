@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/widgets/app_text_field.dart';
 import 'onboarding_controller.dart';
-import 'widgets/onboarding_step_scaffold.dart';
+import 'widgets/onboarding_page_scaffold.dart';
 
 class AssistantNameScreen extends ConsumerStatefulWidget {
   const AssistantNameScreen({super.key, this.returnToSummary = false});
@@ -12,7 +12,8 @@ class AssistantNameScreen extends ConsumerStatefulWidget {
   final bool returnToSummary;
 
   @override
-  ConsumerState<AssistantNameScreen> createState() => _AssistantNameScreenState();
+  ConsumerState<AssistantNameScreen> createState() =>
+      _AssistantNameScreenState();
 }
 
 class _AssistantNameScreenState extends ConsumerState<AssistantNameScreen> {
@@ -28,23 +29,19 @@ class _AssistantNameScreenState extends ConsumerState<AssistantNameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return OnboardingStepScaffold(
+    return OnboardingPageScaffold(
       title: 'Name your assistant',
-      stepNumber: 4,
-      totalSteps: 12,
       onBack: () => context.go(
-        widget.returnToSummary
-            ? '/onboarding/summary'
-            : '/onboarding/age-band',
+        widget.returnToSummary ? '/onboarding/summary' : '/onboarding/age-band',
       ),
       onNext: () {
         ref.read(onboardingControllerProvider.notifier).setAssistantDisplayName(
-              _controller.text.trim().isEmpty ? 'Dope-i' : _controller.text.trim(),
+              _controller.text.trim().isEmpty
+                  ? 'Dope-i'
+                  : _controller.text.trim(),
             );
         context.go(
-          widget.returnToSummary
-              ? '/onboarding/summary'
-              : '/onboarding/mode',
+          widget.returnToSummary ? '/onboarding/summary' : '/onboarding/mode',
         );
       },
       child: SingleChildScrollView(

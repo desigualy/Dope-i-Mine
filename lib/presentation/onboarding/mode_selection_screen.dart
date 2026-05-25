@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/widgets/state_chip_selector.dart';
 import '../../domain/tasks/task_state_snapshot.dart';
 import 'onboarding_controller.dart';
-import 'widgets/onboarding_step_scaffold.dart';
+import 'widgets/onboarding_page_scaffold.dart';
 
 class ModeSelectionScreen extends ConsumerWidget {
   const ModeSelectionScreen({super.key, this.returnToSummary = false});
@@ -16,10 +16,8 @@ class ModeSelectionScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(onboardingControllerProvider);
 
-    return OnboardingStepScaffold(
+    return OnboardingPageScaffold(
       title: 'Choose support mode',
-      stepNumber: 5,
-      totalSteps: 12,
       onBack: () => context.go(
         returnToSummary ? '/onboarding/summary' : '/onboarding/assistant-name',
       ),
@@ -35,8 +33,9 @@ class ModeSelectionScreen extends ConsumerWidget {
               values: SupportMode.values,
               selected: state.mode,
               getLabel: (value) => value.name,
-              onSelected: (value) =>
-                  ref.read(onboardingControllerProvider.notifier).setMode(value),
+              onSelected: (value) => ref
+                  .read(onboardingControllerProvider.notifier)
+                  .setMode(value),
             ),
           ],
         ),

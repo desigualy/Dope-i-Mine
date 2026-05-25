@@ -7,7 +7,7 @@ import '../../core/services/speech_to_text_service.dart';
 import '../../core/services/text_to_speech_service.dart';
 import '../../providers.dart';
 import 'onboarding_controller.dart';
-import 'widgets/onboarding_step_scaffold.dart';
+import 'widgets/onboarding_page_scaffold.dart';
 
 final _permissionsServiceProvider = Provider<PermissionsService>((ref) {
   return PermissionsService(ref.watch(flutterLocalNotificationsPluginProvider));
@@ -49,8 +49,12 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen> {
       final sttOk = await stt.initialize();
       await tts.initialize();
 
-      ref.read(onboardingControllerProvider.notifier).setMicrophoneEnabled(micOk);
-      ref.read(onboardingControllerProvider.notifier).setNotificationsEnabled(notifOk);
+      ref
+          .read(onboardingControllerProvider.notifier)
+          .setMicrophoneEnabled(micOk);
+      ref
+          .read(onboardingControllerProvider.notifier)
+          .setNotificationsEnabled(notifOk);
 
       setState(() {
         _status = 'Notifications: ${notifOk ? 'OK' : 'Unavailable'} · '
@@ -66,15 +70,17 @@ class _PermissionsScreenState extends ConsumerState<PermissionsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return OnboardingStepScaffold(
+    return OnboardingPageScaffold(
       title: 'Permissions & device checks',
-      stepNumber: 8,
-      totalSteps: 12,
       onBack: () => context.go(
-        widget.returnToSummary ? '/onboarding/summary' : '/onboarding/accessibility',
+        widget.returnToSummary
+            ? '/onboarding/summary'
+            : '/onboarding/accessibility',
       ),
       onNext: () => context.go(
-        widget.returnToSummary ? '/onboarding/summary' : '/onboarding/voice-setup',
+        widget.returnToSummary
+            ? '/onboarding/summary'
+            : '/onboarding/voice-setup',
       ),
       nextLabel: widget.returnToSummary ? 'Done' : 'Next',
       child: Column(

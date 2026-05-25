@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../avatar_engine_v4/avatar_engine_v4.dart';
-import 'widgets/onboarding_step_scaffold.dart';
+import 'widgets/onboarding_page_scaffold.dart';
 
 class AvatarSetupScreen extends ConsumerWidget {
   const AvatarSetupScreen({super.key, this.returnToSummary = false});
@@ -12,15 +12,13 @@ class AvatarSetupScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return OnboardingStepScaffold(
+    return OnboardingPageScaffold(
       title: 'Avatar',
-      stepNumber: 12,
-      totalSteps: 13,
       onBack: () => context.go(
         returnToSummary ? '/onboarding/summary' : '/onboarding/identity',
       ),
       onNext: () => context.go(
-        returnToSummary ? '/onboarding/summary' : '/onboarding/phase4/role',
+        returnToSummary ? '/onboarding/summary' : '/onboarding/summary',
       ),
       nextLabel: returnToSummary ? 'Save' : 'Continue',
       child: ListView(

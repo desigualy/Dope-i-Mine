@@ -99,8 +99,7 @@ void main() {
     expect(find.text('Skip and review setup'), findsOneWidget);
   });
 
-  testWidgets('setup summary renders edit actions for phase 4 choices',
-      (tester) async {
+  testWidgets('setup summary renders concise core choices', (tester) async {
     final router = GoRouter(
       initialLocation: '/summary',
       routes: <RouteBase>[
@@ -121,13 +120,14 @@ void main() {
     await tester.pump();
 
     expect(find.text('Setup summary'), findsOneWidget);
-    expect(find.text('Role choice'), findsOneWidget);
+    expect(find.text('Pronunciation'), findsOneWidget);
+    expect(find.text('Support style'), findsOneWidget);
     expect(find.text('Voice choice'), findsOneWidget);
-    expect(find.text('Notification choice'), findsOneWidget);
-    expect(find.text('Accessibility and sensory choices'), findsOneWidget);
-    expect(find.text('Side quest choice'), findsOneWidget);
-    expect(find.text('Body-double preference'), findsOneWidget);
-    expect(find.text('First task choice'), findsOneWidget);
+    expect(find.text('Accessibility basics'), findsOneWidget);
+    expect(find.text('Optional setup'), findsOneWidget);
+    expect(find.text('Role choice'), findsNothing);
+    expect(find.text('Notification choice'), findsNothing);
+    expect(find.text('Body-double preference'), findsNothing);
     expect(find.text('Edit'), findsWidgets);
   });
 

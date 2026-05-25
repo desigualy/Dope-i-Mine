@@ -9,35 +9,75 @@ class OnboardingNotificationSetupScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final controller = ref.watch(onboardingControllerProvider);
+    final state = ref.watch(onboardingControllerProvider);
+    final controller = ref.read(onboardingControllerProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Notifications')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Notification preferences', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            SwitchListTile(
-              value: controller.notificationsEnabled,
-              onChanged: (v) => ref.read(onboardingControllerProvider.notifier).setRemindersEnabled(v),
-              title: const Text('Task & routine reminders'),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: <Widget>[
+            const Text(
+              'Reminder preferences',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SwitchListTile(
-              value: controller.bodyDoubleEnabled,
-              onChanged: (v) => ref.read(onboardingControllerProvider.notifier).setBodyDoubleEnabled(v),
-              title: const Text('Body-double invites & matches'),
+            const SizedBox(height: 8),
+            const Text(
+              'Notifications are for tasks, routines, caregiver assignments, body-double invites, matches, and gentle nudges. If Android permission is denied, the app should keep working and show in-app guidance where available.',
             ),
             const SizedBox(height: 12),
-            Row(children: [
-              TextButton(onPressed: () => context.pop(), child: const Text('Back')),
-              const Spacer(),
-              TextButton(onPressed: () => context.go('/onboarding/phase4/accessibility'), child: const Text('Skip for now')),
-              const SizedBox(width: 8),
-              ElevatedButton(onPressed: () => context.go('/onboarding/phase4/accessibility'), child: const Text('Continue')),
-            ])
+            SwitchListTile(
+              value: state.notificationsEnabled,
+              onChanged: controller.setNotificationsEnabled,
+              title: const Text('Task and routine reminders'),
+            ),
+            SwitchListTile(
+              value: state.bodyDoubleEnabled,
+              onChanged: controller.setBodyDoubleEnabled,
+              title: const Text('Body-double invites and matches'),
+            ),
+            SwitchListTile(
+              value: state.sideQuestsEnabled,
+              onChanged: controller.setSideQuestsEnabled,
+              title: const Text('Side quest prompts'),
+              subtitle: const Text(
+                'Side quests are small optional extras. They should feel helpful, not intrusive.',
+              ),
+            ),
+            const ListTile(
+              title: Text('Quiet hours'),
+              subtitle: Text(
+                  'Keep enabled reminders quiet during rest time where implemented.'),
+            ),
+            const ListTile(
+              title: Text('Sound and vibration'),
+              subtitle: Text(
+                  'Use the app and Android settings to adjust sound or vibration.'),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: <Widget>[
+                TextButton(
+                  onPressed: () => context.go('/onboarding/phase4/voice'),
+                  child: const Text('Back'),
+                ),
+                const Spacer(),
+                TextButton(
+                  onPressed: () {
+                    controller.setNotificationsEnabled(false);
+                    context.go('/onboarding/phase4/accessibility');
+                  },
+                  child: const Text('Skip for now'),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: () =>
+                      context.go('/onboarding/phase4/accessibility'),
+                  child: const Text('Continue'),
+                ),
+              ],
+            ),
           ],
         ),
       ),

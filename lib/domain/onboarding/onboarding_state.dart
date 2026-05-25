@@ -84,10 +84,10 @@ enum OnboardingRole { self, caregiver, supported, both }
 extension OnboardingRoleLabel on OnboardingRole {
   String get label {
     return switch (this) {
-      OnboardingRole.self => 'Self',
-      OnboardingRole.caregiver => 'Caregiver',
-      OnboardingRole.supported => 'Supported user',
-      OnboardingRole.both => 'Self & supported',
+      OnboardingRole.self => 'I am using this for myself',
+      OnboardingRole.caregiver => 'I support someone else',
+      OnboardingRole.supported => 'Someone supports me',
+      OnboardingRole.both => 'Both apply to me',
     };
   }
 }
@@ -119,6 +119,7 @@ class OnboardingState {
     this.microphoneEnabled = false,
     this.bodyDoubleEnabled = false,
     this.sideQuestsEnabled = false,
+    this.firstTaskChoice = 'Not now',
   });
 
   final AgeBand ageBand;
@@ -150,6 +151,7 @@ class OnboardingState {
   final bool microphoneEnabled;
   final bool bodyDoubleEnabled;
   final bool sideQuestsEnabled;
+  final String firstTaskChoice;
 
   String get pronounDisplay {
     if (pronouns == PronounSet.custom && customPronouns.trim().isNotEmpty) {
@@ -184,6 +186,7 @@ class OnboardingState {
     bool? microphoneEnabled,
     bool? bodyDoubleEnabled,
     bool? sideQuestsEnabled,
+    String? firstTaskChoice,
   }) {
     return OnboardingState(
       role: role ?? this.role,
@@ -211,8 +214,7 @@ class OnboardingState {
       microphoneEnabled: microphoneEnabled ?? this.microphoneEnabled,
       bodyDoubleEnabled: bodyDoubleEnabled ?? this.bodyDoubleEnabled,
       sideQuestsEnabled: sideQuestsEnabled ?? this.sideQuestsEnabled,
+      firstTaskChoice: firstTaskChoice ?? this.firstTaskChoice,
     );
   }
 }
-
-enum OnboardingRole { self, caregiver, supported, both }

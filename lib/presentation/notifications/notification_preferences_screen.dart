@@ -3,8 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/sync/sync_queue_item.dart';
 import '../../core/sync/sync_queue_service.dart';
-import '../../data/local/local_notification_preferences_store.dart';
-import '../../data/repositories/notification_repository_impl.dart';
 import '../../domain/notifications/notification_preferences_model.dart';
 import '../../providers.dart';
 
@@ -91,15 +89,14 @@ class _NotificationPreferencesScreenState
         _statusMessage = 'Preferences saved.';
       });
       if (saved != null) {
-        await ref
-            .read(localNotificationPreferencesStoreProvider)
-            .save(saved);
+        await ref.read(localNotificationPreferencesStoreProvider).save(saved);
       }
     } catch (error) {
       await ref.read(syncQueueServiceProvider).enqueue(
             SyncQueueItem.create(
               type: 'save_notification_preferences',
-              idempotencyKey: 'save_notification_preferences_${preferences.userId}',
+              idempotencyKey:
+                  'save_notification_preferences_${preferences.userId}',
               payload: <String, dynamic>{
                 'userId': preferences.userId,
                 'enabled': preferences.enabled,
@@ -117,14 +114,14 @@ class _NotificationPreferencesScreenState
           );
       setState(() {
         _loading = false;
-        _statusMessage =
-            'Preferences saved locally; will sync when online.';
+        _statusMessage = 'Preferences saved locally; will sync when online.';
       });
     }
   }
 
   Future<void> _requestPermission() async {
-    final granted = await ref.read(permissionsServiceProvider).requestNotifications();
+    final granted =
+        await ref.read(permissionsServiceProvider).requestNotifications();
     setState(() {
       _statusMessage = granted
           ? 'Notification access granted.'

@@ -4,9 +4,11 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:dope_i_mine/data/repositories/auth_repository_impl.dart';
 import 'package:dope_i_mine/data/repositories/caregiver_repository.dart';
+import 'package:dope_i_mine/data/repositories/notification_repository_impl.dart';
 import 'package:dope_i_mine/domain/auth/auth_user.dart';
 import 'package:dope_i_mine/domain/body_double/body_double_session.dart';
 import 'package:dope_i_mine/domain/caregiver/caregiver_models.dart';
+import 'package:dope_i_mine/domain/notifications/app_notification.dart';
 import 'package:dope_i_mine/presentation/caregiver/caregiver_dashboard_screen.dart';
 import 'package:dope_i_mine/presentation/caregiver/caregiver_controller.dart';
 import 'package:dope_i_mine/providers.dart' hide caregiverRepositoryProvider;
@@ -16,7 +18,8 @@ void main() {
     final repository = _FakeCaregiverRepository(
       emailInvites: <CaregiverEmailInvite>[_pendingInvite],
     );
-    final controller = CaregiverController(repository);
+    final controller =
+        CaregiverController(repository, _FakeNotificationRepository());
     addTearDown(controller.dispose);
 
     await _settleControllerRefresh();
@@ -32,7 +35,8 @@ void main() {
     final repository = _FakeCaregiverRepository(
       relationships: <CaregiverRelationship>[_acceptedRelationship],
     );
-    final controller = CaregiverController(repository);
+    final controller =
+        CaregiverController(repository, _FakeNotificationRepository());
     addTearDown(controller.dispose);
 
     await _settleControllerRefresh();
@@ -51,7 +55,8 @@ void main() {
     'controller returns invite send result so add screen only closes on success',
     () async {
       final repository = _FakeCaregiverRepository(sendInviteSucceeds: true);
-      final controller = CaregiverController(repository);
+      final controller =
+          CaregiverController(repository, _FakeNotificationRepository());
       addTearDown(controller.dispose);
 
       await _settleControllerRefresh();
@@ -74,7 +79,8 @@ void main() {
       final repository = _FakeCaregiverRepository(
         acceptedInviteRelationship: _acceptedRelationship,
       );
-      final controller = CaregiverController(repository);
+      final controller =
+          CaregiverController(repository, _FakeNotificationRepository());
       addTearDown(controller.dispose);
 
       await _settleControllerRefresh();
@@ -158,6 +164,25 @@ class _FakeAuthRepository implements AuthRepositoryImpl {
 
   @override
   Future<void> completeForcedPasswordChange(String password) async {}
+}
+
+class _FakeNotificationRepository extends Fake
+    implements NotificationRepositoryImpl {
+  @override
+  Future<AppNotification?> createNotification({
+    required String userId,
+    required AppNotificationType type,
+    required String title,
+    String? body,
+    String? route,
+    Map<String, dynamic>? routeParams,
+    AppNotificationPriority priority = AppNotificationPriority.normal,
+    String? sourceType,
+    String? sourceId,
+    DateTime? scheduledFor,
+  }) async {
+    return null;
+  }
 }
 
 final DateTime _now = DateTime.utc(2026, 5, 15, 12);
@@ -269,22 +294,24 @@ class _FakeCaregiverRepository implements CaregiverRepository {
   Future<String> exportProgressReport(String userId) async => '';
 
   @override
-  Future<void> assignRoutine({
+  Future<bool> assignRoutine({
     required String targetUserId,
     String? routineId,
     required String routineTitle,
     String schedule = 'Flexible',
-  }) async {}
+  }) async =>
+      true;
 
   @override
-  Future<void> assignTask({
+  Future<String?> assignTask({
     required String targetUserId,
     required String taskTitle,
     String? taskDescription,
     List<String>? steps,
     DateTime? dueAt,
     String visibilityLevel = 'standard',
-  }) async {}
+  }) async =>
+      'assigned-task-a';
 
   @override
   Future<void> inviteToBodyDouble({

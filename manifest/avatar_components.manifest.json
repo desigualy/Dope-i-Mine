@@ -1,0 +1,3853 @@
+{
+  "project": "Dope-i-Mine 3D-Style Avatar SVG Library",
+  "version": "v1-reference-based",
+  "referenceImage": "ChatGPT Image May 5, 2026, 08_50_44 PM.png",
+  "componentCount": 244,
+  "note": "SVG source library for Rive import/rigging. Not a finished .riv rig.",
+  "components": [
+    {
+      "component": "Avatar_FullBody_Reference_CurlyAuburn",
+      "category": "base_avatar",
+      "sourceSvg": "assets/svg/base_avatar/Avatar_FullBody_Reference_CurlyAuburn.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarHairBaseColor",
+        "avatarEyeIrisColor",
+        "avatarClothingPrimaryColor"
+      ],
+      "tags": [
+        "reference",
+        "full-body"
+      ],
+      "notes": "Full-body SVG based on the attached image."
+    },
+    {
+      "component": "Component_Head_Round",
+      "category": "head",
+      "sourceSvg": "assets/svg/head/Component_Head_Round.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Head_Oval",
+      "category": "head",
+      "sourceSvg": "assets/svg/head/Component_Head_Oval.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Head_Long",
+      "category": "head",
+      "sourceSvg": "assets/svg/head/Component_Head_Long.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Head_Square",
+      "category": "head",
+      "sourceSvg": "assets/svg/head/Component_Head_Square.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Head_Heart",
+      "category": "head",
+      "sourceSvg": "assets/svg/head/Component_Head_Heart.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Head_Diamond",
+      "category": "head",
+      "sourceSvg": "assets/svg/head/Component_Head_Diamond.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Head_SoftJaw",
+      "category": "head",
+      "sourceSvg": "assets/svg/head/Component_Head_SoftJaw.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Head_StrongJaw",
+      "category": "head",
+      "sourceSvg": "assets/svg/head/Component_Head_StrongJaw.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Body_Shoulders_Default",
+      "category": "body",
+      "sourceSvg": "assets/svg/body/Component_Body_Shoulders_Default.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Body_Shoulders_Narrow",
+      "category": "body",
+      "sourceSvg": "assets/svg/body/Component_Body_Shoulders_Narrow.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Body_Shoulders_Broad",
+      "category": "body",
+      "sourceSvg": "assets/svg/body/Component_Body_Shoulders_Broad.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Body_Neck_Default",
+      "category": "body",
+      "sourceSvg": "assets/svg/body/Component_Body_Neck_Default.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Body_Neck_Short",
+      "category": "body",
+      "sourceSvg": "assets/svg/body/Component_Body_Neck_Short.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Body_Neck_Long",
+      "category": "body",
+      "sourceSvg": "assets/svg/body/Component_Body_Neck_Long.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Face_Soft",
+      "category": "face",
+      "sourceSvg": "assets/svg/face/Component_Face_Soft.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Face_Angular",
+      "category": "face",
+      "sourceSvg": "assets/svg/face/Component_Face_Angular.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Face_Full",
+      "category": "face",
+      "sourceSvg": "assets/svg/face/Component_Face_Full.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Face_Slim",
+      "category": "face",
+      "sourceSvg": "assets/svg/face/Component_Face_Slim.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Face_Broad",
+      "category": "face",
+      "sourceSvg": "assets/svg/face/Component_Face_Broad.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Face_DefinedJaw",
+      "category": "face",
+      "sourceSvg": "assets/svg/face/Component_Face_DefinedJaw.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Face_HighCheekbones",
+      "category": "face",
+      "sourceSvg": "assets/svg/face/Component_Face_HighCheekbones.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Face_LowCheekbones",
+      "category": "face",
+      "sourceSvg": "assets/svg/face/Component_Face_LowCheekbones.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Ears_Small",
+      "category": "ears",
+      "sourceSvg": "assets/svg/ears/Component_Ears_Small.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Ears_Medium",
+      "category": "ears",
+      "sourceSvg": "assets/svg/ears/Component_Ears_Medium.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Ears_Large",
+      "category": "ears",
+      "sourceSvg": "assets/svg/ears/Component_Ears_Large.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Ears_AttachedLobe",
+      "category": "ears",
+      "sourceSvg": "assets/svg/ears/Component_Ears_AttachedLobe.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Ears_FreeLobe",
+      "category": "ears",
+      "sourceSvg": "assets/svg/ears/Component_Ears_FreeLobe.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_SkinDetail_None",
+      "category": "skin_detail",
+      "sourceSvg": "assets/svg/skin_detail/Component_SkinDetail_None.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_SkinDetail_Freckles_Light",
+      "category": "skin_detail",
+      "sourceSvg": "assets/svg/skin_detail/Component_SkinDetail_Freckles_Light.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_SkinDetail_Freckles_Dense",
+      "category": "skin_detail",
+      "sourceSvg": "assets/svg/skin_detail/Component_SkinDetail_Freckles_Dense.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_SkinDetail_BeautyMark",
+      "category": "skin_detail",
+      "sourceSvg": "assets/svg/skin_detail/Component_SkinDetail_BeautyMark.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_SkinDetail_Mole",
+      "category": "skin_detail",
+      "sourceSvg": "assets/svg/skin_detail/Component_SkinDetail_Mole.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_SkinDetail_Acne_Light",
+      "category": "skin_detail",
+      "sourceSvg": "assets/svg/skin_detail/Component_SkinDetail_Acne_Light.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_SkinDetail_Acne_Moderate",
+      "category": "skin_detail",
+      "sourceSvg": "assets/svg/skin_detail/Component_SkinDetail_Acne_Moderate.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_SkinDetail_EyeBags",
+      "category": "skin_detail",
+      "sourceSvg": "assets/svg/skin_detail/Component_SkinDetail_EyeBags.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_SkinDetail_Blush",
+      "category": "skin_detail",
+      "sourceSvg": "assets/svg/skin_detail/Component_SkinDetail_Blush.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_SkinDetail_SmileLines",
+      "category": "skin_detail",
+      "sourceSvg": "assets/svg/skin_detail/Component_SkinDetail_SmileLines.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_SkinDetail_Wrinkles_Light",
+      "category": "skin_detail",
+      "sourceSvg": "assets/svg/skin_detail/Component_SkinDetail_Wrinkles_Light.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_SkinDetail_Wrinkles_Mature",
+      "category": "skin_detail",
+      "sourceSvg": "assets/svg/skin_detail/Component_SkinDetail_Wrinkles_Mature.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_SkinDetail_Vitiligo_Partial",
+      "category": "skin_detail",
+      "sourceSvg": "assets/svg/skin_detail/Component_SkinDetail_Vitiligo_Partial.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_SkinDetail_Vitiligo_Extended",
+      "category": "skin_detail",
+      "sourceSvg": "assets/svg/skin_detail/Component_SkinDetail_Vitiligo_Extended.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Eyes_Round",
+      "category": "eyes",
+      "sourceSvg": "assets/svg/eyes/Component_Eyes_Round.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarEyeIrisColor",
+        "avatarEyeRingColor",
+        "avatarEyePupilColor",
+        "avatarEyeHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Eyes_Almond",
+      "category": "eyes",
+      "sourceSvg": "assets/svg/eyes/Component_Eyes_Almond.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarEyeIrisColor",
+        "avatarEyeRingColor",
+        "avatarEyePupilColor",
+        "avatarEyeHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Eyes_Monolid",
+      "category": "eyes",
+      "sourceSvg": "assets/svg/eyes/Component_Eyes_Monolid.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarEyeIrisColor",
+        "avatarEyeRingColor",
+        "avatarEyePupilColor",
+        "avatarEyeHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Eyes_Hooded",
+      "category": "eyes",
+      "sourceSvg": "assets/svg/eyes/Component_Eyes_Hooded.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarEyeIrisColor",
+        "avatarEyeRingColor",
+        "avatarEyePupilColor",
+        "avatarEyeHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Eyes_DeepSet",
+      "category": "eyes",
+      "sourceSvg": "assets/svg/eyes/Component_Eyes_DeepSet.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarEyeIrisColor",
+        "avatarEyeRingColor",
+        "avatarEyePupilColor",
+        "avatarEyeHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Eyes_WideSet",
+      "category": "eyes",
+      "sourceSvg": "assets/svg/eyes/Component_Eyes_WideSet.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarEyeIrisColor",
+        "avatarEyeRingColor",
+        "avatarEyePupilColor",
+        "avatarEyeHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Eyes_CloseSet",
+      "category": "eyes",
+      "sourceSvg": "assets/svg/eyes/Component_Eyes_CloseSet.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarEyeIrisColor",
+        "avatarEyeRingColor",
+        "avatarEyePupilColor",
+        "avatarEyeHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Eyes_Upturned",
+      "category": "eyes",
+      "sourceSvg": "assets/svg/eyes/Component_Eyes_Upturned.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarEyeIrisColor",
+        "avatarEyeRingColor",
+        "avatarEyePupilColor",
+        "avatarEyeHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Eyes_Downturned",
+      "category": "eyes",
+      "sourceSvg": "assets/svg/eyes/Component_Eyes_Downturned.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarEyeIrisColor",
+        "avatarEyeRingColor",
+        "avatarEyePupilColor",
+        "avatarEyeHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Eyes_Small",
+      "category": "eyes",
+      "sourceSvg": "assets/svg/eyes/Component_Eyes_Small.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarEyeIrisColor",
+        "avatarEyeRingColor",
+        "avatarEyePupilColor",
+        "avatarEyeHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Eyes_Large",
+      "category": "eyes",
+      "sourceSvg": "assets/svg/eyes/Component_Eyes_Large.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarEyeIrisColor",
+        "avatarEyeRingColor",
+        "avatarEyePupilColor",
+        "avatarEyeHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_EyesExpr_Neutral",
+      "category": "eyes_expr",
+      "sourceSvg": "assets/svg/eyes_expr/Component_EyesExpr_Neutral.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarEyeIrisColor",
+        "avatarEyeRingColor",
+        "avatarEyePupilColor",
+        "avatarEyeHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_EyesExpr_Focused",
+      "category": "eyes_expr",
+      "sourceSvg": "assets/svg/eyes_expr/Component_EyesExpr_Focused.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarEyeIrisColor",
+        "avatarEyeRingColor",
+        "avatarEyePupilColor",
+        "avatarEyeHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_EyesExpr_Happy",
+      "category": "eyes_expr",
+      "sourceSvg": "assets/svg/eyes_expr/Component_EyesExpr_Happy.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarEyeIrisColor",
+        "avatarEyeRingColor",
+        "avatarEyePupilColor",
+        "avatarEyeHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_EyesExpr_Tired",
+      "category": "eyes_expr",
+      "sourceSvg": "assets/svg/eyes_expr/Component_EyesExpr_Tired.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarEyeIrisColor",
+        "avatarEyeRingColor",
+        "avatarEyePupilColor",
+        "avatarEyeHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_EyesExpr_Overwhelmed",
+      "category": "eyes_expr",
+      "sourceSvg": "assets/svg/eyes_expr/Component_EyesExpr_Overwhelmed.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarEyeIrisColor",
+        "avatarEyeRingColor",
+        "avatarEyePupilColor",
+        "avatarEyeHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_EyesExpr_Calm",
+      "category": "eyes_expr",
+      "sourceSvg": "assets/svg/eyes_expr/Component_EyesExpr_Calm.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarEyeIrisColor",
+        "avatarEyeRingColor",
+        "avatarEyePupilColor",
+        "avatarEyeHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_EyesExpr_Listening",
+      "category": "eyes_expr",
+      "sourceSvg": "assets/svg/eyes_expr/Component_EyesExpr_Listening.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarEyeIrisColor",
+        "avatarEyeRingColor",
+        "avatarEyePupilColor",
+        "avatarEyeHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_EyesExpr_Thinking",
+      "category": "eyes_expr",
+      "sourceSvg": "assets/svg/eyes_expr/Component_EyesExpr_Thinking.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarEyeIrisColor",
+        "avatarEyeRingColor",
+        "avatarEyePupilColor",
+        "avatarEyeHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Brows_Straight",
+      "category": "brows",
+      "sourceSvg": "assets/svg/brows/Component_Brows_Straight.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Brows_SoftArch",
+      "category": "brows",
+      "sourceSvg": "assets/svg/brows/Component_Brows_SoftArch.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Brows_HighArch",
+      "category": "brows",
+      "sourceSvg": "assets/svg/brows/Component_Brows_HighArch.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Brows_Full",
+      "category": "brows",
+      "sourceSvg": "assets/svg/brows/Component_Brows_Full.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Brows_Thin",
+      "category": "brows",
+      "sourceSvg": "assets/svg/brows/Component_Brows_Thin.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Brows_Angled",
+      "category": "brows",
+      "sourceSvg": "assets/svg/brows/Component_Brows_Angled.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Brows_Rounded",
+      "category": "brows",
+      "sourceSvg": "assets/svg/brows/Component_Brows_Rounded.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Brows_Flat",
+      "category": "brows",
+      "sourceSvg": "assets/svg/brows/Component_Brows_Flat.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_BrowsExpr_Relaxed",
+      "category": "brows_expr",
+      "sourceSvg": "assets/svg/brows_expr/Component_BrowsExpr_Relaxed.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_BrowsExpr_Raised",
+      "category": "brows_expr",
+      "sourceSvg": "assets/svg/brows_expr/Component_BrowsExpr_Raised.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_BrowsExpr_Furrowed",
+      "category": "brows_expr",
+      "sourceSvg": "assets/svg/brows_expr/Component_BrowsExpr_Furrowed.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_BrowsExpr_Concerned",
+      "category": "brows_expr",
+      "sourceSvg": "assets/svg/brows_expr/Component_BrowsExpr_Concerned.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_BrowsExpr_Focused",
+      "category": "brows_expr",
+      "sourceSvg": "assets/svg/brows_expr/Component_BrowsExpr_Focused.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Nose_Small",
+      "category": "nose",
+      "sourceSvg": "assets/svg/nose/Component_Nose_Small.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Nose_Medium",
+      "category": "nose",
+      "sourceSvg": "assets/svg/nose/Component_Nose_Medium.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Nose_Broad",
+      "category": "nose",
+      "sourceSvg": "assets/svg/nose/Component_Nose_Broad.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Nose_Button",
+      "category": "nose",
+      "sourceSvg": "assets/svg/nose/Component_Nose_Button.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Nose_Aquiline",
+      "category": "nose",
+      "sourceSvg": "assets/svg/nose/Component_Nose_Aquiline.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Nose_LowBridge",
+      "category": "nose",
+      "sourceSvg": "assets/svg/nose/Component_Nose_LowBridge.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Nose_HighBridge",
+      "category": "nose",
+      "sourceSvg": "assets/svg/nose/Component_Nose_HighBridge.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Nose_Rounded",
+      "category": "nose",
+      "sourceSvg": "assets/svg/nose/Component_Nose_Rounded.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Nose_Defined",
+      "category": "nose",
+      "sourceSvg": "assets/svg/nose/Component_Nose_Defined.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Nose_WideNostril",
+      "category": "nose",
+      "sourceSvg": "assets/svg/nose/Component_Nose_WideNostril.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Nose_NarrowNostril",
+      "category": "nose",
+      "sourceSvg": "assets/svg/nose/Component_Nose_NarrowNostril.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBaseColor",
+        "avatarSkinShadowColor",
+        "avatarSkinHighlightColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Mouth_Narrow",
+      "category": "mouth",
+      "sourceSvg": "assets/svg/mouth/Component_Mouth_Narrow.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBlushColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Mouth_Medium",
+      "category": "mouth",
+      "sourceSvg": "assets/svg/mouth/Component_Mouth_Medium.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBlushColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Mouth_Full",
+      "category": "mouth",
+      "sourceSvg": "assets/svg/mouth/Component_Mouth_Full.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBlushColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Mouth_FullUpper",
+      "category": "mouth",
+      "sourceSvg": "assets/svg/mouth/Component_Mouth_FullUpper.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBlushColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Mouth_FullLower",
+      "category": "mouth",
+      "sourceSvg": "assets/svg/mouth/Component_Mouth_FullLower.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBlushColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Mouth_Wide",
+      "category": "mouth",
+      "sourceSvg": "assets/svg/mouth/Component_Mouth_Wide.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBlushColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Mouth_Small",
+      "category": "mouth",
+      "sourceSvg": "assets/svg/mouth/Component_Mouth_Small.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBlushColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Mouth_DefinedCupid",
+      "category": "mouth",
+      "sourceSvg": "assets/svg/mouth/Component_Mouth_DefinedCupid.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBlushColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_MouthExpr_Neutral",
+      "category": "mouth_expr",
+      "sourceSvg": "assets/svg/mouth_expr/Component_MouthExpr_Neutral.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBlushColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_MouthExpr_Smile",
+      "category": "mouth_expr",
+      "sourceSvg": "assets/svg/mouth_expr/Component_MouthExpr_Smile.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBlushColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_MouthExpr_Open",
+      "category": "mouth_expr",
+      "sourceSvg": "assets/svg/mouth_expr/Component_MouthExpr_Open.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBlushColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_MouthExpr_Frown",
+      "category": "mouth_expr",
+      "sourceSvg": "assets/svg/mouth_expr/Component_MouthExpr_Frown.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBlushColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_MouthExpr_Thinking",
+      "category": "mouth_expr",
+      "sourceSvg": "assets/svg/mouth_expr/Component_MouthExpr_Thinking.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBlushColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_MouthExpr_Surprised",
+      "category": "mouth_expr",
+      "sourceSvg": "assets/svg/mouth_expr/Component_MouthExpr_Surprised.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBlushColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_MouthExpr_Calm",
+      "category": "mouth_expr",
+      "sourceSvg": "assets/svg/mouth_expr/Component_MouthExpr_Calm.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBlushColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_MouthExpr_Encouraging",
+      "category": "mouth_expr",
+      "sourceSvg": "assets/svg/mouth_expr/Component_MouthExpr_Encouraging.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarSkinBlushColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Bald",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Bald.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_BuzzCut",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_BuzzCut.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Shaved",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Shaved.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Fade",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Fade.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Undercut",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Undercut.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Waves_360",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Waves_360.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Short_Straight",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Short_Straight.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Short_Wavy",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Short_Wavy.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Short_Curly",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Short_Curly.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Short_Coily",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Short_Coily.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Medium_Straight",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Medium_Straight.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Medium_Wavy",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Medium_Wavy.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Medium_Curly",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Medium_Curly.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Medium_Coily",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Medium_Coily.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Long_Straight",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Long_Straight.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Long_Wavy",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Long_Wavy.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Long_Curly",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Long_Curly.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Long_Coily",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Long_Coily.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Afro_Short",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Afro_Short.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Afro_Rounded",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Afro_Rounded.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Afro_Large",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Afro_Large.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_HighPuff",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_HighPuff.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_TwoPuff",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_TwoPuff.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Twists_Short",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Twists_Short.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Twists_Long",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Twists_Long.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Locs_Short",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Locs_Short.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Locs_Medium",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Locs_Medium.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Locs_Long",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Locs_Long.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Braids_Single",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Braids_Single.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_BoxBraids_Medium",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_BoxBraids_Medium.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_BoxBraids_Long",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_BoxBraids_Long.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Cornrows",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Cornrows.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_BantuKnots",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_BantuKnots.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Ponytail_Low",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Ponytail_Low.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Ponytail_High",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Ponytail_High.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Bun",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Bun.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Bob",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Bob.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_SidePart",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_SidePart.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_CenterPart",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_CenterPart.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Manbun",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Manbun.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Hair_Reference_AuburnLongCurly",
+      "category": "hair",
+      "sourceSvg": "assets/svg/hair/Component_Hair_Reference_AuburnLongCurly.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarHairBaseColor",
+        "avatarHairShadowColor",
+        "avatarHairHighlightColor",
+        "avatarHairAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_FacialHair_None",
+      "category": "facial_hair",
+      "sourceSvg": "assets/svg/facial_hair/Component_FacialHair_None.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarFacialHairBaseColor",
+        "avatarFacialHairShadowColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_FacialHair_Stubble",
+      "category": "facial_hair",
+      "sourceSvg": "assets/svg/facial_hair/Component_FacialHair_Stubble.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarFacialHairBaseColor",
+        "avatarFacialHairShadowColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_FacialHair_Moustache",
+      "category": "facial_hair",
+      "sourceSvg": "assets/svg/facial_hair/Component_FacialHair_Moustache.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarFacialHairBaseColor",
+        "avatarFacialHairShadowColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_FacialHair_Goatee",
+      "category": "facial_hair",
+      "sourceSvg": "assets/svg/facial_hair/Component_FacialHair_Goatee.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarFacialHairBaseColor",
+        "avatarFacialHairShadowColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_FacialHair_Beard_Short",
+      "category": "facial_hair",
+      "sourceSvg": "assets/svg/facial_hair/Component_FacialHair_Beard_Short.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarFacialHairBaseColor",
+        "avatarFacialHairShadowColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_FacialHair_Beard_Full",
+      "category": "facial_hair",
+      "sourceSvg": "assets/svg/facial_hair/Component_FacialHair_Beard_Full.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarFacialHairBaseColor",
+        "avatarFacialHairShadowColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_FacialHair_Beard_Shaped",
+      "category": "facial_hair",
+      "sourceSvg": "assets/svg/facial_hair/Component_FacialHair_Beard_Shaped.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarFacialHairBaseColor",
+        "avatarFacialHairShadowColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_FacialHair_Sideburns",
+      "category": "facial_hair",
+      "sourceSvg": "assets/svg/facial_hair/Component_FacialHair_Sideburns.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarFacialHairBaseColor",
+        "avatarFacialHairShadowColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_HeadCovering_None",
+      "category": "head_covering",
+      "sourceSvg": "assets/svg/head_covering/Component_HeadCovering_None.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_HeadCovering_Hijab",
+      "category": "head_covering",
+      "sourceSvg": "assets/svg/head_covering/Component_HeadCovering_Hijab.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_HeadCovering_Turban",
+      "category": "head_covering",
+      "sourceSvg": "assets/svg/head_covering/Component_HeadCovering_Turban.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_HeadCovering_Patka",
+      "category": "head_covering",
+      "sourceSvg": "assets/svg/head_covering/Component_HeadCovering_Patka.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_HeadCovering_Durag",
+      "category": "head_covering",
+      "sourceSvg": "assets/svg/head_covering/Component_HeadCovering_Durag.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_HeadCovering_Headscarf",
+      "category": "head_covering",
+      "sourceSvg": "assets/svg/head_covering/Component_HeadCovering_Headscarf.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_HeadCovering_Beanie",
+      "category": "head_covering",
+      "sourceSvg": "assets/svg/head_covering/Component_HeadCovering_Beanie.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_HeadCovering_Cap",
+      "category": "head_covering",
+      "sourceSvg": "assets/svg/head_covering/Component_HeadCovering_Cap.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_HeadCovering_Wrap",
+      "category": "head_covering",
+      "sourceSvg": "assets/svg/head_covering/Component_HeadCovering_Wrap.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Marking_None",
+      "category": "markings",
+      "sourceSvg": "assets/svg/markings/Component_Marking_None.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Marking_CheekScar",
+      "category": "markings",
+      "sourceSvg": "assets/svg/markings/Component_Marking_CheekScar.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Marking_BrowScar",
+      "category": "markings",
+      "sourceSvg": "assets/svg/markings/Component_Marking_BrowScar.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Marking_ChinScar",
+      "category": "markings",
+      "sourceSvg": "assets/svg/markings/Component_Marking_ChinScar.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Marking_Birthmark_Small",
+      "category": "markings",
+      "sourceSvg": "assets/svg/markings/Component_Marking_Birthmark_Small.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Marking_Birthmark_Large",
+      "category": "markings",
+      "sourceSvg": "assets/svg/markings/Component_Marking_Birthmark_Large.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Marking_Mole",
+      "category": "markings",
+      "sourceSvg": "assets/svg/markings/Component_Marking_Mole.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Marking_FreckleCluster",
+      "category": "markings",
+      "sourceSvg": "assets/svg/markings/Component_Marking_FreckleCluster.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Marking_EyeBags",
+      "category": "markings",
+      "sourceSvg": "assets/svg/markings/Component_Marking_EyeBags.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Marking_Bandage_Cheek",
+      "category": "markings",
+      "sourceSvg": "assets/svg/markings/Component_Marking_Bandage_Cheek.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Marking_Bandage_Nose",
+      "category": "markings",
+      "sourceSvg": "assets/svg/markings/Component_Marking_Bandage_Nose.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Marking_Vitiligo_FacePatch",
+      "category": "markings",
+      "sourceSvg": "assets/svg/markings/Component_Marking_Vitiligo_FacePatch.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Marking_Vitiligo_HandsPatch",
+      "category": "markings",
+      "sourceSvg": "assets/svg/markings/Component_Marking_Vitiligo_HandsPatch.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarMarkingColor",
+        "avatarMarkingOpacity"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Accessibility_HearingAid_Left",
+      "category": "accessibility",
+      "sourceSvg": "assets/svg/accessibility/Component_Accessibility_HearingAid_Left.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Accessibility_HearingAid_Right",
+      "category": "accessibility",
+      "sourceSvg": "assets/svg/accessibility/Component_Accessibility_HearingAid_Right.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Accessibility_HearingAid_Both",
+      "category": "accessibility",
+      "sourceSvg": "assets/svg/accessibility/Component_Accessibility_HearingAid_Both.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Accessibility_CochlearImplant_Left",
+      "category": "accessibility",
+      "sourceSvg": "assets/svg/accessibility/Component_Accessibility_CochlearImplant_Left.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Accessibility_CochlearImplant_Right",
+      "category": "accessibility",
+      "sourceSvg": "assets/svg/accessibility/Component_Accessibility_CochlearImplant_Right.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Accessibility_Glasses_Round",
+      "category": "accessibility",
+      "sourceSvg": "assets/svg/accessibility/Component_Accessibility_Glasses_Round.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Accessibility_Glasses_Square",
+      "category": "accessibility",
+      "sourceSvg": "assets/svg/accessibility/Component_Accessibility_Glasses_Square.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Accessibility_Glasses_ThickFrame",
+      "category": "accessibility",
+      "sourceSvg": "assets/svg/accessibility/Component_Accessibility_Glasses_ThickFrame.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Accessibility_Eyepatch_Left",
+      "category": "accessibility",
+      "sourceSvg": "assets/svg/accessibility/Component_Accessibility_Eyepatch_Left.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Accessibility_Eyepatch_Right",
+      "category": "accessibility",
+      "sourceSvg": "assets/svg/accessibility/Component_Accessibility_Eyepatch_Right.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Accessory_None",
+      "category": "accessories",
+      "sourceSvg": "assets/svg/accessories/Component_Accessory_None.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Accessory_Headphones",
+      "category": "accessories",
+      "sourceSvg": "assets/svg/accessories/Component_Accessory_Headphones.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Accessory_Earbuds",
+      "category": "accessories",
+      "sourceSvg": "assets/svg/accessories/Component_Accessory_Earbuds.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Accessory_Necklace",
+      "category": "accessories",
+      "sourceSvg": "assets/svg/accessories/Component_Accessory_Necklace.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Accessory_Earrings_Stud",
+      "category": "accessories",
+      "sourceSvg": "assets/svg/accessories/Component_Accessory_Earrings_Stud.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Accessory_Earrings_Hoop",
+      "category": "accessories",
+      "sourceSvg": "assets/svg/accessories/Component_Accessory_Earrings_Hoop.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Accessory_Hat",
+      "category": "accessories",
+      "sourceSvg": "assets/svg/accessories/Component_Accessory_Hat.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Accessory_Cap",
+      "category": "accessories",
+      "sourceSvg": "assets/svg/accessories/Component_Accessory_Cap.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Accessory_CaregiverBadge",
+      "category": "accessories",
+      "sourceSvg": "assets/svg/accessories/Component_Accessory_CaregiverBadge.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Accessory_TaskBadge",
+      "category": "accessories",
+      "sourceSvg": "assets/svg/accessories/Component_Accessory_TaskBadge.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Accessory_RewardStar",
+      "category": "accessories",
+      "sourceSvg": "assets/svg/accessories/Component_Accessory_RewardStar.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarAccessoryPrimaryColor",
+        "avatarAccessorySecondaryColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Clothing_TShirt",
+      "category": "clothing",
+      "sourceSvg": "assets/svg/clothing/Component_Clothing_TShirt.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarClothingPrimaryColor",
+        "avatarClothingSecondaryColor",
+        "avatarClothingAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Clothing_LongSleeve",
+      "category": "clothing",
+      "sourceSvg": "assets/svg/clothing/Component_Clothing_LongSleeve.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarClothingPrimaryColor",
+        "avatarClothingSecondaryColor",
+        "avatarClothingAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Clothing_Hoodie",
+      "category": "clothing",
+      "sourceSvg": "assets/svg/clothing/Component_Clothing_Hoodie.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarClothingPrimaryColor",
+        "avatarClothingSecondaryColor",
+        "avatarClothingAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Clothing_Jacket",
+      "category": "clothing",
+      "sourceSvg": "assets/svg/clothing/Component_Clothing_Jacket.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarClothingPrimaryColor",
+        "avatarClothingSecondaryColor",
+        "avatarClothingAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Clothing_Shirt",
+      "category": "clothing",
+      "sourceSvg": "assets/svg/clothing/Component_Clothing_Shirt.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarClothingPrimaryColor",
+        "avatarClothingSecondaryColor",
+        "avatarClothingAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Clothing_Polo",
+      "category": "clothing",
+      "sourceSvg": "assets/svg/clothing/Component_Clothing_Polo.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarClothingPrimaryColor",
+        "avatarClothingSecondaryColor",
+        "avatarClothingAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Clothing_Sweater",
+      "category": "clothing",
+      "sourceSvg": "assets/svg/clothing/Component_Clothing_Sweater.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarClothingPrimaryColor",
+        "avatarClothingSecondaryColor",
+        "avatarClothingAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Clothing_CaregiverBadge",
+      "category": "clothing",
+      "sourceSvg": "assets/svg/clothing/Component_Clothing_CaregiverBadge.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarClothingPrimaryColor",
+        "avatarClothingSecondaryColor",
+        "avatarClothingAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Clothing_TaskHelperBadge",
+      "category": "clothing",
+      "sourceSvg": "assets/svg/clothing/Component_Clothing_TaskHelperBadge.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarClothingPrimaryColor",
+        "avatarClothingSecondaryColor",
+        "avatarClothingAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Clothing_DoPeiMascotBadge",
+      "category": "clothing",
+      "sourceSvg": "assets/svg/clothing/Component_Clothing_DoPeiMascotBadge.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarClothingPrimaryColor",
+        "avatarClothingSecondaryColor",
+        "avatarClothingAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_ClothingDetail_None",
+      "category": "clothing_detail",
+      "sourceSvg": "assets/svg/clothing_detail/Component_ClothingDetail_None.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarClothingPrimaryColor",
+        "avatarClothingSecondaryColor",
+        "avatarClothingAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_ClothingDetail_Stripes",
+      "category": "clothing_detail",
+      "sourceSvg": "assets/svg/clothing_detail/Component_ClothingDetail_Stripes.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarClothingPrimaryColor",
+        "avatarClothingSecondaryColor",
+        "avatarClothingAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_ClothingDetail_Pocket",
+      "category": "clothing_detail",
+      "sourceSvg": "assets/svg/clothing_detail/Component_ClothingDetail_Pocket.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarClothingPrimaryColor",
+        "avatarClothingSecondaryColor",
+        "avatarClothingAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_ClothingDetail_Zip",
+      "category": "clothing_detail",
+      "sourceSvg": "assets/svg/clothing_detail/Component_ClothingDetail_Zip.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarClothingPrimaryColor",
+        "avatarClothingSecondaryColor",
+        "avatarClothingAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_ClothingDetail_Drawstrings",
+      "category": "clothing_detail",
+      "sourceSvg": "assets/svg/clothing_detail/Component_ClothingDetail_Drawstrings.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarClothingPrimaryColor",
+        "avatarClothingSecondaryColor",
+        "avatarClothingAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_ClothingDetail_ButtonLine",
+      "category": "clothing_detail",
+      "sourceSvg": "assets/svg/clothing_detail/Component_ClothingDetail_ButtonLine.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarClothingPrimaryColor",
+        "avatarClothingSecondaryColor",
+        "avatarClothingAccentColor"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Expression_Neutral",
+      "category": "expressions",
+      "sourceSvg": "assets/svg/expressions/Component_Expression_Neutral.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarExpressionState"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Expression_TaskFocus",
+      "category": "expressions",
+      "sourceSvg": "assets/svg/expressions/Component_Expression_TaskFocus.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarExpressionState"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Expression_Reward",
+      "category": "expressions",
+      "sourceSvg": "assets/svg/expressions/Component_Expression_Reward.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarExpressionState"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Expression_Overwhelmed",
+      "category": "expressions",
+      "sourceSvg": "assets/svg/expressions/Component_Expression_Overwhelmed.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarExpressionState"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Expression_Listening",
+      "category": "expressions",
+      "sourceSvg": "assets/svg/expressions/Component_Expression_Listening.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarExpressionState"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Expression_Thinking",
+      "category": "expressions",
+      "sourceSvg": "assets/svg/expressions/Component_Expression_Thinking.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarExpressionState"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Expression_Calm",
+      "category": "expressions",
+      "sourceSvg": "assets/svg/expressions/Component_Expression_Calm.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarExpressionState"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Expression_Encouraging",
+      "category": "expressions",
+      "sourceSvg": "assets/svg/expressions/Component_Expression_Encouraging.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarExpressionState"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Expression_Tired",
+      "category": "expressions",
+      "sourceSvg": "assets/svg/expressions/Component_Expression_Tired.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarExpressionState"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Expression_Proud",
+      "category": "expressions",
+      "sourceSvg": "assets/svg/expressions/Component_Expression_Proud.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarExpressionState"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Expression_Confused",
+      "category": "expressions",
+      "sourceSvg": "assets/svg/expressions/Component_Expression_Confused.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarExpressionState"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Expression_Relieved",
+      "category": "expressions",
+      "sourceSvg": "assets/svg/expressions/Component_Expression_Relieved.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarExpressionState"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_State_Idle",
+      "category": "states",
+      "sourceSvg": "assets/svg/states/Component_State_Idle.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarTaskState",
+        "avatarRewardState",
+        "avatarOverwhelmState",
+        "avatarListeningState"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_State_Listening",
+      "category": "states",
+      "sourceSvg": "assets/svg/states/Component_State_Listening.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarTaskState",
+        "avatarRewardState",
+        "avatarOverwhelmState",
+        "avatarListeningState"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_State_Thinking",
+      "category": "states",
+      "sourceSvg": "assets/svg/states/Component_State_Thinking.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarTaskState",
+        "avatarRewardState",
+        "avatarOverwhelmState",
+        "avatarListeningState"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_State_Focused",
+      "category": "states",
+      "sourceSvg": "assets/svg/states/Component_State_Focused.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarTaskState",
+        "avatarRewardState",
+        "avatarOverwhelmState",
+        "avatarListeningState"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_State_Rewarded",
+      "category": "states",
+      "sourceSvg": "assets/svg/states/Component_State_Rewarded.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarTaskState",
+        "avatarRewardState",
+        "avatarOverwhelmState",
+        "avatarListeningState"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_State_Overwhelmed",
+      "category": "states",
+      "sourceSvg": "assets/svg/states/Component_State_Overwhelmed.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarTaskState",
+        "avatarRewardState",
+        "avatarOverwhelmState",
+        "avatarListeningState"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_State_Calm",
+      "category": "states",
+      "sourceSvg": "assets/svg/states/Component_State_Calm.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarTaskState",
+        "avatarRewardState",
+        "avatarOverwhelmState",
+        "avatarListeningState"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_State_BodyDouble",
+      "category": "states",
+      "sourceSvg": "assets/svg/states/Component_State_BodyDouble.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarTaskState",
+        "avatarRewardState",
+        "avatarOverwhelmState",
+        "avatarListeningState"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_State_CaregiverSupport",
+      "category": "states",
+      "sourceSvg": "assets/svg/states/Component_State_CaregiverSupport.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarTaskState",
+        "avatarRewardState",
+        "avatarOverwhelmState",
+        "avatarListeningState"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_State_TaskComplete",
+      "category": "states",
+      "sourceSvg": "assets/svg/states/Component_State_TaskComplete.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [
+        "avatarTaskState",
+        "avatarRewardState",
+        "avatarOverwhelmState",
+        "avatarListeningState"
+      ],
+      "tags": [],
+      "notes": ""
+    },
+    {
+      "component": "Component_Preset_RoundFace_CurlyHair_Glasses_Calm",
+      "category": "presets",
+      "sourceSvg": "assets/svg/presets/Component_Preset_RoundFace_CurlyHair_Glasses_Calm.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [],
+      "tags": [
+        "preset"
+      ],
+      "notes": ""
+    },
+    {
+      "component": "Component_Preset_OvalFace_Locs_Focused",
+      "category": "presets",
+      "sourceSvg": "assets/svg/presets/Component_Preset_OvalFace_Locs_Focused.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [],
+      "tags": [
+        "preset"
+      ],
+      "notes": ""
+    },
+    {
+      "component": "Component_Preset_SquareFace_BuzzCut_TaskFocus",
+      "category": "presets",
+      "sourceSvg": "assets/svg/presets/Component_Preset_SquareFace_BuzzCut_TaskFocus.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [],
+      "tags": [
+        "preset"
+      ],
+      "notes": ""
+    },
+    {
+      "component": "Component_Preset_HeartFace_Hijab_Listening",
+      "category": "presets",
+      "sourceSvg": "assets/svg/presets/Component_Preset_HeartFace_Hijab_Listening.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [],
+      "tags": [
+        "preset"
+      ],
+      "notes": ""
+    },
+    {
+      "component": "Component_Preset_LongFace_LongStraight_Thinking",
+      "category": "presets",
+      "sourceSvg": "assets/svg/presets/Component_Preset_LongFace_LongStraight_Thinking.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [],
+      "tags": [
+        "preset"
+      ],
+      "notes": ""
+    },
+    {
+      "component": "Component_Preset_BroadFace_Afro_Reward",
+      "category": "presets",
+      "sourceSvg": "assets/svg/presets/Component_Preset_BroadFace_Afro_Reward.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [],
+      "tags": [
+        "preset"
+      ],
+      "notes": ""
+    },
+    {
+      "component": "Component_Preset_SoftFace_BoxBraids_Encouraging",
+      "category": "presets",
+      "sourceSvg": "assets/svg/presets/Component_Preset_SoftFace_BoxBraids_Encouraging.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [],
+      "tags": [
+        "preset"
+      ],
+      "notes": ""
+    },
+    {
+      "component": "Component_Preset_AngularFace_Turban_Calm",
+      "category": "presets",
+      "sourceSvg": "assets/svg/presets/Component_Preset_AngularFace_Turban_Calm.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [],
+      "tags": [
+        "preset"
+      ],
+      "notes": ""
+    },
+    {
+      "component": "Component_Preset_FullFace_Cornrows_Overwhelmed",
+      "category": "presets",
+      "sourceSvg": "assets/svg/presets/Component_Preset_FullFace_Cornrows_Overwhelmed.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [],
+      "tags": [
+        "preset"
+      ],
+      "notes": ""
+    },
+    {
+      "component": "Component_Preset_SlimFace_Bob_TaskComplete",
+      "category": "presets",
+      "sourceSvg": "assets/svg/presets/Component_Preset_SlimFace_Bob_TaskComplete.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [],
+      "tags": [
+        "preset"
+      ],
+      "notes": ""
+    },
+    {
+      "component": "Component_Preset_DefinedJaw_Fade_Focused",
+      "category": "presets",
+      "sourceSvg": "assets/svg/presets/Component_Preset_DefinedJaw_Fade_Focused.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [],
+      "tags": [
+        "preset"
+      ],
+      "notes": ""
+    },
+    {
+      "component": "Component_Preset_HighCheekbones_Headscarf_Relieved",
+      "category": "presets",
+      "sourceSvg": "assets/svg/presets/Component_Preset_HighCheekbones_Headscarf_Relieved.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [],
+      "tags": [
+        "preset"
+      ],
+      "notes": ""
+    },
+    {
+      "component": "Component_Preset_Reference_CurlyAuburn_Freckles_Denim",
+      "category": "presets",
+      "sourceSvg": "assets/svg/presets/Component_Preset_Reference_CurlyAuburn_Freckles_Denim.svg",
+      "riveComponent": true,
+      "requiredInQA": true,
+      "style": "3d_mobile_avatar_svg",
+      "reference": "attached_curly_auburn_avatar",
+      "colorBindings": [],
+      "tags": [
+        "preset"
+      ],
+      "notes": ""
+    }
+  ]
+}

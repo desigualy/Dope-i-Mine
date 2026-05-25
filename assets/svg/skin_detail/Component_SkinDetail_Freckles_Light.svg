@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img">
+<title>Component_SkinDetail_Freckles_Light</title>
+<desc>Dope-i-Mine 3D-style SVG avatar component based on the attached curly-haired reference avatar.</desc>
+<defs>
+<filter id="softShadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#000" flood-opacity=".24"/></filter>
+<linearGradient id="skin3d" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#F3B17A"/><stop offset="50%" stop-color="#B87346"/><stop offset="100%" stop-color="#8C4B27"/></linearGradient>
+<linearGradient id="hair3d" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FF9B3D"/><stop offset="45%" stop-color="#8A330B"/><stop offset="100%" stop-color="#461405"/></linearGradient>
+<radialGradient id="iris3d" cx="35%" cy="30%" r="70%"><stop offset="0%" stop-color="#AE7440"/><stop offset="55%" stop-color="#6B3E1D"/><stop offset="100%" stop-color="#241209"/></radialGradient>
+<linearGradient id="denim3d" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#C5DCEA"/><stop offset="48%" stop-color="#79A9C9"/><stop offset="100%" stop-color="#3B6E91"/></linearGradient>
+<linearGradient id="blackCloth3d" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#424242"/><stop offset="45%" stop-color="#111111"/><stop offset="100%" stop-color="#050505"/></linearGradient>
+</defs>
+<g id="Component_SkinDetail_Freckles_Light">
+<circle cx="424.4" cy="480.8" r="2.9" fill="#873A17" opacity="0.65" id="freckle_0"/>
+<circle cx="460.5" cy="475.7" r="3.9" fill="#873A17" opacity="0.4" id="freckle_1"/>
+<circle cx="626.8" cy="480.7" r="3.3" fill="#873A17" opacity="0.58" id="freckle_2"/>
+<circle cx="567.5" cy="470.6" r="4.4" fill="#873A17" opacity="0.75" id="freckle_3"/>
+<circle cx="620.2" cy="418.9" r="2.3" fill="#873A17" opacity="0.49" id="freckle_4"/>
+<circle cx="440.3" cy="472.4" r="4.2" fill="#873A17" opacity="0.75" id="freckle_5"/>
+<circle cx="601.3" cy="473.8" r="4.8" fill="#873A17" opacity="0.66" id="freckle_6"/>
+<circle cx="482.5" cy="475.8" r="4.3" fill="#873A17" opacity="0.5" id="freckle_7"/>
+<circle cx="448.7" cy="412.3" r="2.4" fill="#873A17" opacity="0.66" id="freckle_8"/>
+<circle cx="636.3" cy="476.6" r="3.7" fill="#873A17" opacity="0.73" id="freckle_9"/>
+<circle cx="487.6" cy="431.8" r="2.2" fill="#873A17" opacity="0.44" id="freckle_10"/>
+<circle cx="556.4" cy="436.6" r="4.7" fill="#873A17" opacity="0.38" id="freckle_11"/>
+<circle cx="604.4" cy="477.5" r="3.8" fill="#873A17" opacity="0.62" id="freckle_12"/>
+<circle cx="546.9" cy="400.2" r="3.2" fill="#873A17" opacity="0.75" id="freckle_13"/>
+<circle cx="513.4" cy="404.7" r="3.4" fill="#873A17" opacity="0.41" id="freckle_14"/>
+<circle cx="556.1" cy="428.3" r="4.7" fill="#873A17" opacity="0.73" id="freckle_15"/>
+<circle cx="525.7" cy="407.6" r="3.5" fill="#873A17" opacity="0.68" id="freckle_16"/>
+<circle cx="416.7" cy="420.2" r="3.2" fill="#873A17" opacity="0.69" id="freckle_17"/>
+<circle cx="432.2" cy="422.2" r="4.4" fill="#873A17" opacity="0.49" id="freckle_18"/>
+<circle cx="567.8" cy="400.4" r="3.5" fill="#873A17" opacity="0.43" id="freckle_19"/>
+<circle cx="523.4" cy="411.2" r="2.5" fill="#873A17" opacity="0.73" id="freckle_20"/>
+<circle cx="567.9" cy="446.8" r="2.3" fill="#873A17" opacity="0.56" id="freckle_21"/>
+<circle cx="387.1" cy="478.2" r="3.5" fill="#873A17" opacity="0.43" id="freckle_22"/>
+<circle cx="497.7" cy="480.8" r="4.6" fill="#873A17" opacity="0.57" id="freckle_23"/>
+<circle cx="547.3" cy="432.0" r="4.1" fill="#873A17" opacity="0.55" id="freckle_24"/>
+<circle cx="612.8" cy="458.3" r="2.5" fill="#873A17" opacity="0.53" id="freckle_25"/>
+<circle cx="602.9" cy="408.3" r="3.7" fill="#873A17" opacity="0.63" id="freckle_26"/>
+<circle cx="432.1" cy="434.3" r="2.7" fill="#873A17" opacity="0.4" id="freckle_27"/>
+
+</g>
+</svg>

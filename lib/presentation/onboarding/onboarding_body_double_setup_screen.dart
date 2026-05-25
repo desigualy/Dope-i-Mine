@@ -9,32 +9,73 @@ class OnboardingBodyDoubleSetupScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final controller = ref.watch(onboardingControllerProvider);
+    final state = ref.watch(onboardingControllerProvider);
+    final controller = ref.read(onboardingControllerProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Body-double preferences')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Body-double support', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: <Widget>[
+            const Text(
+              'Body-double support',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 8),
+            const Text(
+              'Choose whether focused support sessions should be easy to find from the app.',
+            ),
             SwitchListTile(
-              value: controller.bodyDoubleEnabled,
-              onChanged: (v) => ref.read(onboardingControllerProvider.notifier).setBodyDoubleEnabled(v),
+              value: state.bodyDoubleEnabled,
+              onChanged: controller.setBodyDoubleEnabled,
               title: const Text('Enable body-double support'),
             ),
             const SizedBox(height: 8),
-            const Text('Options: Dope-i support (bot), known-person, random anonymous'),
-            const SizedBox(height: 12),
-            Row(children: [
-              TextButton(onPressed: () => context.pop(), child: const Text('Back')),
-              const Spacer(),
-              TextButton(onPressed: () => context.go('/onboarding/phase4/first-task'), child: const Text('Skip for now')),
-              const SizedBox(width: 8),
-              ElevatedButton(onPressed: () => context.go('/onboarding/phase4/first-task'), child: const Text('Continue')),
-            ])
+            const ListTile(
+              title: Text('Dope-i support session'),
+              subtitle: Text('Start a focused session with the app.'),
+            ),
+            const ListTile(
+              title: Text('Known-person body double'),
+              subtitle: Text('Invite someone you already trust.'),
+            ),
+            const ListTile(
+              title: Text('Random body double'),
+              subtitle: Text('Uses anonymous labels and safety restrictions.'),
+            ),
+            const ListTile(
+              title: Text('Group body double'),
+              subtitle: Text(
+                  'Shown only where the implemented group flow is available.'),
+            ),
+            const SizedBox(height: 8),
+            const Text('You can leave at any time.'),
+            const Text('Do not share private contact or location details.'),
+            const Text('You can report a participant.'),
+            const SizedBox(height: 24),
+            Row(
+              children: <Widget>[
+                TextButton(
+                  onPressed: () =>
+                      context.go('/onboarding/phase4/accessibility'),
+                  child: const Text('Back'),
+                ),
+                const Spacer(),
+                TextButton(
+                  onPressed: () {
+                    controller.setBodyDoubleEnabled(false);
+                    context.go('/onboarding/phase4/first-task');
+                  },
+                  child: const Text('Not now'),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: () => context.go('/onboarding/phase4/first-task'),
+                  child: const Text('Continue'),
+                ),
+              ],
+            ),
           ],
         ),
       ),

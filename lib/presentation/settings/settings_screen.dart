@@ -125,7 +125,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             idempotencyKey: 'update_sensory_settings_$id',
             payload: <String, dynamic>{
               'userId': id,
-              if (reducedAnimation != null) 'reducedAnimation': reducedAnimation,
+              if (reducedAnimation != null)
+                'reducedAnimation': reducedAnimation,
               if (largeText != null) 'largeText': largeText,
               if (soundEnabled != null) 'soundEnabled': soundEnabled,
             },
@@ -175,6 +176,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   leading: const Icon(Icons.refresh_rounded),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => _restartOnboarding(context),
+                ),
+                ListTile(
+                  title: const Text('Edit setup choices'),
+                  subtitle: const Text(
+                    'Review role, voice, notifications, accessibility, side quests, and body-double preferences.',
+                  ),
+                  leading: const Icon(Icons.tune_rounded),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => context.go('/settings/setup'),
                 ),
                 if (accountType == 'caregiver')
                   ListTile(

@@ -1,9 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class PermissionsService {
-  PermissionsService(this._plugin);
-
-  final FlutterLocalNotificationsPlugin _plugin;
+  PermissionsService(FlutterLocalNotificationsPlugin plugin);
 
   Future<bool> requestMicrophone() async {
     // Replace with permission_handler or equivalent if you want runtime prompts

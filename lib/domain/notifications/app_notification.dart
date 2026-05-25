@@ -148,9 +148,10 @@ class AppNotification {
     final routeParams = json['route_params'];
     Map<String, dynamic> parsedParams;
     if (routeParams is String && routeParams.isNotEmpty) {
-      parsedParams = Map<String, dynamic>.from(jsonDecode(routeParams) as Map<String, dynamic>);
+      parsedParams = Map<String, dynamic>.from(
+          jsonDecode(routeParams) as Map<String, dynamic>);
     } else if (routeParams is Map) {
-      parsedParams = Map<String, dynamic>.from(routeParams as Map);
+      parsedParams = Map<String, dynamic>.from(routeParams);
     } else {
       parsedParams = <String, dynamic>{};
     }
@@ -163,8 +164,10 @@ class AppNotification {
       body: json['body'] as String?,
       route: json['route'] as String?,
       routeParams: parsedParams,
-      status: AppNotificationStatusX.fromJson(json['status'] as String? ?? 'unread'),
-      priority: AppNotificationPriorityX.fromJson(json['priority'] as String? ?? 'normal'),
+      status: AppNotificationStatusX.fromJson(
+          json['status'] as String? ?? 'unread'),
+      priority: AppNotificationPriorityX.fromJson(
+          json['priority'] as String? ?? 'normal'),
       sourceType: json['source_type'] as String?,
       sourceId: json['source_id'] as String?,
       scheduledFor: json['scheduled_for'] == null

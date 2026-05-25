@@ -176,12 +176,27 @@ final GoRouter appRouter = GoRouter(
       path: '/onboarding/summary',
       builder: (_, __) => const OnboardingSummaryScreen(),
     ),
-    GoRoute(path: '/onboarding/phase4/role', builder: (_, __) => const OnboardingRoleSetupScreen()),
-    GoRoute(path: '/onboarding/phase4/voice', builder: (_, __) => const OnboardingVoiceSetupScreen()),
-    GoRoute(path: '/onboarding/phase4/notifications', builder: (_, __) => const OnboardingNotificationSetupScreen()),
-    GoRoute(path: '/onboarding/phase4/accessibility', builder: (_, __) => const OnboardingAccessibilitySetupScreen()),
-    GoRoute(path: '/onboarding/phase4/body-double', builder: (_, __) => const OnboardingBodyDoubleSetupScreen()),
-    GoRoute(path: '/onboarding/phase4/first-task', builder: (_, __) => const OnboardingFirstTaskPromptScreen()),
+    GoRoute(
+        path: '/onboarding/phase4/role',
+        builder: (_, __) => const OnboardingRoleSetupScreen()),
+    GoRoute(
+        path: '/onboarding/phase4/voice',
+        builder: (_, __) => const OnboardingVoiceSetupScreen()),
+    GoRoute(
+        path: '/onboarding/phase4/notifications',
+        builder: (_, __) => const OnboardingNotificationSetupScreen()),
+    GoRoute(
+        path: '/onboarding/phase4/accessibility',
+        builder: (_, __) => const OnboardingAccessibilitySetupScreen()),
+    GoRoute(
+        path: '/onboarding/phase4/body-double',
+        builder: (_, __) => const OnboardingBodyDoubleSetupScreen()),
+    GoRoute(
+        path: '/onboarding/phase4/first-task',
+        builder: (_, __) => const OnboardingFirstTaskPromptScreen()),
+    GoRoute(
+        path: '/onboarding/phase4/summary',
+        builder: (_, __) => const OnboardingSummaryScreen()),
     GoRoute(path: '/tasks/new', builder: (_, __) => const TaskInputScreen()),
     GoRoute(
         path: '/tasks/breakdown',
@@ -270,6 +285,9 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
     GoRoute(
+        path: '/settings/setup',
+        builder: (_, __) => const OnboardingRoleSetupScreen()),
+    GoRoute(
         path: '/settings/voice',
         builder: (_, __) => const VoiceProfileScreen()),
     GoRoute(
@@ -283,7 +301,8 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: '/settings/companion',
         builder: (_, __) => const CompanionScreen()),
-    GoRoute(path: '/feedback/beta', builder: (_, __) => const BetaFeedbackScreen()),
+    GoRoute(
+        path: '/feedback/beta', builder: (_, __) => const BetaFeedbackScreen()),
     GoRoute(
         path: '/settings/pronunciation',
         builder: (_, __) => const PronunciationSettingsScreen()),

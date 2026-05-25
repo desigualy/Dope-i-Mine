@@ -119,10 +119,18 @@ class _HomeAvatarHero extends StatelessWidget {
     );
 
     return Center(
-      child: AvatarRiveView(
-        key: const ValueKey<String>('home-avatar-v4-rive'),
-        config: config,
-        size: 132,
+      child: Column(
+        children: <Widget>[
+          AvatarRiveView(
+            key: const ValueKey<String>('home-avatar-v4-rive'),
+            config: config,
+            size: 132,
+          ),
+          TextButton(
+            onPressed: () => context.push('/avatar/customize'),
+            child: const Text('My avatar'),
+          ),
+        ],
       ),
     );
   }

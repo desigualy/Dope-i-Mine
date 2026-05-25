@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img">
+<title>Component_Preset_DefinedJaw_Fade_Focused</title>
+<desc>Dope-i-Mine 3D-style SVG avatar component based on the attached curly-haired reference avatar.</desc>
+<defs>
+<filter id="softShadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#000" flood-opacity=".24"/></filter>
+<linearGradient id="skin3d" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#F3B17A"/><stop offset="50%" stop-color="#B87346"/><stop offset="100%" stop-color="#8C4B27"/></linearGradient>
+<linearGradient id="hair3d" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FF9B3D"/><stop offset="45%" stop-color="#8A330B"/><stop offset="100%" stop-color="#461405"/></linearGradient>
+<radialGradient id="iris3d" cx="35%" cy="30%" r="70%"><stop offset="0%" stop-color="#AE7440"/><stop offset="55%" stop-color="#6B3E1D"/><stop offset="100%" stop-color="#241209"/></radialGradient>
+<linearGradient id="denim3d" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#C5DCEA"/><stop offset="48%" stop-color="#79A9C9"/><stop offset="100%" stop-color="#3B6E91"/></linearGradient>
+<linearGradient id="blackCloth3d" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#424242"/><stop offset="45%" stop-color="#111111"/><stop offset="100%" stop-color="#050505"/></linearGradient>
+</defs>
+<g id="Component_Preset_DefinedJaw_Fade_Focused">
+<rect x="80" y="80" width="864" height="864" rx="48" fill="#F7F1EA" stroke="#24140C" stroke-width="4"/>
+<path d="M330 360 C370 180 654 180 694 360 C630 275 394 275 330 360 Z" fill="url(#hair3d)" stroke="#461405" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="512" y1="200" x2="512" y2="405" stroke="#D86A1C" stroke-width="7" stroke-linecap="round"/>
+<ellipse cx="512" cy="430" rx="140" ry="230" fill="url(#skin3d)" stroke="#8C4B27" stroke-width="7"/>
+<path d="M375 420 C413 390 477 390 515 420 C475 445 415 445 375 420 Z" fill="#FFF8ED" stroke="#24140C" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="445" cy="420" r="25" fill="url(#iris3d)" stroke="#241209" stroke-width="4"/>
+<circle cx="447" cy="422" r="11" fill="#0A0705"/>
+<circle cx="437" cy="410" r="7" fill="#FFF8ED" opacity="0.9"/>
+<path d="M509 420 C547 390 611 390 649 420 C609 445 549 445 509 420 Z" fill="#FFF8ED" stroke="#24140C" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="579" cy="420" r="25" fill="url(#iris3d)" stroke="#241209" stroke-width="4"/>
+<circle cx="581" cy="422" r="11" fill="#0A0705"/>
+<circle cx="571" cy="410" r="7" fill="#FFF8ED" opacity="0.9"/>
+<path d="M370 365 C415 330 465 325 505 350 M519 350 C559 325 609 330 654 365" fill="none" stroke="#461405" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M510 390 C480 470 492 535 540 548" fill="none" stroke="#8C4B27" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity="0.68"/>
+<path d="M475 552 C510 575 560 575 595 552" fill="none" stroke="#8C4B27" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
+<path d="M420 610 C465 690 559 690 604 610" fill="none" stroke="#E78278" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M450 625 C495 650 540 650 574 625" fill="none" stroke="#FFEDE4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M245 780 L360 660 L435 720 L589 720 L664 660 L779 780 L710 1024 L314 1024 Z" fill="url(#blackCloth3d)" stroke="#24140C" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+
+</g>
+</svg>

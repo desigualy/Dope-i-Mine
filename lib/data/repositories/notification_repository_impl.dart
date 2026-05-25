@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -13,7 +11,8 @@ class NotificationRepositoryImpl implements NotificationRepository {
   final SupabaseClient? _client;
 
   @override
-  Future<List<AppNotification>> getNotifications({required String userId}) async {
+  Future<List<AppNotification>> getNotifications(
+      {required String userId}) async {
     if (_client == null) return <AppNotification>[];
     try {
       final result = await _client
@@ -22,8 +21,8 @@ class NotificationRepositoryImpl implements NotificationRepository {
           .eq('user_id', userId)
           .order('created_at', ascending: false);
       return (result as List<dynamic>)
-          .map((json) => AppNotification.fromJson(
-              Map<String, dynamic>.from(json as Map)))
+          .map((json) =>
+              AppNotification.fromJson(Map<String, dynamic>.from(json as Map)))
           .toList();
     } catch (e) {
       debugPrint('Failed to load notifications: $e');
@@ -170,22 +169,27 @@ class NotificationRepositoryImpl implements NotificationRepository {
 
     try {
       final now = DateTime.now().toUtc().toIso8601String();
-      final result = await _client.from('notification_preferences').upsert(
-        <String, dynamic>{
-          'user_id': preferences.userId,
-          'enabled': preferences.enabled,
-          'quiet_hours_start': preferences.quietHoursStart,
-          'quiet_hours_end': preferences.quietHoursEnd,
-          'allow_task_reminders': preferences.allowTaskReminders,
-          'allow_caregiver_notifications': preferences.allowCaregiverNotifications,
-          'allow_body_double_notifications':
-              preferences.allowBodyDoubleNotifications,
-          'allow_side_quests': preferences.allowSideQuests,
-          'allow_moderation_updates': preferences.allowModerationUpdates,
-          'updated_at': now,
-        },
-        onConflict: 'user_id',
-      ).select().single();
+      final result = await _client
+          .from('notification_preferences')
+          .upsert(
+            <String, dynamic>{
+              'user_id': preferences.userId,
+              'enabled': preferences.enabled,
+              'quiet_hours_start': preferences.quietHoursStart,
+              'quiet_hours_end': preferences.quietHoursEnd,
+              'allow_task_reminders': preferences.allowTaskReminders,
+              'allow_caregiver_notifications':
+                  preferences.allowCaregiverNotifications,
+              'allow_body_double_notifications':
+                  preferences.allowBodyDoubleNotifications,
+              'allow_side_quests': preferences.allowSideQuests,
+              'allow_moderation_updates': preferences.allowModerationUpdates,
+              'updated_at': now,
+            },
+            onConflict: 'user_id',
+          )
+          .select()
+          .single();
 
       return NotificationPreferencesModel.fromJson(
         Map<String, dynamic>.from(result as Map),

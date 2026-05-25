@@ -19,7 +19,9 @@ class AvatarSetupScreen extends ConsumerWidget {
       onBack: () => context.go(
         returnToSummary ? '/onboarding/summary' : '/onboarding/identity',
       ),
-      onNext: () => context.go('/onboarding/summary'),
+      onNext: () => context.go(
+        returnToSummary ? '/onboarding/summary' : '/onboarding/phase4/role',
+      ),
       nextLabel: returnToSummary ? 'Save' : 'Continue',
       child: ListView(
         children: <Widget>[

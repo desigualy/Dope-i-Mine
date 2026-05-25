@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img">
+<title>Component_Accessibility_Glasses_Round</title>
+<desc>Dope-i-Mine 3D-style SVG avatar component based on the attached curly-haired reference avatar.</desc>
+<defs>
+<filter id="softShadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#000" flood-opacity=".24"/></filter>
+<linearGradient id="skin3d" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#F3B17A"/><stop offset="50%" stop-color="#B87346"/><stop offset="100%" stop-color="#8C4B27"/></linearGradient>
+<linearGradient id="hair3d" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FF9B3D"/><stop offset="45%" stop-color="#8A330B"/><stop offset="100%" stop-color="#461405"/></linearGradient>
+<radialGradient id="iris3d" cx="35%" cy="30%" r="70%"><stop offset="0%" stop-color="#AE7440"/><stop offset="55%" stop-color="#6B3E1D"/><stop offset="100%" stop-color="#241209"/></radialGradient>
+<linearGradient id="denim3d" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#C5DCEA"/><stop offset="48%" stop-color="#79A9C9"/><stop offset="100%" stop-color="#3B6E91"/></linearGradient>
+<linearGradient id="blackCloth3d" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#424242"/><stop offset="45%" stop-color="#111111"/><stop offset="100%" stop-color="#050505"/></linearGradient>
+</defs>
+<g id="Component_Accessibility_Glasses_Round">
+<circle cx="445" cy="420" r="58" fill="none" stroke="#2F3437" stroke-width="8"/>
+<circle cx="579" cy="420" r="58" fill="none" stroke="#2F3437" stroke-width="8"/>
+<line x1="503" y1="420" x2="521" y2="420" stroke="#2F3437" stroke-width="8" stroke-linecap="round"/>
+<line x1="387" y1="415" x2="330" y2="390" stroke="#2F3437" stroke-width="7" stroke-linecap="round"/>
+<line x1="637" y1="415" x2="694" y2="390" stroke="#2F3437" stroke-width="7" stroke-linecap="round"/>
+
+</g>
+</svg>

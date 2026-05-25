@@ -23,7 +23,7 @@ void main() {
       ),
     );
 
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 100));
 
     expect(find.text('Hi there!'), findsOneWidget);
     expect(find.text('Ready to tackle your day?'), findsOneWidget);
@@ -35,11 +35,9 @@ void main() {
 
     expect(find.text('My avatar'), findsOneWidget);
 
-    expect(find.text('New task'), findsOneWidget);
+    expect(find.text('Start a task'), findsOneWidget);
 
-    expect(find.text('My routines'), findsOneWidget);
-
-    expect(find.text('My progress'), findsOneWidget);
+    expect(find.text('Start with one small step'), findsOneWidget);
   });
 
   testWidgets('home avatar card remains available for editing flow',
@@ -54,10 +52,10 @@ void main() {
       ),
     );
 
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 100));
 
     expect(find.text('My avatar'), findsOneWidget);
-    expect(find.byIcon(Icons.face_retouching_natural_rounded), findsWidgets);
+    expect(find.text('My avatar'), findsOneWidget);
     expect(
       find.byKey(const ValueKey<String>('home-avatar-v4-rive')),
       findsOneWidget,

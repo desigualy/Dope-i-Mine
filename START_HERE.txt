@@ -1,0 +1,14 @@
+Dope-i-Mine 3D-Style Avatar SVG Library v1
+
+Open first:
+CONTACT_SHEET.html
+
+Contains:
+- 244 SVG source components
+- Full-body reference avatar SVG
+- Modular feature library
+- Manifest JSON/CSV
+- Rive import protocol
+- Flutter naming contract
+
+This is an SVG source library for Rive import/rigging, not a finished .riv rig.

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img">
+<title>Component_Hair_Twists_Short</title>
+<desc>Dope-i-Mine 3D-style SVG avatar component based on the attached curly-haired reference avatar.</desc>
+<defs>
+<filter id="softShadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#000" flood-opacity=".24"/></filter>
+<linearGradient id="skin3d" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#F3B17A"/><stop offset="50%" stop-color="#B87346"/><stop offset="100%" stop-color="#8C4B27"/></linearGradient>
+<linearGradient id="hair3d" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FF9B3D"/><stop offset="45%" stop-color="#8A330B"/><stop offset="100%" stop-color="#461405"/></linearGradient>
+<radialGradient id="iris3d" cx="35%" cy="30%" r="70%"><stop offset="0%" stop-color="#AE7440"/><stop offset="55%" stop-color="#6B3E1D"/><stop offset="100%" stop-color="#241209"/></radialGradient>
+<linearGradient id="denim3d" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#C5DCEA"/><stop offset="48%" stop-color="#79A9C9"/><stop offset="100%" stop-color="#3B6E91"/></linearGradient>
+<linearGradient id="blackCloth3d" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#424242"/><stop offset="45%" stop-color="#111111"/><stop offset="100%" stop-color="#050505"/></linearGradient>
+</defs>
+<g id="Component_Hair_Twists_Short">
+<path d="M350 360 C355 205 669 205 674 360 Z" fill="url(#hair3d)" stroke="#461405" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M335 305 C300 405 315 505 305 610" fill="none" stroke="#8A330B" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M340 305 C310 405 325 505 315 610" fill="none" stroke="#D86A1C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+<path d="M369 305 C334 405 349 505 339 610" fill="none" stroke="#8A330B" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M374 305 C344 405 359 505 349 610" fill="none" stroke="#D86A1C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+<path d="M403 305 C368 405 383 505 373 610" fill="none" stroke="#8A330B" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M408 305 C378 405 393 505 383 610" fill="none" stroke="#D86A1C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+<path d="M437 305 C402 405 417 505 407 610" fill="none" stroke="#8A330B" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M442 305 C412 405 427 505 417 610" fill="none" stroke="#D86A1C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+<path d="M471 305 C436 405 451 505 441 610" fill="none" stroke="#8A330B" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M476 305 C446 405 461 505 451 610" fill="none" stroke="#D86A1C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+<path d="M505 305 C470 405 485 505 475 610" fill="none" stroke="#8A330B" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M510 305 C480 405 495 505 485 610" fill="none" stroke="#D86A1C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+<path d="M539 305 C504 405 519 505 509 610" fill="none" stroke="#8A330B" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M544 305 C514 405 529 505 519 610" fill="none" stroke="#D86A1C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+<path d="M573 305 C538 405 553 505 543 610" fill="none" stroke="#8A330B" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M578 305 C548 405 563 505 553 610" fill="none" stroke="#D86A1C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+<path d="M607 305 C572 405 587 505 577 610" fill="none" stroke="#8A330B" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M612 305 C582 405 597 505 587 610" fill="none" stroke="#D86A1C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+<path d="M641 305 C606 405 621 505 611 610" fill="none" stroke="#8A330B" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M646 305 C616 405 631 505 621 610" fill="none" stroke="#D86A1C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+<path d="M675 305 C640 405 655 505 645 610" fill="none" stroke="#8A330B" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M680 305 C650 405 665 505 655 610" fill="none" stroke="#D86A1C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+<path d="M709 305 C674 405 689 505 679 610" fill="none" stroke="#8A330B" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M714 305 C684 405 699 505 689 610" fill="none" stroke="#D86A1C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+
+</g>
+</svg>

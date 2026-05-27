@@ -35,9 +35,12 @@ void main() {
 
     expect(find.text('My avatar'), findsOneWidget);
 
-    expect(find.text('Start a task'), findsOneWidget);
+    expect(find.text('Start from something friendly'), findsOneWidget);
 
-    expect(find.text('Start with one small step'), findsOneWidget);
+    expect(
+      find.text('Choose a template, then remix it until it fits.'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('home avatar card remains available for editing flow',

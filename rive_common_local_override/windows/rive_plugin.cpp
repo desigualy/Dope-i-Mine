@@ -1,0 +1,2 @@
+void RivePluginRegisterWithRegistrar(void* /*registrar*/) {
+}

@@ -6,8 +6,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/network/connectivity_controller.dart';
 import 'core/network/connectivity_status.dart';
 import 'core/services/local_task_session_cache_service.dart';
+import 'core/services/neural_tts_service.dart';
 import 'core/services/permissions_service.dart';
 import 'core/services/reminder_service.dart';
+import 'core/services/sherpa_onnx_text_to_speech_service.dart';
 import 'core/services/speech_to_text_service.dart';
 import 'core/services/text_to_speech_service.dart';
 import 'core/sync/sync_engine.dart';
@@ -160,8 +162,19 @@ final voiceSettingsProvider = FutureProvider<VoiceSettingsModel?>((ref) async {
   final user = auth.getCurrentUser();
   if (user == null) return null;
 
+  final localStore = ref.watch(localVoiceSettingsStoreProvider);
+  final localSettings = await localStore.load(user.id);
   final repo = ref.watch(voiceSettingsRepositoryProvider);
-  return repo.getSettings(user.id);
+  try {
+    final remoteSettings = await repo.getSettings(user.id);
+    if (remoteSettings != null) {
+      await localStore.save(userId: user.id, settings: remoteSettings);
+      return remoteSettings;
+    }
+  } catch (_) {
+    return localSettings;
+  }
+  return localSettings;
 });
 
 final syncEngineProvider = Provider<SyncEngine>((ref) {
@@ -210,6 +223,23 @@ final textToSpeechServiceProvider = Provider<TextToSpeechService>((ref) {
   return TextToSpeechService();
 });
 
+final neuralTtsServiceProvider = Provider<NeuralTtsService>((ref) {
+  return NeuralTtsService(
+    client: HttpNeuralTtsClient(),
+    cache: NeuralTtsAudioCache(),
+    player: const MethodChannelCachedAudioPlayer(),
+  );
+});
+
+final sherpaOnnxTextToSpeechServiceProvider =
+    Provider<SherpaOnnxTextToSpeechService>((ref) {
+  return SherpaOnnxTextToSpeechService(
+    modelManager: SherpaOnnxTtsModelManager(),
+    cache: SherpaOnnxAudioCache(),
+    player: const MethodChannelCachedAudioPlayer(),
+  );
+});
+
 final localTaskSessionCacheProvider =
     Provider<LocalTaskSessionCacheService>((ref) {
   return LocalTaskSessionCacheService();
@@ -228,7 +258,8 @@ final permissionsServiceProvider = Provider<PermissionsService>((ref) {
   return PermissionsService(ref.watch(flutterLocalNotificationsPluginProvider));
 });
 
-final notificationRepositoryProvider = Provider<NotificationRepositoryImpl>((ref) {
+final notificationRepositoryProvider =
+    Provider<NotificationRepositoryImpl>((ref) {
   return NotificationRepositoryImpl(ref.watch(supabaseProvider));
 });
 

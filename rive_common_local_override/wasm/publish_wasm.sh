@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -ex
+
+# Build for testing purposes
+./build_wasm.sh clean
+
+# Build the wasm and js files that will be released.
+./build_wasm.sh clean release
+./build_wasm.sh clean simd release
+./build_wasm.sh clean simd threads release
+
+# Make sure tests succeed.
+npm test
+
+# Bump version in package.json and referenced by dart code. This very
+# intentionally bumps major version.
+npm run bump-version
+
+# Publish to npm
+npm publish --access public

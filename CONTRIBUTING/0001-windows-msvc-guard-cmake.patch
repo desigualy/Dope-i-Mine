@@ -1,0 +1,18 @@
+*** Begin Patch
+*** Update File: windows/CMakeLists.txt
+@@
+-target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_11)
+-
+-if(MSVC)
+-  # Ensure this plugin is not built with warnings-as-errors (/WX)
+-  target_compile_options(${PLUGIN_NAME} PRIVATE /WX-)
+-endif()
++if(MSVC)
++  # Use C++20 for MSVC to support designated initializers and newer syntax
++  target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_20)
++  # Ensure this plugin is not built with warnings-as-errors (/WX)
++  target_compile_options(${PLUGIN_NAME} PRIVATE /WX- /bigobj /std:c++20)
++else()
++  target_compile_features(${PLUGIN_NAME} PRIVATE cxx_std_11)
++endif()
+*** End Patch

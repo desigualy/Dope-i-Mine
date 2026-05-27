@@ -43,7 +43,7 @@ void main() {
 
       expect(startScreen, contains('start-dopei-body-double-button'));
       expect(startScreen, contains('Body double with someone I know'));
-      expect(startScreen, contains('Select person'));
+      expect(startScreen, contains('Select Partner'));
       expect(startScreen, contains('Privacy Level'));
       expect(startScreen, contains('Send Co-working Invitation'));
       expect(startScreen, isNot(contains('enter-random-queue-button')));

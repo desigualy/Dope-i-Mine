@@ -588,9 +588,12 @@ void main() {
       findsOneWidget,
     );
 
-    await tester.ensureVisible(find.text('My avatar'));
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey<String>('home-menu-my-avatar')),
+      160,
+    );
     await tester.pump();
-    await tester.tap(find.text('My avatar'));
+    await tester.tap(find.byKey(const ValueKey<String>('home-menu-my-avatar')));
     await _pumpUntilVisible(
       tester,
       find.text('Avatar Engine V4 is ready for Rive art packs.'),

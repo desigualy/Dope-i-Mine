@@ -48,6 +48,17 @@ import '../presentation/settings/companion_screen.dart';
 import '../presentation/settings/pronunciation_settings_screen.dart';
 import '../presentation/settings/voice_profile_screen.dart';
 import '../presentation/settings/settings_screen.dart';
+import '../presentation/settings/data_privacy_screen.dart';
+import '../presentation/settings/developer_tools_screen.dart';
+import '../presentation/settings/ai_personality_screen.dart';
+import '../presentation/settings/gamification_settings_screen.dart';
+import '../presentation/settings/advanced_security_screen.dart';
+import '../presentation/settings/appearance_settings_screen.dart';
+import '../presentation/settings/storage_performance_screen.dart';
+import '../presentation/settings/avatar_tweaks_screen.dart';
+import '../presentation/settings/integrations_screen.dart';
+import '../presentation/settings/automation_shortcuts_screen.dart';
+import '../presentation/settings/family_multiuser_screen.dart';
 import '../presentation/notifications/notification_preferences_screen.dart';
 import '../presentation/notifications/notifications_screen.dart';
 import '../presentation/feedback/beta_feedback_screen.dart';
@@ -282,5 +293,38 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: '/settings/reminders',
         builder: (_, __) => const ReminderSettingsScreen()),
+    GoRoute(
+        path: '/settings/data-privacy',
+        builder: (_, __) => const DataPrivacyScreen()),
+    GoRoute(
+        path: '/settings/developer-tools',
+        builder: (_, __) => const DeveloperToolsScreen()),
+    GoRoute(
+        path: '/settings/ai-personality',
+        builder: (_, __) => const AiPersonalityScreen()),
+    GoRoute(
+        path: '/settings/gamification',
+        builder: (_, __) => const GamificationSettingsScreen()),
+    GoRoute(
+        path: '/settings/advanced-security',
+        builder: (_, __) => const AdvancedSecurityScreen()),
+    GoRoute(
+        path: '/settings/appearance',
+        builder: (_, __) => const AppearanceSettingsScreen()),
+    GoRoute(
+        path: '/settings/storage-performance',
+        builder: (_, __) => const StoragePerformanceScreen()),
+    GoRoute(
+        path: '/settings/avatar-tweaks',
+        builder: (_, __) => const AvatarTweaksScreen()),
+    GoRoute(
+        path: '/settings/integrations',
+        builder: (_, __) => const IntegrationsScreen()),
+    GoRoute(
+        path: '/settings/automation-shortcuts',
+        builder: (_, __) => const AutomationShortcutsScreen()),
+    GoRoute(
+        path: '/settings/family-multiuser',
+        builder: (_, __) => const FamilyMultiuserScreen()),
   ],
 );

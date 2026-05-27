@@ -65,8 +65,10 @@ void main() {
     expect(homeSource, isNot(contains('BodyDoubleInvitesCard(')));
     expect(homeSource, isNot(contains('NotificationsSummaryCard(')));
     expect(homeSource, isNot(contains('AccessibilityShortcutsCard(')));
-    expect(homeSource, contains('home-support-body-double'));
-    expect(homeSource, contains('home-support-caregiver'));
-    expect(homeSource, contains('home-support-notifications'));
+    expect(homeSource, contains('home-menu-body-double'));
+    expect(homeSource, contains('home-menu-caregiver'));
+    expect(homeSource, contains('home-secondary-notifications'));
+    expect(homeSource, isNot(contains('home-support-body-double')));
+    expect(homeSource, isNot(contains('home-support-caregiver')));
   });
 }

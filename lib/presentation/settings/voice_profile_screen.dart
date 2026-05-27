@@ -18,6 +18,9 @@ class VoiceProfileScreen extends ConsumerStatefulWidget {
 }
 
 class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
+  static const double _minSpeechRate = 0.5;
+  static const double _maxSpeechRate = 1.5;
+
   String? selectedVoiceId;
   double speechRate = 1.0;
   bool autoReadSteps = false;
@@ -30,29 +33,39 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final authUser = ref.read(authRepositoryProvider).getCurrentUser();
-      if (authUser == null) return;
-      final localSettings = await ref
-          .read(localVoiceSettingsStoreProvider)
-          .load(authUser.id);
+      if (authUser == null) {
+        if (mounted) setState(() => loading = false);
+        return;
+      }
+      final localSettings =
+          await ref.read(localVoiceSettingsStoreProvider).load(authUser.id);
       if (localSettings != null) {
         setState(() {
           selectedVoiceId = localSettings.activeVoiceProfileId;
-          speechRate = localSettings.speechRate;
+          speechRate = _clampSpeechRate(localSettings.speechRate);
           autoReadSteps = localSettings.autoReadSteps;
           autoReadSidequests = localSettings.autoReadSidequests;
         });
       }
 
       final repo = ref.read(voiceSettingsRepositoryProvider);
-      final settings = await repo.getSettings(authUser.id);
-      final availableProfiles = await repo.getVoiceProfiles();
+      VoiceSettingsModel? settings;
+      List<VoiceProfileModel> availableProfiles = VoiceProfileModel.fallbacks;
+      try {
+        settings = await repo.getSettings(authUser.id);
+        availableProfiles = await repo.getVoiceProfiles();
+      } catch (error) {
+        debugPrint('Loaded local voice settings; remote load failed: $error');
+      }
       if (!mounted) return;
+      final resolvedVoiceId = _resolveSelectedVoiceId(
+        preferredId: settings?.activeVoiceProfileId ?? selectedVoiceId,
+        availableProfiles: availableProfiles,
+      );
       setState(() {
         profiles = availableProfiles;
-        selectedVoiceId = settings?.activeVoiceProfileId ??
-            selectedVoiceId ??
-            (availableProfiles.isNotEmpty ? availableProfiles.first.id : null);
-        speechRate = settings?.speechRate ?? speechRate;
+        selectedVoiceId = resolvedVoiceId;
+        speechRate = _clampSpeechRate(settings?.speechRate ?? speechRate);
         autoReadSteps = settings?.autoReadSteps ?? autoReadSteps;
         autoReadSidequests = settings?.autoReadSidequests ?? autoReadSidequests;
         loading = false;
@@ -85,7 +98,9 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
                     final selected = _profileFor(value);
                     setState(() {
                       selectedVoiceId = value;
-                      if (selected != null) speechRate = selected.defaultRate;
+                      if (selected != null) {
+                        speechRate = _clampSpeechRate(selected.defaultRate);
+                      }
                     });
                   },
                   decoration: const InputDecoration(labelText: 'Voice profile'),
@@ -101,8 +116,8 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
                 Text('Speech rate: ${speechRate.toStringAsFixed(2)}'),
                 Slider(
                   value: speechRate,
-                  min: 0.5,
-                  max: 1.5,
+                  min: _minSpeechRate,
+                  max: _maxSpeechRate,
                   divisions: 10,
                   onChanged: (value) => setState(() => speechRate = value),
                 ),
@@ -139,7 +154,8 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
                             settings: nextSettings,
                           );
                     } catch (error) {
-                      debugPrint('Saved voice settings locally; remote sync failed: $error');
+                      debugPrint(
+                          'Saved voice settings locally; remote sync failed: $error');
                       await ref.read(syncQueueServiceProvider).enqueue(
                             SyncQueueItem.create(
                               type: 'save_voice_settings',
@@ -147,15 +163,18 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
                                   'save_voice_settings_${authUser.id}',
                               payload: <String, dynamic>{
                                 'userId': authUser.id,
-                                'activeVoiceProfileId': nextSettings.activeVoiceProfileId,
+                                'activeVoiceProfileId':
+                                    nextSettings.activeVoiceProfileId,
                                 'localeId': nextSettings.localeId,
                                 'speechRate': nextSettings.speechRate,
                                 'autoReadSteps': nextSettings.autoReadSteps,
-                                'autoReadSidequests': nextSettings.autoReadSidequests,
+                                'autoReadSidequests':
+                                    nextSettings.autoReadSidequests,
                               },
                             ),
                           );
                     }
+                    ref.invalidate(voiceSettingsProvider);
 
                     if (mounted) Navigator.pop(context);
                   },
@@ -177,5 +196,20 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
       if (profile.id == id) return profile;
     }
     return null;
+  }
+
+  String? _resolveSelectedVoiceId({
+    required String? preferredId,
+    required List<VoiceProfileModel> availableProfiles,
+  }) {
+    if (availableProfiles.isEmpty) return null;
+    for (final profile in availableProfiles) {
+      if (profile.id == preferredId) return preferredId;
+    }
+    return availableProfiles.first.id;
+  }
+
+  double _clampSpeechRate(double value) {
+    return value.clamp(_minSpeechRate, _maxSpeechRate).toDouble();
   }
 }

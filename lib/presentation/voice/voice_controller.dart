@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/services/neural_tts_service.dart';
+import '../../core/services/sherpa_onnx_text_to_speech_service.dart';
 import '../../core/services/speech_to_text_service.dart';
 import '../../core/services/text_to_speech_service.dart';
 import '../../domain/voice/voice_profile_model.dart';
@@ -10,15 +12,25 @@ final voiceControllerProvider = Provider<VoiceController>((ref) {
   return VoiceController(
     ref,
     ref.watch(speechToTextServiceProvider),
+    ref.watch(sherpaOnnxTextToSpeechServiceProvider),
+    ref.watch(neuralTtsServiceProvider),
     ref.watch(textToSpeechServiceProvider),
   );
 });
 
 class VoiceController {
-  VoiceController(this._ref, this._stt, this._tts);
+  VoiceController(
+    this._ref,
+    this._stt,
+    this._sherpaTts,
+    this._neuralTts,
+    this._tts,
+  );
 
   final Ref _ref;
   final SpeechToTextService _stt;
+  final SherpaOnnxTextToSpeechService _sherpaTts;
+  final NeuralTtsService _neuralTts;
   final TextToSpeechService _tts;
 
   Future<void> speakStep(
@@ -27,14 +39,32 @@ class VoiceController {
     double? previewSpeechRate,
   }) async {
     final resolved = await _resolveVoice();
+    final profile = previewProfile ?? resolved.profile;
+    final rate = previewSpeechRate ?? resolved.settings?.speechRate;
+    final usedSherpa = await _sherpaTts.speak(
+      text: text,
+      profile: profile,
+      speechRate: rate,
+    );
+    if (usedSherpa) return;
+
+    final usedNeural = await _neuralTts.speak(
+      text: text,
+      profile: profile,
+      speechRate: rate,
+    );
+    if (usedNeural) return;
+
     await _tts.initialize(
-      profile: previewProfile ?? resolved.profile,
-      speechRate: previewSpeechRate ?? resolved.settings?.speechRate,
+      profile: profile,
+      speechRate: rate,
     );
     await _tts.speak(text);
   }
 
   Future<void> stopSpeaking() async {
+    await _sherpaTts.stop();
+    await _neuralTts.stop();
     await _tts.stop();
   }
 

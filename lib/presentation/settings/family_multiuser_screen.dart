@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/widgets/primary_scaffold.dart';
+import '../../domain/caregiver/caregiver_models.dart';
 import '../../providers.dart';
 
 class FamilyMultiuserScreen extends ConsumerStatefulWidget {
@@ -75,6 +77,8 @@ class _FamilyMultiuserScreenState extends ConsumerState<FamilyMultiuserScreen> {
               ? Icons.family_restroom_rounded
               : Icons.health_and_safety_rounded,
           isActive: false,
+          status: relationship.status,
+          role: relationship.role,
         ));
       }
     } catch (_) {
@@ -82,7 +86,33 @@ class _FamilyMultiuserScreenState extends ConsumerState<FamilyMultiuserScreen> {
       // unavailable in older/staged Supabase environments.
     }
 
+    try {
+      final invites =
+          await ref.read(caregiverRepositoryProvider).loadEmailInvites();
+      for (final invite in invites) {
+        profiles.add(_UserProfile(
+          id: invite.id,
+          name: invite.inviteeEmail,
+          avatar: Icons.mark_email_unread_rounded,
+          isActive: false,
+          role: invite.role,
+          isPendingEmailInvite: true,
+        ));
+      }
+    } catch (_) {
+      // Pending invites are additive; keep showing signed-in and linked
+      // profiles if invite loading is unavailable.
+    }
+
     return profiles;
+  }
+
+  Future<void> _addProfile() async {
+    await context.push('/caregiver/link');
+    if (!mounted) return;
+    setState(() {
+      _profilesFuture = _loadProfiles();
+    });
   }
 
   @override
@@ -153,19 +183,19 @@ class _FamilyMultiuserScreenState extends ConsumerState<FamilyMultiuserScreen> {
                           child: Icon(profile.avatar),
                         ),
                         title: Text(profile.name),
-                        subtitle: profile.isActive
-                            ? const Text('Current signed-in account')
-                            : Text('Linked account • ${profile.id}'),
+                        subtitle: Text(profile.subtitle),
                         trailing: profile.isActive
                             ? Chip(
                                 label: const Text('Active'),
                                 backgroundColor:
                                     Colors.greenAccent.withValues(alpha: 0.3),
                               )
-                            : OutlinedButton(
-                                onPressed: null,
-                                child: const Text('Switch'),
-                              ),
+                            : profile.isPending
+                                ? const Chip(label: Text('Pending'))
+                                : OutlinedButton(
+                                    onPressed: null,
+                                    child: const Text('Switch'),
+                                  ),
                       );
                     }),
                   ],
@@ -175,15 +205,7 @@ class _FamilyMultiuserScreenState extends ConsumerState<FamilyMultiuserScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: OutlinedButton.icon(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Use Caregiver & trusted links to add real linked profiles.',
-                      ),
-                    ),
-                  );
-                },
+                onPressed: _addProfile,
                 icon: const Icon(Icons.person_add_rounded),
                 label: const Text('Add Profile'),
               ),
@@ -282,10 +304,43 @@ class _UserProfile {
   final String name;
   final IconData avatar;
   final bool isActive;
+  final CaregiverRelationshipStatus? status;
+  final CaregiverRole? role;
+  final bool isPendingEmailInvite;
+
   const _UserProfile({
     required this.id,
     required this.name,
     required this.avatar,
     required this.isActive,
+    this.status,
+    this.role,
+    this.isPendingEmailInvite = false,
   });
+
+  bool get isPending =>
+      isPendingEmailInvite || status == CaregiverRelationshipStatus.pending;
+
+  String get subtitle {
+    if (isActive) return 'Current signed-in account';
+    final roleText = role?.name.toUpperCase();
+    if (isPendingEmailInvite) {
+      return [
+        if (roleText != null) roleText,
+        'pending invite',
+        'awaiting granted permission',
+      ].join(' - ');
+    }
+    if (status == CaregiverRelationshipStatus.pending) {
+      return [
+        if (roleText != null) roleText,
+        'pending relationship',
+        'awaiting granted permission',
+      ].join(' - ');
+    }
+    return [
+      if (roleText != null) roleText,
+      'linked account',
+    ].join(' - ');
+  }
 }

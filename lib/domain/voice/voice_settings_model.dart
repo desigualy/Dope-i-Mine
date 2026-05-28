@@ -7,6 +7,7 @@ class VoiceSettingsModel {
     this.localeId,
     this.platformVoiceName,
     this.platformVoiceLocale,
+    this.offlineVoiceId,
   });
 
   final String? activeVoiceProfileId;
@@ -16,6 +17,7 @@ class VoiceSettingsModel {
   final String? localeId;
   final String? platformVoiceName;
   final String? platformVoiceLocale;
+  final String? offlineVoiceId;
 
   factory VoiceSettingsModel.fromJson(Map<String, dynamic> json) {
     return VoiceSettingsModel(
@@ -26,6 +28,7 @@ class VoiceSettingsModel {
       localeId: json['localeId'] as String?,
       platformVoiceName: json['platformVoiceName'] as String?,
       platformVoiceLocale: json['platformVoiceLocale'] as String?,
+      offlineVoiceId: json['offlineVoiceId'] as String?,
     );
   }
 
@@ -38,6 +41,7 @@ class VoiceSettingsModel {
       'localeId': localeId,
       'platformVoiceName': platformVoiceName,
       'platformVoiceLocale': platformVoiceLocale,
+      'offlineVoiceId': offlineVoiceId,
     };
   }
 }

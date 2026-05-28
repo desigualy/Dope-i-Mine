@@ -11,6 +11,7 @@ class VoiceProfileModel {
     required this.firmness,
     required this.tonePreset,
     this.platformVoiceName,
+    this.offlineVoiceId,
     this.isActive = true,
   });
 
@@ -25,6 +26,7 @@ class VoiceProfileModel {
   final String firmness;
   final String tonePreset;
   final String? platformVoiceName;
+  final String? offlineVoiceId;
   final bool isActive;
 
   double get defaultRate {
@@ -55,6 +57,7 @@ class VoiceProfileModel {
       firmness: row['firmness'] as String? ?? 'medium',
       tonePreset: row['tone_preset'] as String? ?? row['id'] as String,
       platformVoiceName: row['platform_voice_name'] as String?,
+      offlineVoiceId: row['offline_voice_id'] as String?,
       isActive: row['is_active'] as bool? ?? true,
     );
   }
@@ -71,6 +74,7 @@ class VoiceProfileModel {
         'firmness': firmness,
         'tone_preset': tonePreset,
         'platform_voice_name': platformVoiceName,
+        'offline_voice_id': offlineVoiceId,
         'is_active': isActive,
       };
 

@@ -3,6 +3,7 @@ import 'package:dope_i_mine/core/services/sherpa_onnx_text_to_speech_service.dar
 import 'package:dope_i_mine/core/services/speech_to_text_service.dart';
 import 'package:dope_i_mine/core/services/text_to_speech_service.dart';
 import 'package:dope_i_mine/domain/voice/installed_tts_voice_model.dart';
+import 'package:dope_i_mine/domain/voice/offline_tts_voice_model.dart';
 import 'package:dope_i_mine/domain/voice/voice_profile_model.dart';
 import 'package:dope_i_mine/presentation/voice/voice_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,6 +28,7 @@ class _FakeSherpaTts implements SherpaOnnxTextToSpeechService {
     required String text,
     VoiceProfileModel? profile,
     double? speechRate,
+    OfflineTtsVoiceModel? offlineVoice,
   }) async {
     speakCalls += 1;
     return false;
@@ -34,6 +36,12 @@ class _FakeSherpaTts implements SherpaOnnxTextToSpeechService {
 
   @override
   Future<void> stop() async {}
+
+  @override
+  Future<OfflineTtsVoiceDownloadStatus> downloadStatus(
+    OfflineTtsVoiceModel voice,
+  ) async =>
+      OfflineTtsVoiceDownloadStatus.failed;
 }
 
 class _FakeNeuralTts implements NeuralTtsService {

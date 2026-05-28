@@ -2,6 +2,7 @@ import 'package:dope_i_mine/data/repositories/auth_repository_impl.dart';
 import 'package:dope_i_mine/data/repositories/voice_settings_repository_impl.dart';
 import 'package:dope_i_mine/domain/auth/auth_user.dart';
 import 'package:dope_i_mine/domain/voice/installed_tts_voice_model.dart';
+import 'package:dope_i_mine/domain/voice/offline_tts_voice_model.dart';
 import 'package:dope_i_mine/domain/voice/voice_profile_model.dart';
 import 'package:dope_i_mine/domain/voice/voice_settings_model.dart';
 import 'package:dope_i_mine/presentation/settings/voice_profile_screen.dart';
@@ -118,6 +119,9 @@ void main() {
           installedTtsVoicesProvider.overrideWith(
             (_) async => const <InstalledTtsVoiceModel>[],
           ),
+          offlineTtsVoiceStatusProvider.overrideWith(
+            (_, __) async => OfflineTtsVoiceDownloadStatus.failed,
+          ),
         ],
         child: const MaterialApp(home: VoiceProfileScreen()),
       ),
@@ -142,6 +146,9 @@ void main() {
               .overrideWithValue(_FakeVoiceSettingsRepository()),
           installedTtsVoicesProvider.overrideWith(
             (_) async => const <InstalledTtsVoiceModel>[],
+          ),
+          offlineTtsVoiceStatusProvider.overrideWith(
+            (_, __) async => OfflineTtsVoiceDownloadStatus.failed,
           ),
         ],
         child: const MaterialApp(home: VoiceProfileScreen()),
@@ -170,6 +177,9 @@ void main() {
               .overrideWithValue(_FakeVoiceSettingsRepository()),
           installedTtsVoicesProvider.overrideWith(
             (_) async => const <InstalledTtsVoiceModel>[],
+          ),
+          offlineTtsVoiceStatusProvider.overrideWith(
+            (_, __) async => OfflineTtsVoiceDownloadStatus.failed,
           ),
         ],
         child: const MaterialApp(home: VoiceProfileScreen()),
@@ -206,6 +216,9 @@ void main() {
                 networkConnectionRequired: true,
               ),
             ],
+          ),
+          offlineTtsVoiceStatusProvider.overrideWith(
+            (_, __) async => OfflineTtsVoiceDownloadStatus.failed,
           ),
         ],
         child: const MaterialApp(home: VoiceProfileScreen()),

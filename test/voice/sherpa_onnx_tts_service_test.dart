@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:dope_i_mine/core/services/neural_tts_service.dart';
 import 'package:dope_i_mine/core/services/sherpa_onnx_text_to_speech_service.dart';
+import 'package:dope_i_mine/domain/voice/offline_tts_voice_model.dart';
 import 'package:dope_i_mine/domain/voice/voice_profile_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -12,7 +13,10 @@ class _FakeModelManager extends SherpaOnnxTtsModelManager {
   final SherpaOnnxTtsModelPaths? model;
 
   @override
-  Future<SherpaOnnxTtsModelPaths?> ensureModelAvailable() async => model;
+  Future<SherpaOnnxTtsModelPaths?> ensureModelAvailable([
+    OfflineTtsVoiceModel? voice,
+  ]) async =>
+      model;
 }
 
 class _FakeEngineFactory extends SherpaOnnxOfflineTtsFactory {

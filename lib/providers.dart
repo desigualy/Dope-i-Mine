@@ -39,6 +39,7 @@ import 'data/repositories/side_quest_repository_impl.dart';
 import 'data/repositories/task_repository_impl.dart';
 import 'data/repositories/voice_settings_repository_impl.dart';
 import 'domain/voice/installed_tts_voice_model.dart';
+import 'domain/voice/offline_tts_voice_model.dart';
 import 'data/repositories/reward_repository_impl.dart';
 import 'domain/voice/voice_settings_model.dart';
 
@@ -227,6 +228,19 @@ final textToSpeechServiceProvider = Provider<TextToSpeechService>((ref) {
 final installedTtsVoicesProvider =
     FutureProvider<List<InstalledTtsVoiceModel>>((ref) async {
   return ref.watch(textToSpeechServiceProvider).installedVoices();
+});
+
+final offlineTtsVoicesProvider = Provider<List<OfflineTtsVoiceModel>>((ref) {
+  return OfflineTtsVoiceModel.catalogue;
+});
+
+final offlineTtsVoiceStatusProvider = FutureProvider.family<
+    OfflineTtsVoiceDownloadStatus, OfflineTtsVoiceModel>((ref, voice) async {
+  try {
+    return await ref.watch(sherpaOnnxTextToSpeechServiceProvider).downloadStatus(voice);
+  } catch (_) {
+    return OfflineTtsVoiceDownloadStatus.failed;
+  }
 });
 
 final neuralTtsServiceProvider = Provider<NeuralTtsService>((ref) {

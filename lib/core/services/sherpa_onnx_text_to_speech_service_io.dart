@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:sherpa_onnx/sherpa_onnx.dart' as sherpa;
 
+import '../../domain/voice/offline_tts_voice_model.dart';
 import '../../domain/voice/voice_profile_model.dart';
 import 'neural_tts_service.dart';
 
@@ -34,11 +35,15 @@ class SherpaOnnxTextToSpeechService {
     required String text,
     VoiceProfileModel? profile,
     double? speechRate,
+    OfflineTtsVoiceModel? offlineVoice,
   }) async {
     final trimmed = text.trim();
     if (trimmed.isEmpty) return true;
 
-    final model = await _modelManager.ensureModelAvailable();
+    final selectedVoice = offlineVoice ??
+        OfflineTtsVoiceModel.byId(profile?.offlineVoiceId) ??
+        OfflineTtsVoiceModel.defaultVoice();
+    final model = await _modelManager.ensureModelAvailable(selectedVoice);
     if (model == null) return false;
 
     final speed = _speedFromSpeechRate(speechRate ?? profile?.defaultRate);
@@ -47,6 +52,7 @@ class SherpaOnnxTextToSpeechService {
       modelId: model.id,
       speed: speed,
       speakerId: model.speakerId,
+      offlineVoiceId: selectedVoice.id,
     );
     final cached = await _cache.load(cacheKey);
     if (cached != null) {
@@ -73,6 +79,12 @@ class SherpaOnnxTextToSpeechService {
 
   Future<void> stop() async {
     await _player.stop();
+  }
+
+  Future<OfflineTtsVoiceDownloadStatus> downloadStatus(
+    OfflineTtsVoiceModel voice,
+  ) {
+    return _modelManager.downloadStatus(voice);
   }
 
   SherpaOnnxOfflineTtsEngine _engineFor(SherpaOnnxTtsModelPaths model) {
@@ -109,9 +121,11 @@ class SherpaOnnxTextToSpeechService {
     required String modelId,
     required double speed,
     required int speakerId,
+    required String offlineVoiceId,
   }) {
     final encoded = jsonEncode(<String, Object?>{
       'engine': 'sherpa_onnx',
+      'offlineVoiceId': offlineVoiceId,
       'modelId': modelId,
       'speakerId': speakerId,
       'speed': speed.toStringAsFixed(2),
@@ -182,31 +196,29 @@ class SherpaOnnxTtsModelManager {
     http.Client? client,
     String? modelArchiveUrl,
   })  : _client = client ?? http.Client(),
-        _modelArchiveUrl = modelArchiveUrl ?? _defaultModelArchiveUrl;
-
-  static const String _defaultModelArchiveUrl = String.fromEnvironment(
-    'SHERPA_ONNX_TTS_MODEL_URL',
-    defaultValue:
-        'https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-en_US-lessac-medium.tar.bz2',
-  );
+        _modelArchiveUrlOverride = modelArchiveUrl;
 
   final http.Client _client;
-  final String _modelArchiveUrl;
+  final String? _modelArchiveUrlOverride;
 
-  Future<SherpaOnnxTtsModelPaths?> ensureModelAvailable() async {
+  Future<SherpaOnnxTtsModelPaths?> ensureModelAvailable([
+    OfflineTtsVoiceModel? voice,
+  ]) async {
+    final selectedVoice = voice ?? OfflineTtsVoiceModel.defaultVoice();
     final root = await _modelRoot();
-    final paths = _pathsFor(root);
+    final paths = _pathsFor(root, selectedVoice);
     if (paths.existsSync()) return paths;
 
-    if (_modelArchiveUrl.trim().isEmpty) return null;
+    final archiveUrl = _modelArchiveUrlOverride ?? selectedVoice.modelArchiveUrl;
+    if (archiveUrl.trim().isEmpty) return null;
 
     try {
-      final response = await _client.get(Uri.parse(_modelArchiveUrl));
+      final response = await _client.get(Uri.parse(archiveUrl));
       if (response.statusCode < 200 || response.statusCode >= 300) {
         return null;
       }
       await _extractTarBz2(response.bodyBytes, root);
-      final extracted = _pathsFor(root);
+      final extracted = _pathsFor(root, selectedVoice);
       return extracted.existsSync() ? extracted : null;
     } catch (_) {
       return null;
@@ -218,14 +230,36 @@ class SherpaOnnxTtsModelManager {
     return Directory('${support.path}/sherpa_onnx_tts');
   }
 
-  SherpaOnnxTtsModelPaths _pathsFor(Directory root) {
-    final modelDir = Directory('${root.path}/vits-piper-en_US-lessac-medium');
+  Future<OfflineTtsVoiceDownloadStatus> downloadStatus(
+    OfflineTtsVoiceModel voice,
+  ) async {
+    final root = await _modelRoot();
+    if (_pathsFor(root, voice).existsSync()) {
+      return OfflineTtsVoiceDownloadStatus.ready;
+    }
+    return voice.canDownload
+        ? OfflineTtsVoiceDownloadStatus.notDownloaded
+        : OfflineTtsVoiceDownloadStatus.failed;
+  }
+
+  SherpaOnnxTtsModelPaths pathsForTesting(
+    Directory root,
+    OfflineTtsVoiceModel voice,
+  ) {
+    return _pathsFor(root, voice);
+  }
+
+  SherpaOnnxTtsModelPaths _pathsFor(
+    Directory root,
+    OfflineTtsVoiceModel voice,
+  ) {
+    final modelDir = Directory('${root.path}/${voice.modelDirectoryName}');
     return SherpaOnnxTtsModelPaths(
-      id: 'vits-piper-en_US-lessac-medium',
-      model: '${modelDir.path}/en_US-lessac-medium.onnx',
-      tokens: '${modelDir.path}/tokens.txt',
-      dataDir: '${modelDir.path}/espeak-ng-data',
-      speakerId: 0,
+      id: voice.modelId,
+      model: '${modelDir.path}/${voice.modelFileName}',
+      tokens: '${modelDir.path}/${voice.tokensFileName}',
+      dataDir: '${modelDir.path}/${voice.dataDirectoryName}',
+      speakerId: voice.speakerId,
     );
   }
 

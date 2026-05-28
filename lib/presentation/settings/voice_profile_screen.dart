@@ -5,10 +5,12 @@ import '../../core/sync/sync_queue_item.dart';
 import '../../core/sync/sync_queue_service.dart';
 import '../../core/widgets/primary_scaffold.dart';
 import '../../domain/voice/installed_tts_voice_model.dart';
+import '../../domain/voice/offline_tts_voice_model.dart';
 import '../../domain/voice/voice_profile_model.dart';
 import '../../domain/voice/voice_settings_model.dart';
 import '../../providers.dart';
 
+import '../../presentation/voice/voice_controller.dart';
 import '../../presentation/voice/voice_test_panel.dart';
 
 class VoiceProfileScreen extends ConsumerStatefulWidget {
@@ -24,6 +26,7 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
 
   String? selectedVoiceId;
   String? selectedPlatformVoiceId;
+  String? selectedOfflineVoiceId;
   double speechRate = 1.0;
   bool autoReadSteps = false;
   bool autoReadSidequests = false;
@@ -48,6 +51,7 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
             name: localSettings.platformVoiceName,
             locale: localSettings.platformVoiceLocale ?? localSettings.localeId,
           );
+          selectedOfflineVoiceId = localSettings.offlineVoiceId;
           speechRate = _clampSpeechRate(localSettings.speechRate);
           autoReadSteps = localSettings.autoReadSteps;
           autoReadSidequests = localSettings.autoReadSidequests;
@@ -76,10 +80,11 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
               locale: settings?.platformVoiceLocale ?? settings?.localeId,
             ) ??
             selectedPlatformVoiceId;
+        selectedOfflineVoiceId = settings?.offlineVoiceId ?? selectedOfflineVoiceId;
+        loading = false;
         speechRate = _clampSpeechRate(settings?.speechRate ?? speechRate);
         autoReadSteps = settings?.autoReadSteps ?? autoReadSteps;
         autoReadSidequests = settings?.autoReadSidequests ?? autoReadSidequests;
-        loading = false;
       });
       if (settings != null) {
         await ref
@@ -92,6 +97,7 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final installedVoices = ref.watch(installedTtsVoicesProvider);
+    final offlineVoices = ref.watch(offlineTtsVoicesProvider);
     return PrimaryScaffold(
       title: 'Voice settings',
       child: loading
@@ -99,10 +105,57 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
           : ListView(
               children: <Widget>[
                 _EngineStatusLabel(
-                  hasSelectedPlatformVoice: selectedPlatformVoiceId != null,
+                  hasSelectedOfflineVoice: selectedOfflineVoiceId != null,
+                  hasSelectedPlatformVoice:
+                      selectedOfflineVoiceId == null && selectedPlatformVoiceId != null,
                   installedVoices: installedVoices,
                 ),
                 const SizedBox(height: 16),
+                Text(
+                  'Offline open-source voices',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 8),
+                ...offlineVoices.map(
+                  (voice) => _OfflineVoiceTile(
+                    voice: voice,
+                    selected: selectedOfflineVoiceId == voice.id,
+                    status: ref.watch(offlineTtsVoiceStatusProvider(voice)),
+                    onSelected: () {
+                      setState(() {
+                        selectedOfflineVoiceId = voice.id;
+                        selectedPlatformVoiceId = null;
+                      });
+                    },
+                    onPreview: () {
+                      ref.read(voiceControllerProvider).speakStep(
+                            'Hello. This is ${voice.label}.',
+                            previewProfile: VoiceProfileModel(
+                              id: voice.id,
+                              provider: voice.provider,
+                              label: voice.label,
+                              localeId: voice.localeId,
+                              accent: voice.accent,
+                              gender: 'neutral',
+                              pace: 'normal',
+                              warmth: 'medium',
+                              firmness: 'medium',
+                              tonePreset: voice.perceivedVoiceType,
+                              offlineVoiceId: voice.id,
+                            ),
+                          );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Android system voices',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const Text(
+                  'Device/emulator voices vary and may sound different or be limited.',
+                ),
+                const SizedBox(height: 8),
                 installedVoices.when(
                   data: (voices) => voices.isEmpty
                       ? const _NoInstalledVoicesNotice()
@@ -118,6 +171,7 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
                             final selected = _installedVoiceFor(voices, value);
                             setState(() {
                               selectedPlatformVoiceId = value;
+                              selectedOfflineVoiceId = null;
                               if (selected != null) {
                                 selectedVoiceId = _matchingProfileIdForLocale(
                                       selected.locale,
@@ -206,6 +260,7 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
                           _profileFor(selectedVoiceId)?.localeId,
                       platformVoiceName: selectedPlatformVoice?.name,
                       platformVoiceLocale: selectedPlatformVoice?.locale,
+                      offlineVoiceId: selectedOfflineVoiceId,
                       speechRate: speechRate,
                       autoReadSteps: autoReadSteps,
                       autoReadSidequests: autoReadSidequests,
@@ -235,6 +290,7 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
                                     nextSettings.platformVoiceName,
                                 'platformVoiceLocale':
                                     nextSettings.platformVoiceLocale,
+                                'offlineVoiceId': nextSettings.offlineVoiceId,
                                 'speechRate': nextSettings.speechRate,
                                 'autoReadSteps': nextSettings.autoReadSteps,
                                 'autoReadSidequests':
@@ -271,9 +327,27 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
       AsyncValue<List<InstalledTtsVoiceModel>> installedVoices) {
     final profile = _profileFor(selectedVoiceId);
     final selectedVoice = installedVoices.maybeWhen(
-      data: (voices) => _installedVoiceFor(voices, selectedPlatformVoiceId),
+      data: (voices) => selectedOfflineVoiceId == null
+          ? _installedVoiceFor(voices, selectedPlatformVoiceId)
+          : null,
       orElse: () => null,
     );
+    final offlineVoice = OfflineTtsVoiceModel.byId(selectedOfflineVoiceId);
+    if (offlineVoice != null) {
+      return VoiceProfileModel(
+        id: profile?.id ?? offlineVoice.id,
+        provider: offlineVoice.provider,
+        label: offlineVoice.label,
+        localeId: offlineVoice.localeId,
+        accent: offlineVoice.accent,
+        gender: profile?.gender ?? 'neutral',
+        pace: profile?.pace ?? 'normal',
+        warmth: profile?.warmth ?? 'medium',
+        firmness: profile?.firmness ?? 'medium',
+        tonePreset: profile?.tonePreset ?? offlineVoice.perceivedVoiceType,
+        offlineVoiceId: offlineVoice.id,
+      );
+    }
     if (selectedVoice == null) return profile;
     return VoiceProfileModel(
       id: profile?.id ?? selectedVoice.id,
@@ -348,10 +422,12 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
 
 class _EngineStatusLabel extends StatelessWidget {
   const _EngineStatusLabel({
+    required this.hasSelectedOfflineVoice,
     required this.hasSelectedPlatformVoice,
     required this.installedVoices,
   });
 
+  final bool hasSelectedOfflineVoice;
   final bool hasSelectedPlatformVoice;
   final AsyncValue<List<InstalledTtsVoiceModel>> installedVoices;
 
@@ -359,6 +435,7 @@ class _EngineStatusLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     final label = installedVoices.when(
       data: (voices) {
+        if (hasSelectedOfflineVoice) return 'Engine active: Sherpa offline voice';
         if (hasSelectedPlatformVoice) return 'Engine active: Android system voice';
         if (voices.isNotEmpty) {
           return 'Engine active: Sherpa offline unless an Android voice is selected';
@@ -373,6 +450,49 @@ class _EngineStatusLabel extends StatelessWidget {
       child: Chip(
         avatar: const Icon(Icons.graphic_eq_rounded, size: 18),
         label: Text(label),
+      ),
+    );
+  }
+}
+
+class _OfflineVoiceTile extends StatelessWidget {
+  const _OfflineVoiceTile({
+    required this.voice,
+    required this.selected,
+    required this.status,
+    required this.onSelected,
+    required this.onPreview,
+  });
+
+  final OfflineTtsVoiceModel voice;
+  final bool selected;
+  final AsyncValue<OfflineTtsVoiceDownloadStatus> status;
+  final VoidCallback onSelected;
+  final VoidCallback onPreview;
+
+  @override
+  Widget build(BuildContext context) {
+    final statusText = status.when(
+      data: (value) => switch (value) {
+        OfflineTtsVoiceDownloadStatus.notDownloaded => 'Not downloaded',
+        OfflineTtsVoiceDownloadStatus.downloading => 'Downloading',
+        OfflineTtsVoiceDownloadStatus.ready => 'Ready',
+        OfflineTtsVoiceDownloadStatus.failed => 'Failed',
+      },
+      loading: () => 'Checking',
+      error: (_, __) => 'Failed',
+    );
+    return RadioListTile<String>(
+      value: voice.id,
+      groupValue: selected ? voice.id : null,
+      onChanged: (_) => onSelected(),
+      title: Text(voice.label),
+      subtitle: Text(
+        '${voice.localeId} · ${voice.perceivedVoiceType} · ${voice.qualityTier} · $statusText · ${voice.licenseLabel}',
+      ),
+      secondary: TextButton(
+        onPressed: onPreview,
+        child: const Text('Preview'),
       ),
     );
   }

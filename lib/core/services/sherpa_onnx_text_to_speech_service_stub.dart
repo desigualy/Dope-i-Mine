@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import '../../domain/voice/voice_profile_model.dart';
+import '../../domain/voice/offline_tts_voice_model.dart';
 import 'neural_tts_service.dart';
 
 class SherpaOnnxTextToSpeechService {
@@ -17,6 +18,7 @@ class SherpaOnnxTextToSpeechService {
     required String text,
     VoiceProfileModel? profile,
     double? speechRate,
+    OfflineTtsVoiceModel? offlineVoice,
   }) async {
     return false;
   }
@@ -24,6 +26,11 @@ class SherpaOnnxTextToSpeechService {
   Future<void> stop() async {
     await _player.stop();
   }
+
+  Future<OfflineTtsVoiceDownloadStatus> downloadStatus(
+    OfflineTtsVoiceModel voice,
+  ) async =>
+      OfflineTtsVoiceDownloadStatus.failed;
 }
 
 class SherpaOnnxTtsModelManager {
@@ -32,7 +39,15 @@ class SherpaOnnxTtsModelManager {
     String? modelArchiveUrl,
   });
 
-  Future<SherpaOnnxTtsModelPaths?> ensureModelAvailable() async => null;
+  Future<SherpaOnnxTtsModelPaths?> ensureModelAvailable([
+    OfflineTtsVoiceModel? voice,
+  ]) async =>
+      null;
+
+  Future<OfflineTtsVoiceDownloadStatus> downloadStatus(
+    OfflineTtsVoiceModel voice,
+  ) async =>
+      OfflineTtsVoiceDownloadStatus.failed;
 }
 
 class SherpaOnnxTtsModelPaths {

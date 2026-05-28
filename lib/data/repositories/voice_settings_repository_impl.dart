@@ -24,6 +24,7 @@ class VoiceSettingsRepositoryImpl {
       localeId: row['locale_id'] as String?,
       platformVoiceName: row['platform_voice_name'] as String?,
       platformVoiceLocale: row['platform_voice_locale'] as String?,
+      offlineVoiceId: row['offline_voice_id'] as String?,
     );
   }
 
@@ -37,6 +38,7 @@ class VoiceSettingsRepositoryImpl {
       'locale_id': settings.localeId,
       'platform_voice_name': settings.platformVoiceName,
       'platform_voice_locale': settings.platformVoiceLocale,
+      'offline_voice_id': settings.offlineVoiceId,
       'speech_rate': settings.speechRate,
       'auto_read_steps': settings.autoReadSteps,
       'auto_read_sidequests': settings.autoReadSidequests,

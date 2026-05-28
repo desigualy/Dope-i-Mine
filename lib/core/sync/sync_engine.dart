@@ -219,6 +219,7 @@ class SyncEngine {
       'locale_id': payload['localeId'],
       'platform_voice_name': payload['platformVoiceName'],
       'platform_voice_locale': payload['platformVoiceLocale'],
+      'offline_voice_id': payload['offlineVoiceId'],
       'speech_rate': payload['speechRate'] ?? 1.0,
       'auto_read_steps': payload['autoReadSteps'] ?? false,
       'auto_read_sidequests': payload['autoReadSidequests'] ?? false,

@@ -4,6 +4,7 @@ import '../../core/services/neural_tts_service.dart';
 import '../../core/services/sherpa_onnx_text_to_speech_service.dart';
 import '../../core/services/speech_to_text_service.dart';
 import '../../core/services/text_to_speech_service.dart';
+import '../../domain/voice/offline_tts_voice_model.dart';
 import '../../domain/voice/voice_profile_model.dart';
 import '../../domain/voice/voice_settings_model.dart';
 import '../../providers.dart';
@@ -48,6 +49,19 @@ class VoiceController {
         resolved.settings?.platformVoiceLocale ??
         resolved.settings?.localeId ??
         profile?.localeId;
+    final selectedOfflineVoice = OfflineTtsVoiceModel.byId(
+      resolved.settings?.offlineVoiceId ?? previewProfile?.offlineVoiceId,
+    );
+
+    if (selectedOfflineVoice != null) {
+      final usedSherpa = await _sherpaTts.speak(
+        text: text,
+        profile: profile,
+        speechRate: rate,
+        offlineVoice: selectedOfflineVoice,
+      );
+      if (usedSherpa) return;
+    }
 
     if (platformVoiceName != null && platformVoiceName.isNotEmpty) {
       await _speakWithPlatformTts(
@@ -60,11 +74,13 @@ class VoiceController {
       return;
     }
 
-    if (_canUseSherpaFor(profile)) {
+    final defaultOfflineVoice = OfflineTtsVoiceModel.defaultVoice();
+    if (_canUseDefaultSherpaFor(profile)) {
       final usedSherpa = await _sherpaTts.speak(
         text: text,
         profile: profile,
         speechRate: rate,
+        offlineVoice: defaultOfflineVoice,
       );
       if (usedSherpa) return;
     }
@@ -101,8 +117,8 @@ class VoiceController {
     await _tts.speak(text);
   }
 
-  bool _canUseSherpaFor(VoiceProfileModel? profile) {
-    return profile?.provider == 'sherpa_onnx';
+  bool _canUseDefaultSherpaFor(VoiceProfileModel? profile) {
+    return profile == null || profile.provider == 'sherpa_onnx';
   }
 
   Future<void> stopSpeaking() async {

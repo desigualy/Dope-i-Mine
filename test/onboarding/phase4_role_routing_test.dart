@@ -128,4 +128,56 @@ void main() {
       isNot('/caregiver/confirm'),
     );
   });
+
+  group('ProfileRepositoryImpl.resolveEffectiveAccountType', () {
+    test('does not trust stored caregiver account_type by itself', () {
+      expect(
+        ProfileRepositoryImpl.resolveEffectiveAccountType(
+          storedAccountType: 'caregiver',
+          requestedAccountType: null,
+          hasCaregiverProfile: false,
+          hasAcceptedCaregiverRelationship: false,
+          hasAcceptedSupportedUserRelationship: false,
+        ),
+        'user',
+      );
+    });
+
+    test('keeps supported users as normal users', () {
+      expect(
+        ProfileRepositoryImpl.resolveEffectiveAccountType(
+          storedAccountType: 'caregiver',
+          requestedAccountType: null,
+          hasCaregiverProfile: false,
+          hasAcceptedCaregiverRelationship: false,
+          hasAcceptedSupportedUserRelationship: true,
+        ),
+        'user',
+      );
+    });
+
+    test('promotes only explicit caregiver proof', () {
+      expect(
+        ProfileRepositoryImpl.resolveEffectiveAccountType(
+          storedAccountType: 'user',
+          requestedAccountType: 'caregiver',
+          hasCaregiverProfile: false,
+          hasAcceptedCaregiverRelationship: false,
+          hasAcceptedSupportedUserRelationship: false,
+        ),
+        'caregiver',
+      );
+
+      expect(
+        ProfileRepositoryImpl.resolveEffectiveAccountType(
+          storedAccountType: 'user',
+          requestedAccountType: null,
+          hasCaregiverProfile: false,
+          hasAcceptedCaregiverRelationship: true,
+          hasAcceptedSupportedUserRelationship: false,
+        ),
+        'caregiver',
+      );
+    });
+  });
 }

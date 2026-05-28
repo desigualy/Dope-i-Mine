@@ -102,7 +102,8 @@ class OfflineFirstTaskRepository {
         await localTaskStore.upsertSteps(remoteSteps);
         return remoteSteps;
       } catch (error) {
-        debugPrint('Remote breakDownStep failed; using offline fallback: $error');
+        debugPrint(
+            'Remote breakDownStep failed; using offline fallback: $error');
       }
     }
 
@@ -112,11 +113,13 @@ class OfflineFirstTaskRepository {
         .map((item) => item['text'] as String? ?? '')
         .where((text) => text.trim().isNotEmpty)
         .toList();
+    final parentStep = await localTaskStore.findStep(stepId);
+    final taskId = parentStep?.taskId ?? stepId;
     final now = DateTime.now().microsecondsSinceEpoch;
     final generated = substeps.asMap().entries.map((entry) {
       return TaskStepModel(
         id: 'local_step_${now}_${entry.key}',
-        taskId: 'local_unknown_task',
+        taskId: taskId,
         parentStepId: stepId,
         text: entry.value,
         sequenceNo: entry.key + 1,
@@ -129,6 +132,7 @@ class OfflineFirstTaskRepository {
       idempotencyKey: 'breakdown_step_$stepId',
       payload: <String, dynamic>{
         'stepId': stepId,
+        'taskId': taskId,
         'stepText': stepText,
         'snapshot': snapshot.toJson(),
       },
@@ -187,7 +191,8 @@ class OfflineFirstTaskRepository {
       category: data['category'] as String?,
     );
 
-    final rawPrimary = data['primarySteps'] as List<dynamic>? ?? const <dynamic>[];
+    final rawPrimary =
+        data['primarySteps'] as List<dynamic>? ?? const <dynamic>[];
     final steps = <TaskStepModel>[];
     var sequence = 1;
     for (final item in rawPrimary.whereType<Map>()) {
@@ -201,7 +206,8 @@ class OfflineFirstTaskRepository {
         isOptional: item['isOptional'] as bool? ?? false,
       ));
       final substeps = item['substeps'] as List<dynamic>? ?? const <dynamic>[];
-      for (final subEntry in substeps.whereType<Map>().toList().asMap().entries) {
+      for (final subEntry
+          in substeps.whereType<Map>().toList().asMap().entries) {
         steps.add(TaskStepModel(
           id: '${sectionId}_child_${subEntry.key}',
           taskId: taskId,
@@ -214,35 +220,42 @@ class OfflineFirstTaskRepository {
       sequence++;
     }
 
-    final minimum = (data['minimumVersionSteps'] as List<dynamic>? ?? const <dynamic>[])
-        .whereType<Map>()
-        .toList()
-        .asMap()
-        .entries
-        .map<TaskStepModel>((entry) => TaskStepModel(
-              id: 'local_min_${now}_${entry.key}',
-              taskId: taskId,
-              text: entry.value['text'] as String? ?? 'Do the smallest first step',
-              sequenceNo: entry.key + 1,
-              depthLevel: 0,
-              isMinimumPath: true,
-            ))
-        .toList();
+    final minimum =
+        (data['minimumVersionSteps'] as List<dynamic>? ?? const <dynamic>[])
+            .whereType<Map>()
+            .toList()
+            .asMap()
+            .entries
+            .map<TaskStepModel>((entry) => TaskStepModel(
+                  id: 'local_min_${now}_${entry.key}',
+                  taskId: taskId,
+                  text: entry.value['text'] as String? ??
+                      'Do the smallest first step',
+                  sequenceNo: entry.key + 1,
+                  depthLevel: 0,
+                  isMinimumPath: true,
+                ))
+            .toList();
 
-    final sideQuests = (data['sideQuests'] as List<dynamic>? ?? const <dynamic>[])
-        .whereType<Map>()
-        .toList()
-        .asMap()
-        .entries
-        .map<SideQuestModel>((entry) => SideQuestModel(
-              id: 'local_sidequest_${now}_${entry.key}',
-              title: entry.value['title'] as String? ?? 'Tiny bonus action',
-              questType: (entry.value['quest_type'] ?? entry.value['questType'] ?? 'bonus') as String,
-              rewardXp: (entry.value['reward_xp'] ?? entry.value['rewardXp'] ?? 10) as int,
-              status: 'available',
-              taskId: taskId,
-            ))
-        .toList();
+    final sideQuests =
+        (data['sideQuests'] as List<dynamic>? ?? const <dynamic>[])
+            .whereType<Map>()
+            .toList()
+            .asMap()
+            .entries
+            .map<SideQuestModel>((entry) => SideQuestModel(
+                  id: 'local_sidequest_${now}_${entry.key}',
+                  title: entry.value['title'] as String? ?? 'Tiny bonus action',
+                  questType: (entry.value['quest_type'] ??
+                      entry.value['questType'] ??
+                      'bonus') as String,
+                  rewardXp: (entry.value['reward_xp'] ??
+                      entry.value['rewardXp'] ??
+                      10) as int,
+                  status: 'available',
+                  taskId: taskId,
+                ))
+            .toList();
 
     return LocalTaskBundle(
       task: task,

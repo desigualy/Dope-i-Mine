@@ -93,6 +93,13 @@ class LocalTaskStore {
       ..sort((a, b) => a.sequenceNo.compareTo(b.sequenceNo));
   }
 
+  Future<TaskStepModel?> findStep(String stepId) async {
+    final rows = await _store.readList(_stepsKey);
+    final row = rows.where((row) => row['id'] == stepId).firstOrNull;
+    if (row == null) return null;
+    return _stepFromJson(row);
+  }
+
   Future<void> upsertSteps(List<TaskStepModel> newSteps) async {
     if (newSteps.isEmpty) return;
     final rows = await _store.readList(_stepsKey);

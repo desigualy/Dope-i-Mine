@@ -29,6 +29,15 @@ class VoiceInputButton extends ConsumerStatefulWidget {
 class _VoiceInputButtonState extends ConsumerState<VoiceInputButton> {
   String? _lastErrorMessage;
 
+  @override
+  void initState() {
+    super.initState();
+    ref.listenManual(
+      voiceIoControllerProvider,
+      (_, next) => _onControllerChanged(next),
+    );
+  }
+
   void _onControllerChanged(VoiceIoController controller) {
     if (!mounted) return;
 
@@ -44,9 +53,6 @@ class _VoiceInputButtonState extends ConsumerState<VoiceInputButton> {
   @override
   Widget build(BuildContext context) {
     final controller = ref.watch(voiceIoControllerProvider);
-    
-    // Listen for errors using ref.listen or manual listener
-    ref.listen(voiceIoControllerProvider, (_, next) => _onControllerChanged(next));
 
     final state = controller.state;
     final listening = state.isListening;

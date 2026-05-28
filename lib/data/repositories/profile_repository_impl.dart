@@ -16,18 +16,21 @@ class ProfileRepositoryImpl {
     String? email,
     String accountType = 'user',
   }) async {
+    await _acceptPendingCaregiverInvitesForEmail(email);
+
     final hasAcceptedCaregiverProfile = await _hasCaregiverProfile(userId);
     final hasAcceptedCaregiverRelationship =
         await _hasAcceptedCaregiverRelationship(userId);
+    final hasAcceptedSupportedUserRelationship =
+        await _hasAcceptedSupportedUserRelationship(userId);
     final existingAccountType = await _getStoredAccountType(userId);
-    final requestedAccountType =
-        accountType == 'caregiver' ? 'caregiver' : 'user';
-    final normalizedAccountType = requestedAccountType == 'caregiver' ||
-            existingAccountType == 'caregiver' ||
-            hasAcceptedCaregiverProfile ||
-            hasAcceptedCaregiverRelationship
-        ? 'caregiver'
-        : 'user';
+    final normalizedAccountType = resolveEffectiveAccountType(
+      storedAccountType: existingAccountType,
+      requestedAccountType: accountType,
+      hasCaregiverProfile: hasAcceptedCaregiverProfile,
+      hasAcceptedCaregiverRelationship: hasAcceptedCaregiverRelationship,
+      hasAcceptedSupportedUserRelationship: hasAcceptedSupportedUserRelationship,
+    );
     try {
       await _client.from('users_profile').upsert(<String, dynamic>{
         'id': userId,
@@ -60,8 +63,31 @@ class ProfileRepositoryImpl {
         hasAcceptedCaregiverRelationship: hasAcceptedCaregiverRelationship,
       );
     }
+  }
 
-    await _acceptPendingCaregiverInvitesForEmail(email);
+  static String resolveEffectiveAccountType({
+    required String? storedAccountType,
+    required String? requestedAccountType,
+    required bool hasCaregiverProfile,
+    required bool hasAcceptedCaregiverRelationship,
+    required bool hasAcceptedSupportedUserRelationship,
+  }) {
+    final explicitlyRequestedCaregiver = requestedAccountType == 'caregiver';
+
+    if (explicitlyRequestedCaregiver ||
+        hasCaregiverProfile ||
+        hasAcceptedCaregiverRelationship) {
+      return 'caregiver';
+    }
+
+    // A supported user has a relationship row, but they are not the caregiver.
+    // Never promote them into caregiver routing because of support linkage.
+    if (hasAcceptedSupportedUserRelationship) return 'user';
+
+    // Stored account_type is intentionally not authoritative on its own. Older
+    // builds could accidentally persist `caregiver`; require a caregiver profile
+    // or caregiver-side accepted relationship before routing to caregiver pages.
+    return 'user';
   }
 
   Future<String?> _getStoredAccountType(String userId) async {
@@ -299,20 +325,21 @@ class ProfileRepositoryImpl {
           .select('account_type')
           .eq('id', userId)
           .maybeSingle();
-      if (profileRow?['account_type'] != 'caregiver') return 'user';
 
       final hasCaregiverProfile = await _hasCaregiverProfile(userId);
       final hasCaregiverRelationship =
           await _hasAcceptedCaregiverRelationship(userId);
-      if (hasCaregiverProfile || hasCaregiverRelationship) {
-        return 'caregiver';
-      }
+      final hasSupportedUserRelationship =
+          await _hasAcceptedSupportedUserRelationship(userId);
 
-      if (await _hasAcceptedSupportedUserRelationship(userId)) {
-        return 'user';
-      }
-
-      return 'caregiver';
+      final storedAccountType = profileRow?['account_type'];
+      return resolveEffectiveAccountType(
+        storedAccountType: storedAccountType is String ? storedAccountType : null,
+        requestedAccountType: null,
+        hasCaregiverProfile: hasCaregiverProfile,
+        hasAcceptedCaregiverRelationship: hasCaregiverRelationship,
+        hasAcceptedSupportedUserRelationship: hasSupportedUserRelationship,
+      );
     } catch (_) {
       return 'user';
     }

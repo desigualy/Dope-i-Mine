@@ -17,6 +17,7 @@ class TaskViewState {
     this.sideQuests = const <SideQuestModel>[],
     this.showMinimumVersion = false,
     this.showSideQuests = true,
+    this.sideQuestsEnabled = true,
     this.focusedSectionId,
     this.missionRewarded = false,
     this.snapshot,
@@ -29,6 +30,7 @@ class TaskViewState {
   final List<SideQuestModel> sideQuests;
   final bool showMinimumVersion;
   final bool showSideQuests;
+  final bool sideQuestsEnabled;
   final String? focusedSectionId;
   final bool missionRewarded;
   final TaskStateSnapshot? snapshot;
@@ -41,6 +43,7 @@ class TaskViewState {
     List<SideQuestModel>? sideQuests,
     bool? showMinimumVersion,
     bool? showSideQuests,
+    bool? sideQuestsEnabled,
     String? focusedSectionId,
     bool? missionRewarded,
     TaskStateSnapshot? snapshot,
@@ -54,6 +57,7 @@ class TaskViewState {
       sideQuests: sideQuests ?? this.sideQuests,
       showMinimumVersion: showMinimumVersion ?? this.showMinimumVersion,
       showSideQuests: showSideQuests ?? this.showSideQuests,
+      sideQuestsEnabled: sideQuestsEnabled ?? this.sideQuestsEnabled,
       focusedSectionId: clearFocusedSection
           ? null
           : (focusedSectionId ?? this.focusedSectionId),
@@ -77,21 +81,32 @@ class TaskController extends StateNotifier<TaskViewState> {
     required String userId,
     required String sourceText,
     required TaskStateSnapshot snapshot,
+    required bool sideQuestsEnabled,
   }) async {
-    state = TaskViewState(loading: true, snapshot: snapshot);
+    state = TaskViewState(
+      loading: true,
+      snapshot: snapshot,
+      sideQuestsEnabled: sideQuestsEnabled,
+      showSideQuests: sideQuestsEnabled,
+    );
     try {
       final result = await _repository.createTask(
         userId: userId,
         sourceText: sourceText,
         snapshot: snapshot,
+        sideQuestsEnabled: sideQuestsEnabled,
       );
       state = state.copyWith(
         loading: false,
         task: result.task,
         steps: result.steps,
         minimumVersion: result.minimumVersion,
-        sideQuests: _lockedSideQuests(result.sideQuests),
+        sideQuests: sideQuestsEnabled
+            ? _lockedSideQuests(result.sideQuests)
+            : const <SideQuestModel>[],
         showMinimumVersion: false,
+        showSideQuests: sideQuestsEnabled,
+        sideQuestsEnabled: sideQuestsEnabled,
         missionRewarded: false,
         snapshot: snapshot,
       );
@@ -106,6 +121,7 @@ class TaskController extends StateNotifier<TaskViewState> {
   }
 
   void toggleSideQuests(bool value) {
+    if (!state.sideQuestsEnabled) return;
     state = state.copyWith(showSideQuests: value);
   }
 
@@ -122,6 +138,7 @@ class TaskController extends StateNotifier<TaskViewState> {
   }
 
   void replaceSideQuests(List<SideQuestModel> sideQuests) {
+    if (!state.sideQuestsEnabled) return;
     state = state.copyWith(sideQuests: sideQuests);
   }
 
@@ -155,6 +172,7 @@ class TaskController extends StateNotifier<TaskViewState> {
   }
 
   void _unlockBreakdownSideQuest() {
+    if (!state.sideQuestsEnabled) return;
     final locked = state.sideQuests.where((q) => q.status == 'locked').toList();
     if (locked.isEmpty) return;
 
@@ -198,6 +216,7 @@ class TaskController extends StateNotifier<TaskViewState> {
   }
 
   void updateSideQuestStatus(String sideQuestId, String status) {
+    if (!state.sideQuestsEnabled) return;
     final updatedSideQuests = state.sideQuests.map<SideQuestModel>((quest) {
       if (quest.id == sideQuestId) {
         return quest.copyWith(status: status);
@@ -209,6 +228,7 @@ class TaskController extends StateNotifier<TaskViewState> {
   }
 
   List<SideQuestModel> unlockEarnedSideQuests(List<TaskStepModel> rewardSteps) {
+    if (!state.sideQuestsEnabled) return const <SideQuestModel>[];
     final earnedCount = PointsEngine.earnedSideQuestCount(rewardSteps);
     if (earnedCount <= 0 || state.sideQuests.isEmpty) {
       return const <SideQuestModel>[];

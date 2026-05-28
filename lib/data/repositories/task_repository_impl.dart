@@ -24,6 +24,7 @@ class TaskRepositoryImpl {
     required String userId,
     required String sourceText,
     required TaskStateSnapshot snapshot,
+    required bool sideQuestsEnabled,
   }) async {
     final template = TaskTemplateLibrary.findTemplate(sourceText);
     Map<String, dynamic> data;
@@ -44,6 +45,7 @@ class TaskRepositoryImpl {
               TimeAvailable.fifteenMinutes => '15m',
               TimeAvailable.thirtyPlus => '30m_plus',
             },
+            'sideQuestsEnabled': sideQuestsEnabled,
           },
         );
         data = Map<String, dynamic>.from(response.data as Map);
@@ -54,6 +56,9 @@ class TaskRepositoryImpl {
     }
 
     data = _adaptTaskDataToSnapshot(data, snapshot);
+    if (!sideQuestsEnabled) {
+      data['sideQuests'] = const <dynamic>[];
+    }
 
     final normalizedTitle =
         (data['normalizedTitle'] as String?)?.trim().isNotEmpty == true
@@ -99,11 +104,14 @@ class TaskRepositoryImpl {
       minimumSteps:
           data['minimumVersionSteps'] as List<dynamic>? ?? const <dynamic>[],
     );
-    final sideQuests = await _insertSideQuests(
-      userId: userId,
-      taskId: taskId,
-      rawSideQuests: data['sideQuests'] as List<dynamic>? ?? const <dynamic>[],
-    );
+    final sideQuests = sideQuestsEnabled
+        ? await _insertSideQuests(
+            userId: userId,
+            taskId: taskId,
+            rawSideQuests:
+                data['sideQuests'] as List<dynamic>? ?? const <dynamic>[],
+          )
+        : const <SideQuestModel>[];
 
     return (
       task: TaskMapper.fromTaskRow(taskRow),
@@ -1186,6 +1194,7 @@ bool _containsAnyToken(String text, List<String> tokens) {
   final lower = text.toLowerCase();
   return tokens.any((t) => lower.contains(t));
 }
+
 
 
 

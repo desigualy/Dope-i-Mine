@@ -37,6 +37,7 @@ void main() {
         userId: 'user-a',
         sourceText: 'Clean my desk',
         snapshot: _snapshot,
+        sideQuestsEnabled: true,
       );
       final parentStep = created.steps.first;
 
@@ -57,6 +58,77 @@ void main() {
           .toSet();
       expect(storedStepIds, containsAll(generated.map((step) => step.id)));
     },
+  );
+
+  test('offline fallback creates side quests when enabled', () async {
+    SharedPreferences.setMockInitialValues(<String, Object>{});
+    final preferences = await SharedPreferences.getInstance();
+    final repository = _repository(preferences);
+
+    final created = await repository.createTask(
+      userId: 'user-a',
+      sourceText: 'Clean my desk',
+      snapshot: _snapshot,
+      sideQuestsEnabled: true,
+    );
+
+    expect(created.sideQuests, isNotEmpty);
+    expect(created.sideQuests, everyElement(hasTaskId(created.task.id)));
+  });
+
+  test('offline fallback creates no side quests when disabled', () async {
+    SharedPreferences.setMockInitialValues(<String, Object>{});
+    final preferences = await SharedPreferences.getInstance();
+    final repository = _repository(preferences);
+
+    final created = await repository.createTask(
+      userId: 'user-a',
+      sourceText: 'Clean my desk',
+      snapshot: _snapshot,
+      sideQuestsEnabled: false,
+    );
+
+    expect(created.sideQuests, isEmpty);
+
+    final stored = await repository.localTaskStore.getTaskBundle(created.task.id);
+    expect(stored?.sideQuests, isEmpty);
+  });
+
+  test('queued offline create task payload includes sideQuestsEnabled', () async {
+    SharedPreferences.setMockInitialValues(<String, Object>{});
+    final preferences = await SharedPreferences.getInstance();
+    final syncQueue = SyncQueueService(preferences: preferences);
+    final repository = _repository(preferences, syncQueue: syncQueue);
+
+    await repository.createTask(
+      userId: 'user-a',
+      sourceText: 'Clean my desk',
+      snapshot: _snapshot,
+      sideQuestsEnabled: false,
+    );
+
+    final queue = await syncQueue.loadQueue();
+    final createTaskItem = queue.singleWhere((item) => item.type == 'create_task');
+    expect(createTaskItem.payload['sideQuestsEnabled'], isFalse);
+  });
+}
+
+OfflineFirstTaskRepository _repository(
+  SharedPreferences preferences, {
+  SyncQueueService? syncQueue,
+}) {
+  return OfflineFirstTaskRepository(
+    localTaskStore: LocalTaskStore(
+      store: LocalJsonStore('offline.first.task.test', preferences: preferences),
+    ),
+    localRewardStore: LocalRewardStore(
+      store: LocalJsonStore(
+        'offline.first.reward.test',
+        preferences: preferences,
+      ),
+    ),
+    syncQueue: syncQueue ?? SyncQueueService(preferences: preferences),
+    connectivityController: _OfflineConnectivityController(),
   );
 }
 

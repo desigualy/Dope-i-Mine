@@ -39,6 +39,7 @@ class OfflineFirstTaskRepository {
     required String userId,
     required String sourceText,
     required TaskStateSnapshot snapshot,
+    required bool sideQuestsEnabled,
   }) async {
     final online = await connectivityController.refresh();
     if (remote != null && online.isOnline) {
@@ -47,6 +48,7 @@ class OfflineFirstTaskRepository {
           userId: userId,
           sourceText: sourceText,
           snapshot: snapshot,
+          sideQuestsEnabled: sideQuestsEnabled,
         );
         await localTaskStore.saveTaskBundle(LocalTaskBundle(
           task: result.task,
@@ -64,6 +66,7 @@ class OfflineFirstTaskRepository {
       userId: userId,
       sourceText: sourceText,
       snapshot: snapshot,
+      sideQuestsEnabled: sideQuestsEnabled,
     );
     await localTaskStore.saveTaskBundle(bundle);
     await syncQueue.enqueue(SyncQueueItem.create(
@@ -74,6 +77,7 @@ class OfflineFirstTaskRepository {
         'userId': userId,
         'sourceText': sourceText,
         'snapshot': snapshot.toJson(),
+        'sideQuestsEnabled': sideQuestsEnabled,
         'createdOffline': true,
       },
     ));
@@ -178,6 +182,7 @@ class OfflineFirstTaskRepository {
     required String userId,
     required String sourceText,
     required TaskStateSnapshot snapshot,
+    required bool sideQuestsEnabled,
   }) {
     final data = localTaskFallback(sourceText, snapshot);
     final now = DateTime.now().microsecondsSinceEpoch;
@@ -237,8 +242,8 @@ class OfflineFirstTaskRepository {
                 ))
             .toList();
 
-    final sideQuests =
-        (data['sideQuests'] as List<dynamic>? ?? const <dynamic>[])
+    final sideQuests = sideQuestsEnabled
+        ? (data['sideQuests'] as List<dynamic>? ?? const <dynamic>[])
             .whereType<Map>()
             .toList()
             .asMap()
@@ -255,7 +260,8 @@ class OfflineFirstTaskRepository {
                   status: 'available',
                   taskId: taskId,
                 ))
-            .toList();
+            .toList()
+        : const <SideQuestModel>[];
 
     return LocalTaskBundle(
       task: task,

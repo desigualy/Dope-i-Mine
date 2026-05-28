@@ -153,12 +153,13 @@ class TaskBreakdownScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  _SideQuestToggle(
-                    value: state.showSideQuests,
-                    onChanged: (value) => ref
-                        .read(taskControllerProvider.notifier)
-                        .toggleSideQuests(value),
-                  ),
+                  if (state.sideQuestsEnabled)
+                    _SideQuestToggle(
+                      value: state.showSideQuests,
+                      onChanged: (value) => ref
+                          .read(taskControllerProvider.notifier)
+                          .toggleSideQuests(value),
+                    ),
                 ],
               ),
               Row(
@@ -240,7 +241,9 @@ class TaskBreakdownScreen extends ConsumerWidget {
                     child: const Text('View Summary & Continue'),
                   ),
                 ),
-              if (state.task?.id != null && state.showSideQuests) ...<Widget>[
+              if (state.task?.id != null &&
+                  state.sideQuestsEnabled &&
+                  state.showSideQuests) ...<Widget>[
                 const SizedBox(height: 24),
                 Text(
                   'Side Quest Available:',

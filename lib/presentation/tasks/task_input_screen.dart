@@ -136,6 +136,8 @@ class _TaskInputScreenState extends ConsumerState<TaskInputScreen> {
                                 stressLevel: _stress,
                                 timeAvailable: _time,
                               ),
+                              sideQuestsEnabled:
+                                  await _resolveSideQuestsEnabled(ref, userId),
                             );
                         if (mounted) context.go('/tasks/breakdown');
                       } catch (error) {
@@ -163,4 +165,13 @@ String _resolveTaskUserId(WidgetRef ref) {
   } catch (_) {}
 
   return _localTaskUserId;
+}
+
+Future<bool> _resolveSideQuestsEnabled(WidgetRef ref, String userId) async {
+  if (userId == _localTaskUserId) return false;
+  try {
+    return ref.read(profileRepositoryProvider).areSideQuestsEnabled(userId);
+  } catch (_) {
+    return false;
+  }
 }

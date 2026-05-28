@@ -83,6 +83,7 @@ class SyncEngine {
     final userId = payload['userId'] as String?;
     final sourceText = payload['sourceText'] as String?;
     final snapshotJson = (payload['snapshot'] as Map?)?.cast<String, dynamic>();
+    final sideQuestsEnabled = payload['sideQuestsEnabled'] as bool? ?? true;
 
     if (userId == null || sourceText == null || snapshotJson == null) {
       throw StateError('Cannot sync create_task without user/source/snapshot.');
@@ -97,6 +98,7 @@ class SyncEngine {
       userId: userId,
       sourceText: sourceText,
       snapshot: TaskStateSnapshot.fromJson(snapshotJson),
+      sideQuestsEnabled: sideQuestsEnabled,
     );
 
     if (localTaskId != null && localTaskStore != null) {

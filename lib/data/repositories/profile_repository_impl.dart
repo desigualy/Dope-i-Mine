@@ -318,6 +318,19 @@ class ProfileRepositoryImpl {
     return profileRow['onboarding_completed'] == true;
   }
 
+  Future<bool> areSideQuestsEnabled(String userId) async {
+    try {
+      final profileRow = await _client
+          .from('users_profile')
+          .select('side_quests_enabled')
+          .eq('id', userId)
+          .maybeSingle();
+      return profileRow?['side_quests_enabled'] == true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   Future<String> getAccountType(String userId) async {
     try {
       final profileRow = await _client

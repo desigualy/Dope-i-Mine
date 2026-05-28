@@ -1,3 +1,5 @@
+// ignore_for_file: unused_element_parameter
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -212,6 +214,9 @@ class _FakeProfileRepository implements ProfileRepositoryImpl {
     }
     return onboardingComplete;
   }
+
+  @override
+  Future<bool> areSideQuestsEnabled(String userId) async => true;
 
   @override
   Future<SensorySettingsModel?> getSensorySettings(String userId) async => null;
@@ -1037,7 +1042,6 @@ void main() {
     );
 
     await _pumpUntilVisible(tester, find.text('Hi there!'));
-
     expect(find.text('Hi there!'), findsOneWidget);
   });
 

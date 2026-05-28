@@ -61,8 +61,77 @@ void main() {
         StepStatus.completed,
       );
     });
+
+    test('sideQuestsEnabled false prevents unlocks on step completion', () async {
+      final controller = TaskController(
+        _FakeTaskRepository(
+          sideQuests: const <SideQuestModel>[
+            SideQuestModel(
+              id: 'quest-1',
+              title: 'Bonus action',
+              questType: 'bonus',
+              rewardXp: 10,
+              status: 'available',
+              taskId: 'task-1',
+            ),
+          ],
+        ),
+      );
+
+      await controller.createTask(
+        userId: 'user-a',
+        sourceText: 'Clean desk',
+        snapshot: _snapshot,
+        sideQuestsEnabled: false,
+      );
+      controller.replaceSteps(<TaskStepModel>[
+        _step(id: 'step-1', text: 'One'),
+        _step(id: 'step-2', text: 'Two', sequenceNo: 2),
+      ]);
+
+      controller.updateStepCompletion('step-1', 'completed');
+      controller.updateStepCompletion('step-2', 'completed');
+
+      expect(controller.state.sideQuestsEnabled, isFalse);
+      expect(controller.state.showSideQuests, isFalse);
+      expect(controller.state.sideQuests, isEmpty);
+    });
+
+    test('sideQuestsEnabled true keeps generated quests lockable/unlockable', () async {
+      final controller = TaskController(
+        _FakeTaskRepository(
+          sideQuests: const <SideQuestModel>[
+            SideQuestModel(
+              id: 'quest-1',
+              title: 'Bonus action',
+              questType: 'bonus',
+              rewardXp: 10,
+              status: 'available',
+              taskId: 'task-1',
+            ),
+          ],
+        ),
+      );
+
+      await controller.createTask(
+        userId: 'user-a',
+        sourceText: 'Clean desk',
+        snapshot: _snapshot,
+        sideQuestsEnabled: true,
+      );
+
+      expect(controller.state.sideQuests, hasLength(1));
+      expect(controller.state.sideQuests.single.status, 'locked');
+    });
   });
 }
+
+const _snapshot = TaskStateSnapshot(
+  mode: SupportMode.audhd,
+  energyLevel: EnergyLevel.medium,
+  stressLevel: StressLevel.friction,
+  timeAvailable: TimeAvailable.fifteenMinutes,
+);
 
 TaskStepModel _step({
   required String id,
@@ -82,6 +151,10 @@ TaskStepModel _step({
 }
 
 class _FakeTaskRepository implements TaskRepositoryImpl {
+  _FakeTaskRepository({this.sideQuests = const <SideQuestModel>[]});
+
+  final List<SideQuestModel> sideQuests;
+
   @override
   Future<({
     TaskModel task,
@@ -92,8 +165,19 @@ class _FakeTaskRepository implements TaskRepositoryImpl {
     required String userId,
     required String sourceText,
     required TaskStateSnapshot snapshot,
-  }) {
-    throw UnimplementedError();
+    required bool sideQuestsEnabled,
+  }) async {
+    return (
+      task: const TaskModel(
+        id: 'task-1',
+        normalizedTitle: 'Clean desk',
+        effortBand: 'low',
+        estimatedMinutes: 10,
+      ),
+      steps: const <TaskStepModel>[],
+      minimumVersion: const <TaskStepModel>[],
+      sideQuests: sideQuestsEnabled ? sideQuests : const <SideQuestModel>[],
+    );
   }
 
   @override

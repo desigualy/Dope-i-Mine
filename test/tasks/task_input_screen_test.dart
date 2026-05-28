@@ -115,6 +115,7 @@ class _FakeTaskRepository {
     required String userId,
     required String sourceText,
     required TaskStateSnapshot snapshot,
+    required bool sideQuestsEnabled,
   }) async {
     lastUserId = userId;
     return (

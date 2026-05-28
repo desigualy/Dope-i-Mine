@@ -1,0 +1,41 @@
+{
+  "buildFiles": [
+    "C:\\Users\\Lenovo PC\\Downloads\\dope_i_mine_pass_12_analyze_fix\\rive_common_local_override\\android\\CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "C:\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+      "-C",
+      "C:\\Users\\Lenovo PC\\Downloads\\dope_i_mine_pass_12_analyze_fix\\rive_common_local_override\\android\\.cxx\\Debug\\3o136h1s\\x86_64",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "C:\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+    "-C",
+    "C:\\Users\\Lenovo PC\\Downloads\\dope_i_mine_pass_12_analyze_fix\\rive_common_local_override\\android\\.cxx\\Debug\\3o136h1s\\x86_64",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "rive_text::@6890427a1f51a3e7e1df": {
+      "toolchain": "toolchain",
+      "abi": "x86_64",
+      "artifactName": "rive_text",
+      "output": "C:\\Users\\Lenovo PC\\Downloads\\dope_i_mine_pass_12_analyze_fix\\build\\rive_common\\intermediates\\cxx\\Debug\\3o136h1s\\obj\\x86_64\\librive_text.so",
+      "runtimeFiles": []
+    }
+  },
+  "toolchains": {
+    "toolchain": {
+      "cCompilerExecutable": "C:\\Android\\Sdk\\ndk\\25.1.8937393\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang.exe",
+      "cppCompilerExecutable": "C:\\Android\\Sdk\\ndk\\25.1.8937393\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe"
+    }
+  },
+  "cFileExtensions": [
+    "c"
+  ],
+  "cppFileExtensions": [
+    "cpp",
+    "cc"
+  ]
+}

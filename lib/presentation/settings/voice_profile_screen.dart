@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/sync/sync_queue_item.dart';
 import '../../core/sync/sync_queue_service.dart';
 import '../../core/widgets/primary_scaffold.dart';
+import '../../domain/voice/installed_tts_voice_model.dart';
 import '../../domain/voice/voice_profile_model.dart';
 import '../../domain/voice/voice_settings_model.dart';
 import '../../providers.dart';
@@ -22,6 +23,7 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
   static const double _maxSpeechRate = 1.5;
 
   String? selectedVoiceId;
+  String? selectedPlatformVoiceId;
   double speechRate = 1.0;
   bool autoReadSteps = false;
   bool autoReadSidequests = false;
@@ -42,6 +44,10 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
       if (localSettings != null) {
         setState(() {
           selectedVoiceId = localSettings.activeVoiceProfileId;
+          selectedPlatformVoiceId = _platformVoiceId(
+            name: localSettings.platformVoiceName,
+            locale: localSettings.platformVoiceLocale ?? localSettings.localeId,
+          );
           speechRate = _clampSpeechRate(localSettings.speechRate);
           autoReadSteps = localSettings.autoReadSteps;
           autoReadSidequests = localSettings.autoReadSidequests;
@@ -65,6 +71,11 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
       setState(() {
         profiles = availableProfiles;
         selectedVoiceId = resolvedVoiceId;
+        selectedPlatformVoiceId = _platformVoiceId(
+              name: settings?.platformVoiceName,
+              locale: settings?.platformVoiceLocale ?? settings?.localeId,
+            ) ??
+            selectedPlatformVoiceId;
         speechRate = _clampSpeechRate(settings?.speechRate ?? speechRate);
         autoReadSteps = settings?.autoReadSteps ?? autoReadSteps;
         autoReadSidequests = settings?.autoReadSidequests ?? autoReadSidequests;
@@ -80,12 +91,51 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final installedVoices = ref.watch(installedTtsVoicesProvider);
     return PrimaryScaffold(
       title: 'Voice settings',
       child: loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
               children: <Widget>[
+                _EngineStatusLabel(
+                  hasSelectedPlatformVoice: selectedPlatformVoiceId != null,
+                  installedVoices: installedVoices,
+                ),
+                const SizedBox(height: 16),
+                installedVoices.when(
+                  data: (voices) => voices.isEmpty
+                      ? const _NoInstalledVoicesNotice()
+                      : DropdownButtonFormField<String>(
+                          value: _resolvedSelectedPlatformVoiceId(voices),
+                          items: voices
+                              .map((voice) => DropdownMenuItem<String>(
+                                    value: voice.id,
+                                    child: Text(voice.displayLabel),
+                                  ))
+                              .toList(),
+                          onChanged: (value) {
+                            final selected = _installedVoiceFor(voices, value);
+                            setState(() {
+                              selectedPlatformVoiceId = value;
+                              if (selected != null) {
+                                selectedVoiceId = _matchingProfileIdForLocale(
+                                      selected.locale,
+                                    ) ??
+                                    selectedVoiceId;
+                              }
+                            });
+                          },
+                          decoration: const InputDecoration(
+                            labelText: 'Android system voice',
+                            helperText:
+                                'These are real voices installed on this device.',
+                          ),
+                        ),
+                  loading: () => const LinearProgressIndicator(),
+                  error: (_, __) => const _NoInstalledVoicesNotice(),
+                ),
+                const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   value: selectedVoiceId,
                   items: profiles
@@ -103,7 +153,11 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
                       }
                     });
                   },
-                  decoration: const InputDecoration(labelText: 'Voice profile'),
+                  decoration: const InputDecoration(
+                    labelText: 'Voice profile tuning',
+                    helperText:
+                        'Used for rate, pitch, locale hints, Neural TTS, and Sherpa fallback.',
+                  ),
                 ),
                 if (_profileFor(selectedVoiceId) case final selected?) ...[
                   const SizedBox(height: 8),
@@ -138,9 +192,20 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
                     final authUser =
                         ref.read(authRepositoryProvider).getCurrentUser();
                     if (authUser == null) return;
+                    final installedVoices = await ref
+                        .read(installedTtsVoicesProvider.future)
+                        .catchError(
+                            (_) => const <InstalledTtsVoiceModel>[]);
+                    final selectedPlatformVoice = _installedVoiceFor(
+                      installedVoices,
+                      selectedPlatformVoiceId,
+                    );
                     final nextSettings = VoiceSettingsModel(
                       activeVoiceProfileId: selectedVoiceId,
-                      localeId: _profileFor(selectedVoiceId)?.localeId,
+                      localeId: selectedPlatformVoice?.locale ??
+                          _profileFor(selectedVoiceId)?.localeId,
+                      platformVoiceName: selectedPlatformVoice?.name,
+                      platformVoiceLocale: selectedPlatformVoice?.locale,
                       speechRate: speechRate,
                       autoReadSteps: autoReadSteps,
                       autoReadSidequests: autoReadSidequests,
@@ -166,6 +231,10 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
                                 'activeVoiceProfileId':
                                     nextSettings.activeVoiceProfileId,
                                 'localeId': nextSettings.localeId,
+                                'platformVoiceName':
+                                    nextSettings.platformVoiceName,
+                                'platformVoiceLocale':
+                                    nextSettings.platformVoiceLocale,
                                 'speechRate': nextSettings.speechRate,
                                 'autoReadSteps': nextSettings.autoReadSteps,
                                 'autoReadSidequests':
@@ -182,7 +251,7 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
                 ),
                 const SizedBox(height: 24),
                 VoiceTestPanel(
-                  previewProfile: _profileFor(selectedVoiceId),
+                  previewProfile: _previewProfile(installedVoices),
                   previewSpeechRate: speechRate,
                 ),
               ],
@@ -198,6 +267,69 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
     return null;
   }
 
+  VoiceProfileModel? _previewProfile(
+      AsyncValue<List<InstalledTtsVoiceModel>> installedVoices) {
+    final profile = _profileFor(selectedVoiceId);
+    final selectedVoice = installedVoices.maybeWhen(
+      data: (voices) => _installedVoiceFor(voices, selectedPlatformVoiceId),
+      orElse: () => null,
+    );
+    if (selectedVoice == null) return profile;
+    return VoiceProfileModel(
+      id: profile?.id ?? selectedVoice.id,
+      provider: 'system',
+      label: selectedVoice.displayLabel,
+      localeId: selectedVoice.locale,
+      accent: profile?.accent ?? _accentForLocale(selectedVoice.locale),
+      gender: profile?.gender ?? 'neutral',
+      pace: profile?.pace ?? 'normal',
+      warmth: profile?.warmth ?? 'medium',
+      firmness: profile?.firmness ?? 'medium',
+      tonePreset: profile?.tonePreset ?? 'platform_system_voice',
+      platformVoiceName: selectedVoice.name,
+    );
+  }
+
+  String? _resolvedSelectedPlatformVoiceId(
+      List<InstalledTtsVoiceModel> voices) {
+    if (voices.any((voice) => voice.id == selectedPlatformVoiceId)) {
+      return selectedPlatformVoiceId;
+    }
+    return null;
+  }
+
+  InstalledTtsVoiceModel? _installedVoiceFor(
+    List<InstalledTtsVoiceModel> voices,
+    String? id,
+  ) {
+    if (id == null) return null;
+    for (final voice in voices) {
+      if (voice.id == id) return voice;
+    }
+    return null;
+  }
+
+  String? _matchingProfileIdForLocale(String locale) {
+    final normalized = locale.toLowerCase().replaceAll('_', '-');
+    for (final profile in profiles) {
+      if (profile.localeId.toLowerCase().replaceAll('_', '-') == normalized) {
+        return profile.id;
+      }
+    }
+    return null;
+  }
+
+  String? _platformVoiceId({String? name, String? locale}) {
+    if (name == null || name.isEmpty || locale == null || locale.isEmpty) {
+      return null;
+    }
+    return '$locale::$name';
+  }
+
+  String _accentForLocale(String locale) {
+    return locale.toLowerCase().contains('us') ? 'US' : 'UK';
+  }
+
   String? _resolveSelectedVoiceId({
     required String? preferredId,
     required List<VoiceProfileModel> availableProfiles,
@@ -211,5 +343,50 @@ class _VoiceProfileScreenState extends ConsumerState<VoiceProfileScreen> {
 
   double _clampSpeechRate(double value) {
     return value.clamp(_minSpeechRate, _maxSpeechRate).toDouble();
+  }
+}
+
+class _EngineStatusLabel extends StatelessWidget {
+  const _EngineStatusLabel({
+    required this.hasSelectedPlatformVoice,
+    required this.installedVoices,
+  });
+
+  final bool hasSelectedPlatformVoice;
+  final AsyncValue<List<InstalledTtsVoiceModel>> installedVoices;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = installedVoices.when(
+      data: (voices) {
+        if (hasSelectedPlatformVoice) return 'Engine active: Android system voice';
+        if (voices.isNotEmpty) {
+          return 'Engine active: Sherpa offline unless an Android voice is selected';
+        }
+        return 'Engine active: Sherpa offline or Neural, then Android default fallback';
+      },
+      loading: () => 'Engine active: checking Android system voices',
+      error: (_, __) => 'Engine active: Sherpa offline, Neural, or Android default fallback',
+    );
+    return Semantics(
+      label: label,
+      child: Chip(
+        avatar: const Icon(Icons.graphic_eq_rounded, size: 18),
+        label: Text(label),
+      ),
+    );
+  }
+}
+
+class _NoInstalledVoicesNotice extends StatelessWidget {
+  const _NoInstalledVoicesNotice();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Text(
+      'No installed Android system voices were reported by this device. '
+      'Fallback profiles may still use Sherpa offline, Neural TTS if configured, '
+      'or the Android default voice, but they are not separate installed voices.',
+    );
   }
 }

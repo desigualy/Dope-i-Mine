@@ -42,10 +42,12 @@ void main() {
       expect(stepCard, contains('SpeakButton'));
     });
 
-    test('voice controller prefers Sherpa before fallback engines', () {
+    test('voice controller uses Sherpa only for explicit Sherpa profiles', () {
       final controller = _read('lib/presentation/voice/voice_controller.dart');
 
       expect(controller, contains('SherpaOnnxTextToSpeechService'));
+      expect(controller, contains('_canUseSherpaFor'));
+      expect(controller, contains("provider == 'sherpa_onnx'"));
       expect(controller.indexOf('_sherpaTts.speak'),
           lessThan(controller.indexOf('_neuralTts.speak')));
       expect(controller.indexOf('_neuralTts.speak'),

@@ -41,6 +41,8 @@ create table if not exists public.user_voice_settings (
   user_id uuid primary key references public.users_profile(id) on delete cascade,
   active_voice_profile_id text references public.voice_profiles(id),
   locale_id text,
+  platform_voice_name text,
+  platform_voice_locale text,
   speech_rate numeric not null default 1.0,
   auto_read_steps boolean not null default false,
   auto_read_sidequests boolean not null default false,
@@ -51,6 +53,8 @@ create table if not exists public.user_voice_settings (
 alter table public.user_voice_settings
   add column if not exists active_voice_profile_id text references public.voice_profiles(id),
   add column if not exists locale_id text,
+  add column if not exists platform_voice_name text,
+  add column if not exists platform_voice_locale text,
   add column if not exists speech_rate numeric not null default 1.0,
   add column if not exists auto_read_steps boolean not null default false,
   add column if not exists auto_read_sidequests boolean not null default false,

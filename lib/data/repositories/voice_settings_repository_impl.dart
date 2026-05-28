@@ -22,6 +22,8 @@ class VoiceSettingsRepositoryImpl {
       autoReadSteps: row['auto_read_steps'] as bool? ?? false,
       autoReadSidequests: row['auto_read_sidequests'] as bool? ?? false,
       localeId: row['locale_id'] as String?,
+      platformVoiceName: row['platform_voice_name'] as String?,
+      platformVoiceLocale: row['platform_voice_locale'] as String?,
     );
   }
 
@@ -33,6 +35,8 @@ class VoiceSettingsRepositoryImpl {
       'user_id': userId,
       'active_voice_profile_id': settings.activeVoiceProfileId,
       'locale_id': settings.localeId,
+      'platform_voice_name': settings.platformVoiceName,
+      'platform_voice_locale': settings.platformVoiceLocale,
       'speech_rate': settings.speechRate,
       'auto_read_steps': settings.autoReadSteps,
       'auto_read_sidequests': settings.autoReadSidequests,

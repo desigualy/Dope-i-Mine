@@ -1,6 +1,7 @@
 import 'package:dope_i_mine/data/repositories/auth_repository_impl.dart';
 import 'package:dope_i_mine/data/repositories/voice_settings_repository_impl.dart';
 import 'package:dope_i_mine/domain/auth/auth_user.dart';
+import 'package:dope_i_mine/domain/voice/installed_tts_voice_model.dart';
 import 'package:dope_i_mine/domain/voice/voice_profile_model.dart';
 import 'package:dope_i_mine/domain/voice/voice_settings_model.dart';
 import 'package:dope_i_mine/presentation/settings/voice_profile_screen.dart';
@@ -114,6 +115,9 @@ void main() {
           authRepositoryProvider.overrideWithValue(_FakeAuthRepository()),
           voiceSettingsRepositoryProvider
               .overrideWithValue(_FakeVoiceSettingsRepository()),
+          installedTtsVoicesProvider.overrideWith(
+            (_) async => const <InstalledTtsVoiceModel>[],
+          ),
         ],
         child: const MaterialApp(home: VoiceProfileScreen()),
       ),
@@ -136,6 +140,9 @@ void main() {
           authRepositoryProvider.overrideWithValue(_FakeAuthRepository()),
           voiceSettingsRepositoryProvider
               .overrideWithValue(_FakeVoiceSettingsRepository()),
+          installedTtsVoicesProvider.overrideWith(
+            (_) async => const <InstalledTtsVoiceModel>[],
+          ),
         ],
         child: const MaterialApp(home: VoiceProfileScreen()),
       ),
@@ -161,6 +168,9 @@ void main() {
           authRepositoryProvider.overrideWithValue(_FakeAuthRepository()),
           voiceSettingsRepositoryProvider
               .overrideWithValue(_FakeVoiceSettingsRepository()),
+          installedTtsVoicesProvider.overrideWith(
+            (_) async => const <InstalledTtsVoiceModel>[],
+          ),
         ],
         child: const MaterialApp(home: VoiceProfileScreen()),
       ),
@@ -172,5 +182,41 @@ void main() {
     final slider = tester.widget<Slider>(find.byType(Slider));
     expect(slider.value, greaterThanOrEqualTo(slider.min));
     expect(slider.value, lessThanOrEqualTo(slider.max));
+  });
+
+  testWidgets('voice settings screen shows actual installed voice choices',
+      (tester) async {
+    SharedPreferences.setMockInitialValues(<String, Object>{});
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: <Override>[
+          authRepositoryProvider.overrideWithValue(_FakeAuthRepository()),
+          voiceSettingsRepositoryProvider
+              .overrideWithValue(_FakeVoiceSettingsRepository()),
+          installedTtsVoicesProvider.overrideWith(
+            (_) async => const <InstalledTtsVoiceModel>[
+              InstalledTtsVoiceModel(
+                name: 'en-gb-x-gba-local',
+                locale: 'en-GB',
+              ),
+              InstalledTtsVoiceModel(
+                name: 'en-us-x-sfg-network',
+                locale: 'en-US',
+                networkConnectionRequired: true,
+              ),
+            ],
+          ),
+        ],
+        child: const MaterialApp(home: VoiceProfileScreen()),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Android system voice'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('en-gb-x-gba-local (en-GB)'), findsWidgets);
+    expect(find.text('en-us-x-sfg-network (en-US) · network'), findsWidgets);
   });
 }

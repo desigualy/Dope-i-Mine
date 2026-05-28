@@ -1,22 +1,27 @@
 import 'package:flutter_tts/flutter_tts.dart';
 
+import '../../domain/voice/installed_tts_voice_model.dart';
 import '../../domain/voice/voice_profile_model.dart';
 
 class TextToSpeechService {
-  final FlutterTts _tts = FlutterTts();
+  TextToSpeechService({FlutterTts? tts}) : _tts = tts ?? FlutterTts();
+
+  final FlutterTts _tts;
 
   Future<void> initialize({
     VoiceProfileModel? profile,
     double? speechRate,
+    String? platformVoiceName,
+    String? platformVoiceLocale,
   }) async {
-    final localeId = profile?.localeId ?? 'en-GB';
+    final localeId = platformVoiceLocale ?? profile?.localeId ?? 'en-GB';
     await _tts.setLanguage(localeId);
     await _tts.setSpeechRate(speechRate ?? profile?.defaultRate ?? 0.45);
     await _tts.setPitch(profile?.defaultPitch ?? 1.0);
-    final platformVoiceName = profile?.platformVoiceName;
-    if (platformVoiceName != null && platformVoiceName.isNotEmpty) {
+    final selectedVoiceName = platformVoiceName ?? profile?.platformVoiceName;
+    if (selectedVoiceName != null && selectedVoiceName.isNotEmpty) {
       await _trySetVoice(<String, String>{
-        'name': platformVoiceName,
+        'name': selectedVoiceName,
         'locale': localeId,
       });
     } else if (profile != null) {
@@ -29,6 +34,23 @@ class TextToSpeechService {
 
   Future<void> speak(String text) => _tts.speak(text);
   Future<void> stop() => _tts.stop();
+
+  Future<List<InstalledTtsVoiceModel>> installedVoices() async {
+    final rawVoices = await _safeGetVoices();
+    if (rawVoices is! List) return const <InstalledTtsVoiceModel>[];
+
+    final voices = rawVoices
+        .whereType<Map>()
+        .map(InstalledTtsVoiceModel.fromPlatformMap)
+        .where((voice) => voice.name.isNotEmpty && voice.locale.isNotEmpty)
+        .where((voice) => voice.notInstalled != true)
+        .toList();
+    voices.sort((a, b) {
+      final locale = a.locale.compareTo(b.locale);
+      return locale == 0 ? a.name.compareTo(b.name) : locale;
+    });
+    return voices;
+  }
 
   Future<Map<String, String>?> _findInstalledVoice(
       VoiceProfileModel profile) async {

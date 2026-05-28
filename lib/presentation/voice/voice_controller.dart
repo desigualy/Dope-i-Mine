@@ -41,12 +41,33 @@ class VoiceController {
     final resolved = await _resolveVoice();
     final profile = previewProfile ?? resolved.profile;
     final rate = previewSpeechRate ?? resolved.settings?.speechRate;
-    final usedSherpa = await _sherpaTts.speak(
-      text: text,
-      profile: profile,
-      speechRate: rate,
-    );
-    if (usedSherpa) return;
+    final platformVoiceName = previewProfile?.platformVoiceName ??
+        resolved.settings?.platformVoiceName ??
+        profile?.platformVoiceName;
+    final platformVoiceLocale = previewProfile?.localeId ??
+        resolved.settings?.platformVoiceLocale ??
+        resolved.settings?.localeId ??
+        profile?.localeId;
+
+    if (platformVoiceName != null && platformVoiceName.isNotEmpty) {
+      await _speakWithPlatformTts(
+        text,
+        profile: profile,
+        speechRate: rate,
+        platformVoiceName: platformVoiceName,
+        platformVoiceLocale: platformVoiceLocale,
+      );
+      return;
+    }
+
+    if (_canUseSherpaFor(profile)) {
+      final usedSherpa = await _sherpaTts.speak(
+        text: text,
+        profile: profile,
+        speechRate: rate,
+      );
+      if (usedSherpa) return;
+    }
 
     final usedNeural = await _neuralTts.speak(
       text: text,
@@ -55,11 +76,33 @@ class VoiceController {
     );
     if (usedNeural) return;
 
-    await _tts.initialize(
+    await _speakWithPlatformTts(
+      text,
       profile: profile,
       speechRate: rate,
+      platformVoiceName: platformVoiceName,
+      platformVoiceLocale: platformVoiceLocale,
+    );
+  }
+
+  Future<void> _speakWithPlatformTts(
+    String text, {
+    VoiceProfileModel? profile,
+    double? speechRate,
+    String? platformVoiceName,
+    String? platformVoiceLocale,
+  }) async {
+    await _tts.initialize(
+      profile: profile,
+      speechRate: speechRate,
+      platformVoiceName: platformVoiceName,
+      platformVoiceLocale: platformVoiceLocale,
     );
     await _tts.speak(text);
+  }
+
+  bool _canUseSherpaFor(VoiceProfileModel? profile) {
+    return profile?.provider == 'sherpa_onnx';
   }
 
   Future<void> stopSpeaking() async {
